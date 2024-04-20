@@ -63,7 +63,7 @@
     "bittorrent-peerid": "^1.3.6",
     "blob-util": "^2.0.2",
     "cfonts": "^3.2.0",
-    "chalk": "4.1.2",
+    "chalk": "5.3.0",
     "copy-webpack-plugin": "^12.0.0",
     "cross-env": "^7.0.3",
     "css-loader": "^7.0.0",
