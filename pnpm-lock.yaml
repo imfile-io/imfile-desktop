@@ -80,8 +80,8 @@ devDependencies:
     specifier: ^3.2.0
     version: 3.2.0
   chalk:
-    specifier: 4.1.2
-    version: 4.1.2
+    specifier: 5.3.0
+    version: 5.3.0
   copy-webpack-plugin:
     specifier: ^12.0.0
     version: 12.0.2(webpack@5.91.0)
@@ -3101,6 +3101,11 @@ packages:
     dependencies:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
+    dev: true
+
+  /chalk@5.3.0:
+    resolution: {integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==}
+    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
     dev: true
 
   /chokidar@3.6.0:
