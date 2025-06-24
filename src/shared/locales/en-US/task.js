@@ -120,6 +120,6 @@ export default {
   'download-fail-notify': 'Download Failed',
   'task-add':'Add task',
   'task-all-start' : 'Start all',
-  'task-all-stop' : 'pause all',
+  'task-all-stop' : 'Pause all',
   'task-not-data' : 'No task'
 }
