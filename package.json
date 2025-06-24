@@ -78,7 +78,7 @@
     "electron-store": "^9.0.0",
     "electron-updater": "^6.1.8",
     "element-ui": "^2.15.14",
-    "eslint": "^7.32.0",
+    "eslint": "^9.0.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^14.0.0",
