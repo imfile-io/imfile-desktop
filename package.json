@@ -98,7 +98,7 @@
     "randomatic": "^3.1.1",
     "sass": "1.77.2",
     "sass-loader": "^14.0.0",
-    "style-loader": "^3.3.2",
+    "style-loader": "^4.0.0",
     "tailwindcss": "^3.4.3",
     "terser-webpack-plugin": "^5.3.8",
     "vue": "^2.7.16",
