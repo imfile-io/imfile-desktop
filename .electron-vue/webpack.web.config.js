@@ -50,6 +50,7 @@ let webConfig = {
               implementation: require('sass'),
               additionalData: '@import "@/components/Theme/Variables.scss"',
               sassOptions: {
+                quietDeps: true,
                 includePaths:[__dirname, 'src']
               }
             },
@@ -68,6 +69,7 @@ let webConfig = {
               indentedSyntax: true,
               additionalData: '@import "@/components/Theme/Variables.scss"',
               sassOptions: {
+                quietDeps: true,
                 includePaths:[__dirname, 'src']
               }
             },
@@ -102,8 +104,8 @@ let webConfig = {
           options: {
             extractCSS: true,
             loaders: {
-              sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1',
-              scss: 'vue-style-loader!css-loader!sass-loader',
+              sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1&sassOptions[quietDeps]=true',
+              scss: 'vue-style-loader!css-loader!sass-loader?sassOptions[quietDeps]=true',
               less: 'vue-style-loader!css-loader!less-loader'
             }
           }
