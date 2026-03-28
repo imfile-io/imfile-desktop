@@ -1,18 +1,24 @@
 name: Build/release
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   release-linux:
     runs-on: ubuntu-latest
     environment: release
-    env:
-      GH_TOKEN: ${{ secrets.gh_token }}
-      GITHUB_TOKEN: ${{ secrets.gh_token }}
+    permissions:
+      contents: read
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
+      - name: Set build version from date
+        run: |
+          VERSION=$(date +%Y.%m.%d)
+          npm version $VERSION --no-git-tag-version
 
       - name: Cache node modules
         id: cache-npm
@@ -40,20 +46,33 @@ jobs:
           cache: 'npm'
 
       - run: yarn install --network-timeout 100000
-      - run: yarn run release
+      - run: node .electron-vue/build.js && npx electron-builder --publish=never
+
+      - name: Upload Linux build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-linux
+          path: |
+            release/*.AppImage
+            release/*.deb
+            release/*.rpm
+            release/*.snap
+          if-no-files-found: error
+          retention-days: 90
 
   release-macos:
     runs-on: macos-latest
     permissions:
-      contents: write
+      contents: read
     environment: release
-    env:
-      GH_TOKEN: ${{ secrets.gh_token }}
-      GITHUB_TOKEN: ${{ secrets.gh_token }}
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
+      - name: Set build version from date
+        run: |
+          VERSION=$(date +%Y.%m.%d)
+          npm version $VERSION --no-git-tag-version
 
       - name: Cache node modules
         id: cache-npm
@@ -76,20 +95,33 @@ jobs:
           cache: 'npm'
 
       - run: yarn install --network-timeout 100000
-      - run: yarn run release
+      - run: node .electron-vue/build.js && npx electron-builder --publish=never
+
+      - name: Upload macOS build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-macos
+          path: |
+            release/*.dmg
+            release/*.zip
+          if-no-files-found: error
+          retention-days: 90
 
   release-windows:
     runs-on: windows-latest
     environment: release
-    env:
-      gh_token: ${{ secrets.gh_token }}
-      github_token: ${{ secrets.gh_token }}
+    permissions:
+      contents: read
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Set build version from date
+        run: |
+          $version = Get-Date -Format "yyyy.MM.dd"
+          npm version $version --no-git-tag-version
 
       - name: Cache node modules
         id: cache-npm
@@ -112,4 +144,55 @@ jobs:
           cache: 'npm'
 
       - run: yarn install --network-timeout 100000
-      - run: yarn run release
+      - run: node .electron-vue/build.js && npx electron-builder --publish=never
+
+      - name: Upload Windows build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: |
+            release/*.exe
+            release/*.appx
+            release/*.zip
+          if-no-files-found: error
+          retention-days: 90
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs:
+      - release-linux
+      - release-macos
+      - release-windows
+    permissions:
+      contents: write
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Prepare Linux artifacts for release
+        uses: actions/download-artifact@v4
+        with:
+          name: release-linux
+          path: release-artifacts/linux
+
+      - name: Prepare macOS artifacts for release
+        uses: actions/download-artifact@v4
+        with:
+          name: release-macos
+          path: release-artifacts/macos
+
+      - name: Prepare Windows artifacts for release
+        uses: actions/download-artifact@v4
+        with:
+          name: release-windows
+          path: release-artifacts/windows
+
+      - name: Create GitHub release from generated artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create master-${{ github.run_number }} \
+            --title "imFile build ${{ github.run_number }}" \
+            --target ${{ github.sha }} \
+            --notes "Automated build triggered by push to master branch." \
+            release-artifacts/**/*
