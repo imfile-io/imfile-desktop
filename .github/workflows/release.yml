@@ -187,12 +187,17 @@ jobs:
           name: release-windows
           path: release-artifacts/windows
 
+      - name: Set version from date
+        run: |
+          VERSION=$(date +%Y.%m.%d)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Create GitHub release from generated artifacts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create master-${{ github.run_number }} \
-            --title "imFile build ${{ github.run_number }}" \
+          gh release create imFile-${{ env.VERSION }} \
+            --title "${{ env.VERSION }}" \
             --target ${{ github.sha }} \
             --notes "Automated build triggered by push to master branch." \
             release-artifacts/**/*
