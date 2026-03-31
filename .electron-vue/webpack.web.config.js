@@ -50,7 +50,8 @@ let webConfig = {
               implementation: require('sass'),
               additionalData: '@import "@/components/Theme/Variables.scss"',
               sassOptions: {
-                includePaths:[__dirname, 'src']
+                includePaths: [__dirname, 'src'],
+                quietDeps: true
               }
             },
           }
@@ -68,7 +69,8 @@ let webConfig = {
               indentedSyntax: true,
               additionalData: '@import "@/components/Theme/Variables.scss"',
               sassOptions: {
-                includePaths:[__dirname, 'src']
+                includePaths: [__dirname, 'src'],
+                quietDeps: true
               }
             },
           }

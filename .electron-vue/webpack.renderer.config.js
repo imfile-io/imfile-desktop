@@ -50,7 +50,9 @@ let rendererConfig = {
               implementation: require('sass'),
               additionalData: '@import "@/components/Theme/Variables.scss";',
               sassOptions: {
-                includePaths:[__dirname, 'src']
+                includePaths: [__dirname, 'src'],
+                // element-ui theme-chalk 等依赖在较新 Sass 下会触发 function-units 等弃用提示
+                quietDeps: true
               }
             },
           }
@@ -68,7 +70,8 @@ let rendererConfig = {
               indentedSyntax: true,
               additionalData: '@import "@/components/Theme/Variables.scss";',
               sassOptions: {
-                includePaths:[__dirname, 'src']
+                includePaths: [__dirname, 'src'],
+                quietDeps: true
               }
             },
           }
