@@ -20,7 +20,7 @@
     created () {
       this.bindIpcEvents()
     },
-    destroyed () {
+    unmounted () {
       this.unbindIpcEvents()
     }
   }

@@ -15,14 +15,14 @@
         >
           <span class="mo-directory-path" :title="directory">{{directory}}</span>
           <span class="mo-directory-actions">
-            <i
-              class="el-icon-star-off icon-history-favorited"
+            <el-icon
+              class="icon-history-favorited"
               @click.stop="() => handleCancelFavoriteItem(directory)"
-            />
-            <i
-              class="el-icon-delete icon-history-remove"
+            ><Star /></el-icon>
+            <el-icon
+              class="icon-history-remove"
               @click.stop="() => handleRemoveItem(directory)"
-            />
+            ><Delete /></el-icon>
           </span>
         </li>
       </ul>
@@ -35,29 +35,32 @@
         >
           <span class="mo-directory-path" :title="directory">{{directory}}</span>
           <span class="mo-directory-actions">
-            <i
+            <el-icon
               v-if="showFavoriteAction"
-              class="el-icon-star-off icon-history-favorite"
+              class="icon-history-favorite"
               @click.stop="() => handleFavoriteItem(directory)"
-            />
-            <i
-              class="el-icon-delete icon-history-remove"
+            ><Star /></el-icon>
+            <el-icon
+              class="icon-history-remove"
               @click.stop="() => handleRemoveItem(directory)"
-            />
+            ><Delete /></el-icon>
           </span>
         </li>
       </ul>
-      <el-button
-        slot="reference"
+      <template v-slot:reference>
+<el-button
+
         :disabled="popoverDisabled"
       >
-        <i class="el-icon-time" />
+        <el-icon><Clock /></el-icon>
       </el-button>
+</template>
     </el-popover>
   </div>
 </template>
 
 <script>
+  import { Clock, Delete, Star } from '@element-plus/icons-vue'
   import { mapState } from 'vuex'
   import { MAX_NUM_OF_DIRECTORIES } from '@shared/constants'
   import { cloneArray } from '@shared/utils'
@@ -65,6 +68,9 @@
   export default {
     name: 'mo-history-directory',
     components: {
+      Clock,
+      Delete,
+      Star
     },
     props: {
       width: {

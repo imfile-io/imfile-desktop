@@ -56,19 +56,13 @@
   import {
     buildFileList,
     listTorrentFiles,
-    bytesToSize,
-    getAsBase64,
-    removeExtensionDot
+    getAsBase64
   } from '@shared/utils'
 
   export default {
     name: 'mo-select-torrent',
     components: {
       [TaskFiles.name]: TaskFiles
-    },
-    filters: {
-      bytesToSize,
-      removeExtensionDot
     },
     props: {
     },

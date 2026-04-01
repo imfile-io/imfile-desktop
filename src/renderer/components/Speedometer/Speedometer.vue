@@ -10,8 +10,8 @@
       <em>{{ engineMode }}</em>
     </div>
     <div class="value" v-if="stat.numActive > 0">
-      <em>{{ stat.uploadSpeed | bytesToSize }}/s</em>
-      <span>{{ stat.downloadSpeed | bytesToSize }}/s</span>
+      <em>{{ bytesToSize(stat.uploadSpeed) }}/s</em>
+      <span>{{ bytesToSize(stat.downloadSpeed) }}/s</span>
     </div>
   </div>
 </template>
@@ -31,10 +31,8 @@
         'engineMode'
       ])
     },
-    filters: {
-      bytesToSize
-    },
     methods: {
+      bytesToSize,
       ...mapActions('preference', [
         'toggleEngineMode'
       ])

@@ -2,10 +2,10 @@
   <el-container class="content panel" direction="vertical">
     <el-header class="panel-header" height="84">
       <el-row class="panel-row">
-        <el-col :span="4" @click.native="() => nav('basic')" class="active">
+        <el-col :span="4" @click="() => nav('basic')" class="active">
           <h4>{{ $t('preferences.basic') }}</h4>
         </el-col>
-        <el-col :span="4" @click.native="() => nav('advanced')">
+        <el-col :span="4" @click="() => nav('advanced')">
           <h4>{{ $t('preferences.advanced') }}</h4>
         </el-col>
       </el-row>
@@ -20,7 +20,7 @@
         class="form-preference"
         ref="basicForm"
         label-position="right"
-        size="mini"
+        size="small"
         :model="form"
         :rules="rules"
       >
@@ -122,11 +122,13 @@
               slot="prepend"
               @selected="handleHistoryDirectorySelected"
             /> -->
-            <mo-select-directory
+            <template v-slot:append>
+<mo-select-directory
               v-if="isRenderer"
-              slot="append"
+
               @selected="handleNativeDirectorySelected"
             />
+</template>
           </el-input>
           <div class="el-form-item__info" v-if="isMas" style="margin-top: 8px;">
             {{ $t('preferences.mas-default-dir-tips') }}

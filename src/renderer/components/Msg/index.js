@@ -2,8 +2,8 @@ const queue = []
 const maxLength = 5
 
 export default {
-  install: function (Vue, Message, defaultOption = {}) {
-    Vue.prototype.$msg = new Proxy(Message, {
+  install: function (app, MessageApi, defaultOption = {}) {
+    app.config.globalProperties.$msg = new Proxy(MessageApi, {
       get (obj, prop) {
         return (arg) => {
           if (!(arg instanceof Object)) {

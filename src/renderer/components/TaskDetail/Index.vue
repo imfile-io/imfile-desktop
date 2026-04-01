@@ -1,33 +1,39 @@
 <template>
   <el-drawer
-    custom-class="panel task-detail-drawer"
+    class="panel task-detail-drawer"
     size="61.8%"
     v-if="gid"
     :title="$t('task.task-detail-title')"
     :with-header="true"
     :show-close="true"
     :destroy-on-close="true"
-    :visible="visible"
+    :model-value="visible"
     :before-close="handleClose"
     @closed="handleClosed"
   >
     <el-tabs
       tab-position="top"
       class="task-detail-tab"
-      value="general"
+      v-model="activeTab"
       :before-leave="handleTabBeforeLeave"
       @tab-click="handleTabClick"
     >
       <el-tab-pane name="general">
-        <span class="task-detail-tab-label" slot="label"><i class="el-icon-info"></i></span>
+        <template #label>
+          <span class="task-detail-tab-label"><el-icon><InfoFilled /></el-icon></span>
+        </template>
         <mo-task-general :task="task" />
       </el-tab-pane>
       <el-tab-pane name="activity" lazy>
-        <span class="task-detail-tab-label" slot="label"><i class="el-icon-s-grid"></i></span>
+        <template #label>
+          <span class="task-detail-tab-label"><el-icon><Grid /></el-icon></span>
+        </template>
         <mo-task-activity ref="taskGraphic" :task="task" />
       </el-tab-pane>
       <el-tab-pane name="trackers" lazy v-if="isBT">
-        <span class="task-detail-tab-label" slot="label"><i class="el-icon-discover"></i></span>
+        <template #label>
+          <span class="task-detail-tab-label"><el-icon><Compass /></el-icon></span>
+        </template>
         <mo-task-trackers :task="task" />
       </el-tab-pane>
       <!-- <el-tab-pane name="peers" lazy v-if="isBT">
@@ -78,6 +84,7 @@
     SELECTED_ALL_FILES,
     TASK_STATUS
   } from '@shared/constants'
+  import { Compass, Grid, InfoFilled } from '@element-plus/icons-vue'
   import TaskItemActions from '@/components/Task/TaskItemActions'
   import TaskGeneral from './TaskGeneral'
   import TaskActivity from './TaskActivity'
@@ -92,6 +99,9 @@
   export default {
     name: 'mo-task-detail',
     components: {
+      Compass,
+      Grid,
+      InfoFilled,
       [TaskItemActions.name]: TaskItemActions,
       [TaskGeneral.name]: TaskGeneral,
       [TaskActivity.name]: TaskActivity,
@@ -180,7 +190,7 @@
     mounted () {
       window.addEventListener('resize', this.handleAppResize)
     },
-    destroyed () {
+    unmounted () {
       window.removeEventListener('resize', this.handleAppResize)
       cached.files = []
     },
@@ -193,6 +203,7 @@
       handleClose (done) {
         window.removeEventListener('resize', this.handleAppResize)
         this.$store.dispatch('task/hideTaskDetail')
+        done()
       },
       handleClosed (done) {
         this.$store.dispatch('task/updateCurrentTaskGid', EMPTY_STRING)

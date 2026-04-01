@@ -18,11 +18,13 @@
     </el-form-item>
     <el-form-item :label="`${$t('task.task-dir')} `">
       <el-input placeholder="" readonly v-model="path">
-        <mo-show-in-folder
-          slot="append"
+        <template v-slot:append>
+<mo-show-in-folder
+
           v-if="isRenderer"
           :path="path"
         />
+</template>
       </el-input>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-status')} `">
@@ -58,7 +60,7 @@
     </el-form-item>
     <el-form-item :label="`${$t('task.task-piece-length')} `" v-if="isBT">
       <div class="form-static-value">
-        {{ task.pieceLength | bytesToSize }}
+        {{ bytesToSize(task.pieceLength) }}
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-num-pieces')} `" v-if="isBT">
@@ -68,7 +70,7 @@
     </el-form-item>
     <el-form-item :label="`${$t('task.task-bittorrent-creation-date')} `" v-if="isBT">
       <div class="form-static-value">
-        {{ task.bittorrent.creationDate | localeDateTimeFormat(locale) }}
+        {{ localeDateTimeFormat(task.bittorrent.creationDate, locale) }}
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-bittorrent-comment')} `" v-if="isBT">
@@ -162,11 +164,9 @@
         return checkTaskIsBT(this.task)
       }
     },
-    filters: {
-      bytesToSize,
-      localeDateTimeFormat
-    },
     methods: {
+      bytesToSize,
+      localeDateTimeFormat,
       handleCopyClick () {
         const { task } = this
         const uri = getTaskUri(task)
