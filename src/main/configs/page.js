@@ -1,3 +1,6 @@
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
+
 import is from 'electron-is'
 
 export default {
@@ -12,6 +15,7 @@ export default {
     },
     bindCloseToHide: true,
     openDevTools: is.dev(),
-    url: is.dev() ? 'http://localhost:9080' : require('path').join('file://', __dirname, '/index.html')
+    // 必须用 pathToFileURL：path.join('file://', __dirname, '/index.html') 在 Windows 上会得到非法 URL，导致白屏
+    url: is.dev() ? 'http://localhost:9080' : pathToFileURL(path.join(__dirname, 'index.html')).href
   }
 }
