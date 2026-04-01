@@ -54,7 +54,7 @@ jobs:
     # Electron：不用 autobuild（对 JS 多为启发式，且易与 webpack/electron-builder 不匹配）。
     # 显式安装依赖并执行与 CI 一致的 webpack 构建（不含 electron-builder 打包）。
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: 24
         cache: yarn
