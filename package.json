@@ -76,7 +76,7 @@
     "electron-devtools-installer": "^4.0.0",
     "electron-is": "^3.0.0",
     "electron-log": "^5.4.3",
-    "electron-store": "^9.0.0",
+    "electron-store": "^11.0.0",
     "electron-updater": "^6.3.0",
     "element-plus": "^2.9.4",
     "eslint": "^9.22.0",
