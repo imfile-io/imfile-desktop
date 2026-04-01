@@ -1,4 +1,4 @@
-import { getTaskName } from '@shared/utils'
+import { getTaskName, parseEd2kFileName } from '@shared/utils'
 
 const toNumber = (value, defaultValue = 0) => {
   const result = Number(value)
@@ -48,7 +48,10 @@ export const adaptGoed2kdTask = (task = {}) => {
   const completedLength = totalDone
   const totalLength = totalWanted
   const progress = totalLength > 0 ? completedLength / totalLength : 0
-  const name = task.file_name || task.file_path || id
+  const nameFromLink = parseEd2kFileName(
+    task.ed2k_link || task.ed2k || task.link || ''
+  )
+  const name = task.file_name || task.file_path || nameFromLink || id
   const status = normalizeGoed2kdStatus(task.status || task.state)
 
   return {
@@ -80,8 +83,5 @@ export const adaptTaskForMainFlow = (task = {}) => {
 }
 
 export const getTaskDisplayName = (task = {}, defaultName = 'Unknown') => {
-  if (task.engine === 'goed2kd') {
-    return task.name || task.file_name || task.file_path || defaultName
-  }
   return getTaskName(task, { defaultName, maxLen: -1 })
 }

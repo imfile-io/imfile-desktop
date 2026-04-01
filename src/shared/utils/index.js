@@ -227,6 +227,55 @@ export const getFileSelection = (files = []) => {
   return result
 }
 
+/**
+ * 从标准 ed2k 链接解析文件名：ed2k://|file|<name>|<size>|<hash>|/
+ */
+export const parseEd2kFileName = (ed2kLink) => {
+  if (!ed2kLink || typeof ed2kLink !== 'string') {
+    return ''
+  }
+  const s = ed2kLink.trim()
+  if (!s.toLowerCase().startsWith('ed2k://')) {
+    return ''
+  }
+  const parts = s.split('|')
+  if (parts.length < 4 || parts[1] !== 'file') {
+    return ''
+  }
+  const rawName = parts[2]
+  if (!rawName) {
+    return ''
+  }
+  try {
+    return decodeURIComponent(rawName)
+  } catch (e) {
+    return rawName
+  }
+}
+
+const resolveGoed2kdTaskName = (task) => {
+  const raw = task.raw || {}
+  const link =
+    task.ed2k_link ||
+    task.ed2kLink ||
+    task.ed2k ||
+    task.link ||
+    raw.ed2k_link ||
+    raw.ed2k ||
+    raw.link ||
+    ''
+  const fromLink = parseEd2kFileName(link)
+  return (
+    task.name ||
+    task.file_name ||
+    task.file_path ||
+    fromLink ||
+    task.hash ||
+    task.id ||
+    ''
+  )
+}
+
 export const getTaskName = (task, options = {}) => {
   const o = {
     defaultName: '',
@@ -236,6 +285,12 @@ export const getTaskName = (task, options = {}) => {
   const { defaultName, maxLen } = o
   let result = defaultName
   if (!task) {
+    return result
+  }
+
+  if (task.engine === 'goed2kd') {
+    const n = resolveGoed2kdTaskName(task)
+    result = n ? ellipsis(n, maxLen) : defaultName
     return result
   }
 

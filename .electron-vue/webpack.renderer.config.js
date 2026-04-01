@@ -47,12 +47,15 @@ let rendererConfig = {
           {
             loader: 'sass-loader',
             options: {
+              api: 'modern',
               implementation: require('sass'),
               additionalData: '@import "@/components/Theme/Variables.scss";',
               sassOptions: {
                 includePaths: [__dirname, 'src'],
                 // element-ui theme-chalk 等依赖在较新 Sass 下会触发 function-units 等弃用提示
-                quietDeps: true
+                quietDeps: true,
+                // $-- 变量在 @use 模块下会被视为「私有」，与 Element 主题不兼容；在迁移到 @use/@forward 前抑制 @import 弃用
+                silenceDeprecations: ['import']
               }
             },
           }
@@ -66,12 +69,14 @@ let rendererConfig = {
           {
             loader: 'sass-loader',
             options: {
+              api: 'modern',
               implementation: require('sass'),
               indentedSyntax: true,
               additionalData: '@import "@/components/Theme/Variables.scss";',
               sassOptions: {
                 includePaths: [__dirname, 'src'],
-                quietDeps: true
+                quietDeps: true,
+                silenceDeprecations: ['import']
               }
             },
           }
@@ -108,8 +113,8 @@ let rendererConfig = {
           options: {
             extractCSS: process.env.NODE_ENV === 'production',
             loaders: {
-              sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1',
-              scss: 'vue-style-loader!css-loader!sass-loader',
+              sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1&api=modern',
+              scss: 'vue-style-loader!css-loader!sass-loader?api=modern',
               less: 'vue-style-loader!css-loader!less-loader'
             }
           }

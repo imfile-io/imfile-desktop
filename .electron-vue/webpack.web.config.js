@@ -47,11 +47,13 @@ let webConfig = {
           {
             loader: 'sass-loader',
             options: {
+              api: 'modern',
               implementation: require('sass'),
               additionalData: '@import "@/components/Theme/Variables.scss"',
               sassOptions: {
                 includePaths: [__dirname, 'src'],
-                quietDeps: true
+                quietDeps: true,
+                silenceDeprecations: ['import']
               }
             },
           }
@@ -65,12 +67,14 @@ let webConfig = {
           {
             loader: 'sass-loader',
             options: {
+              api: 'modern',
               implementation: require('sass'),
               indentedSyntax: true,
               additionalData: '@import "@/components/Theme/Variables.scss"',
               sassOptions: {
                 includePaths: [__dirname, 'src'],
-                quietDeps: true
+                quietDeps: true,
+                silenceDeprecations: ['import']
               }
             },
           }
@@ -104,8 +108,8 @@ let webConfig = {
           options: {
             extractCSS: true,
             loaders: {
-              sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1',
-              scss: 'vue-style-loader!css-loader!sass-loader',
+              sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1&api=modern',
+              scss: 'vue-style-loader!css-loader!sass-loader?api=modern',
               less: 'vue-style-loader!css-loader!less-loader'
             }
           }
