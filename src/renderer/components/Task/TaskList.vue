@@ -8,10 +8,10 @@
   <div v-if="taskList.length > 0" class="mx-4">
     <div
       v-for="item in taskList"
-      :key="item.gid"
-      :attr="item.gid"
+      :key="item.taskKey"
+      :attr="item.taskKey"
       :class="getItemClass(item)"
-      @click="()=>selectData(item.gid)"
+      @click="()=>selectData(item.taskKey)"
     >
       <mo-task-item
         :task="item"
@@ -47,16 +47,16 @@
     computed: {
       ...mapState('task', {
         taskList: state => state.taskList,
-        selectedGidList: state => state.selectedGidList
+        selectedTaskKeyList: state => state.selectedTaskKeyList
       })
     },
     methods: {
-      selectData (gid) {
-        const selectedGidList = this.$store.state.task.selectedGidList
-        if (selectedGidList.includes(gid)) {
-          this.$store.dispatch('task/selectTasks', pull(selectedGidList, gid))
+      selectData (taskKey) {
+        const selectedTaskKeyList = this.$store.state.task.selectedTaskKeyList
+        if (selectedTaskKeyList.includes(taskKey)) {
+          this.$store.dispatch('task/selectTasks', pull(selectedTaskKeyList, taskKey))
         } else {
-          this.$store.dispatch('task/selectTasks', selectedGidList.concat(gid))
+          this.$store.dispatch('task/selectTasks', selectedTaskKeyList.concat(taskKey))
         }
       },
       handleDragSelectChange (selectedList) {
@@ -64,14 +64,14 @@
         this.$store.dispatch('task/selectTasks', cloneDeep(selectedList))
       },
       getItemClass (item) {
-        const isSelected = this.selectedList.includes(item.gid)
+        const isSelected = this.selectedList.includes(item.taskKey)
         return {
           selected: isSelected
         }
       }
     },
     watch: {
-      selectedGidList (newVal) {
+      selectedTaskKeyList (newVal) {
         this.selectedList = newVal
       }
     }

@@ -16,6 +16,13 @@ const state = {
     enabledFeatures: []
   },
   engineOptions: {},
+  goed2kdStatus: {
+    started: false,
+    healthy: false,
+    pid: null,
+    lastError: '',
+    updatedAt: 0
+  },
   interval: BASE_INTERVAL,
   stat: {
     downloadSpeed: 0,
@@ -50,6 +57,9 @@ const mutations = {
   },
   UPDATE_ENGINE_OPTIONS (state, engineOptions) {
     state.engineOptions = { ...state.engineOptions, ...engineOptions }
+  },
+  UPDATE_GOED2KD_STATUS (state, payload) {
+    state.goed2kdStatus = { ...state.goed2kdStatus, ...payload }
   },
   UPDATE_GLOBAL_STAT (state, stat) {
     state.stat = stat
@@ -126,6 +136,29 @@ const actions = {
           resolve(data)
         })
     })
+  },
+  fetchGoed2kdStatus ({ commit }) {
+    return api.getGoed2kdStatus()
+      .then((data) => {
+        const payload = {
+          ...(data || {}),
+          // UI uses this field as the latest refresh timestamp.
+          updatedAt: Date.now()
+        }
+        commit('UPDATE_GOED2KD_STATUS', payload)
+        return payload
+      })
+      .catch(() => {
+        const fallback = {
+          started: false,
+          healthy: false,
+          pid: null,
+          lastError: 'fetch goed2kd status failed',
+          updatedAt: Date.now()
+        }
+        commit('UPDATE_GOED2KD_STATUS', fallback)
+        return fallback
+      })
   },
   fetchGlobalStat ({ commit, dispatch }) {
     api.getGlobalStat()

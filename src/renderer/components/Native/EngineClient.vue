@@ -225,7 +225,7 @@
         this.$store.dispatch('app/fetchProgress')
         this.$store.dispatch('task/fetchList')
 
-        if (this.taskDetailVisible && this.currentTaskGid) {
+        if (this.taskDetailVisible && this.currentTaskGid && this.currentTaskItem && this.currentTaskItem.engine !== 'goed2kd') {
           if (this.currentTaskIsBT && this.enabledFetchPeers) {
             this.$store.dispatch('task/fetchItemWithPeers', this.currentTaskGid)
           } else {

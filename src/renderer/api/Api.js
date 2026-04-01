@@ -37,6 +37,11 @@ export default class Api {
     return result
   }
 
+  async getGoed2kdStatus () {
+    const result = await ipcRenderer.invoke('get-goed2kd-status')
+    return result
+  }
+
   async loadConfig () {
     let result = is.renderer()
       ? await this.loadConfigFromNativeStore()
@@ -67,11 +72,9 @@ export default class Api {
       })
   }
 
-  fetchPreference () {
-    return new Promise((resolve) => {
-      this.config = this.loadConfig()
-      resolve(this.config)
-    })
+  async fetchPreference () {
+    this.config = await this.loadConfig()
+    return this.config
   }
 
   savePreference (params = {}) {
@@ -107,6 +110,50 @@ export default class Api {
     }
 
     ipcRenderer.send('command', 'application:save-preference', config)
+  }
+
+  async addEd2kTask (ed2k) {
+    return ipcRenderer.invoke('goed2kd:add-ed2k', { ed2k })
+  }
+
+  async fetchGoed2kdTaskList () {
+    return ipcRenderer.invoke('goed2kd:list-downloads')
+  }
+
+  async pauseGoed2kdTask (hash) {
+    return ipcRenderer.invoke('goed2kd:pause-download', { hash })
+  }
+
+  async resumeGoed2kdTask (hash) {
+    return ipcRenderer.invoke('goed2kd:resume-download', { hash })
+  }
+
+  async removeGoed2kdTask (hash) {
+    return ipcRenderer.invoke('goed2kd:remove-download', { hash })
+  }
+
+  async pauseTaskByEngine (task = {}) {
+    const id = task.id || task.gid
+    if (task.engine === 'goed2kd') {
+      return this.pauseGoed2kdTask(id)
+    }
+    return this.pauseTask({ gid: id })
+  }
+
+  async resumeTaskByEngine (task = {}) {
+    const id = task.id || task.gid
+    if (task.engine === 'goed2kd') {
+      return this.resumeGoed2kdTask(id)
+    }
+    return this.resumeTask({ gid: id })
+  }
+
+  async removeTaskByEngine (task = {}) {
+    const id = task.id || task.gid
+    if (task.engine === 'goed2kd') {
+      return this.removeGoed2kdTask(id)
+    }
+    return this.removeTask({ gid: id })
   }
 
   getVersion () {

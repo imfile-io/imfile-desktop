@@ -16,6 +16,6 @@ export default {
     bindCloseToHide: true,
     openDevTools: is.dev(),
     // 必须用 pathToFileURL：path.join('file://', __dirname, '/index.html') 在 Windows 上会得到非法 URL，导致白屏
-    url: is.dev() ? 'http://localhost:9080' : pathToFileURL(path.join(__dirname, 'index.html')).href
+    url: is.dev() ? 'http://localhost:9080/index.html' : pathToFileURL(path.join(__dirname, 'index.html')).href
   }
 }

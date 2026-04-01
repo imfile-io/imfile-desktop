@@ -8,7 +8,7 @@
   >
     <el-form-item :label="`${$t('task.task-gid')} `">
       <div class="form-static-value">
-        {{ task.gid }}
+        {{ task.id || task.gid }}
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-name')} `">

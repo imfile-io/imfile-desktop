@@ -16,7 +16,7 @@
               </i>
               <span>{{ $t('task.task-all-stop') }}</span>
           </div></el-button>
-          <mo-batch-delete-task-btn v-if="selectedGidListCount > 1"/>
+          <mo-batch-delete-task-btn v-if="selectedTaskKeyListCount > 1"/>
           <!-- <li @click="onResumeAllClick" class="task-action-start">
               <i class="task-action">
                   <mo-icon name="task-play" width="15" height="15" />
@@ -53,7 +53,7 @@
     computed: {
       ...mapState('task', {
         currentList: state => state.currentList,
-        selectedGidListCount: state => state.selectedGidList.length
+        selectedTaskKeyListCount: state => state.selectedTaskKeyList.length
       })
     },
     filters: {

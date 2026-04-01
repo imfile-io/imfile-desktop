@@ -1,6 +1,35 @@
 import api from '@/api'
 import { EMPTY_STRING, TASK_STATUS } from '@shared/constants'
 import { checkTaskIsBT, intersection } from '@shared/utils'
+import { adaptAria2Task, adaptGoed2kdTask } from '../taskAdapter'
+
+const resolveGoed2kdList = (resp) => {
+  if (Array.isArray(resp)) return resp
+  if (!resp || typeof resp !== 'object') return []
+  if (Array.isArray(resp.data)) return resp.data
+  if (Array.isArray(resp.list)) return resp.list
+  if (Array.isArray(resp.items)) return resp.items
+  if (Array.isArray(resp.transfers)) return resp.transfers
+  if (resp.data && typeof resp.data === 'object') {
+    if (Array.isArray(resp.data.list)) return resp.data.list
+    if (Array.isArray(resp.data.items)) return resp.data.items
+    if (Array.isArray(resp.data.transfers)) return resp.data.transfers
+  }
+  return []
+}
+
+const matchGoed2kdListByCurrentTab = (status, currentList) => {
+  if (currentList === 'active') {
+    return status === TASK_STATUS.ACTIVE
+  }
+  if (currentList === 'waiting') {
+    return status === TASK_STATUS.PAUSED || status === TASK_STATUS.WAITING
+  }
+  if (currentList === 'stopped') {
+    return [TASK_STATUS.COMPLETE, TASK_STATUS.ERROR, TASK_STATUS.REMOVED].includes(status)
+  }
+  return false
+}
 
 const state = {
   currentList: 'active',
@@ -18,7 +47,7 @@ const state = {
     waiting: 0,
     stoped: 0
   },
-  selectedGidList: []
+  selectedTaskKeyList: []
 }
 
 const getters = {
@@ -31,8 +60,8 @@ const mutations = {
   UPDATE_TASK_LIST (state, taskList) {
     state.taskList = taskList
   },
-  UPDATE_SELECTED_GID_LIST (state, gidList) {
-    state.selectedGidList = gidList
+  UPDATE_SELECTED_TASK_KEY_LIST (state, taskKeyList) {
+    state.selectedTaskKeyList = taskKeyList
   },
   CHANGE_CURRENT_LIST (state, currentList) {
     state.currentList = currentList
@@ -63,7 +92,7 @@ const mutations = {
 const actions = {
   changeCurrentList ({ commit, dispatch }, currentList) {
     commit('CHANGE_CURRENT_LIST', currentList)
-    commit('UPDATE_SELECTED_GID_LIST', [])
+    commit('UPDATE_SELECTED_TASK_KEY_LIST', [])
     dispatch('fetchList')
   },
   fetchAllList ({ commit }) {
@@ -84,24 +113,50 @@ const actions = {
   },
   fetchList ({ commit, state }) {
     return api.fetchTaskList({ type: state.currentList })
-      .then((data) => {
-        commit('UPDATE_TASK_LIST', data)
+      .then(async (aria2Data) => {
+        let taskList = (aria2Data || []).map(adaptAria2Task)
+        if (['active', 'waiting', 'stopped'].includes(state.currentList)) {
+          try {
+            const goed2kdStatus = await api.getGoed2kdStatus()
+            if (!goed2kdStatus || !goed2kdStatus.healthy) {
+              commit('UPDATE_TASK_LIST', taskList)
+              commit('UPDATE_COUNT', {
+                ...state.count,
+                [state.currentList === 'active' ? 'downloading' : state.currentList]: taskList.length
+              })
+              const taskKeys = taskList.map((task) => task.taskKey)
+              const list = intersection(state.selectedTaskKeyList, taskKeys)
+              commit('UPDATE_SELECTED_TASK_KEY_LIST', list)
+              return
+            }
+            const goed2kdResp = await api.fetchGoed2kdTaskList()
+            const goed2kdData = resolveGoed2kdList(goed2kdResp)
+            const goed2kdList = (goed2kdData || [])
+              .map(adaptGoed2kdTask)
+              .filter(task => matchGoed2kdListByCurrentTab(task.status, state.currentList))
+            taskList = taskList.concat(goed2kdList)
+          } catch (err) {
+            console.warn('[imFile] fetch goed2kd task list fail:', err)
+          }
+        }
+
+        commit('UPDATE_TASK_LIST', taskList)
         commit('UPDATE_COUNT', {
           ...state.count,
-          [state.currentList === 'active' ? 'downloading' : state.currentList]: data.length
+          [state.currentList === 'active' ? 'downloading' : state.currentList]: taskList.length
         })
-        const { selectedGidList } = state
-        const gids = data.map((task) => task.gid)
-        const list = intersection(selectedGidList, gids)
-        commit('UPDATE_SELECTED_GID_LIST', list)
+        const { selectedTaskKeyList } = state
+        const taskKeys = taskList.map((task) => task.taskKey)
+        const list = intersection(selectedTaskKeyList, taskKeys)
+        commit('UPDATE_SELECTED_TASK_KEY_LIST', list)
       })
   },
   selectTasks ({ commit }, list) {
-    commit('UPDATE_SELECTED_GID_LIST', list)
+    commit('UPDATE_SELECTED_TASK_KEY_LIST', list)
   },
   selectAllTask ({ commit, state }) {
-    const gids = state.taskList.map((task) => task.gid)
-    commit('UPDATE_SELECTED_GID_LIST', gids)
+    const taskKeys = state.taskList.map((task) => task.taskKey)
+    commit('UPDATE_SELECTED_TASK_KEY_LIST', taskKeys)
   },
   fetchItem ({ dispatch }, gid) {
     return api.fetchTaskItem({ gid })
@@ -126,7 +181,7 @@ const actions = {
   },
   showTaskDetail ({ commit, dispatch }, task) {
     dispatch('updateCurrentTaskItem', task)
-    commit('UPDATE_CURRENT_TASK_GID', task.gid)
+    commit('UPDATE_CURRENT_TASK_GID', task.id || task.gid)
     commit('CHANGE_TASK_DETAIL_VISIBLE', true)
   },
   hideTaskDetail ({ commit }) {
@@ -150,11 +205,21 @@ const actions = {
   },
   addUri ({ dispatch }, data) {
     const { uris, outs, options } = data
-    return api.addUri({ uris, outs, options })
-      .then(() => {
-        dispatch('fetchList')
-        dispatch('app/updateAddTaskOptions', {}, { root: true })
-      })
+    const ed2kUris = (uris || []).filter(uri => String(uri).startsWith('ed2k://'))
+    const normalUris = (uris || []).filter(uri => !String(uri).startsWith('ed2k://'))
+    const requests = []
+
+    if (normalUris.length > 0) {
+      requests.push(api.addUri({ uris: normalUris, outs, options }))
+    }
+    ed2kUris.forEach((uri) => {
+      requests.push(api.addEd2kTask(uri))
+    })
+
+    return Promise.all(requests).then(() => {
+      dispatch('fetchList')
+      dispatch('app/updateAddTaskOptions', {}, { root: true })
+    })
   },
   addTorrent ({ dispatch }, data) {
     const { torrent, options } = data
@@ -185,21 +250,31 @@ const actions = {
     return api.changeOption({ gid, options })
   },
   removeTask ({ state, dispatch }, task) {
-    const { gid } = task
+    const gid = task.id || task.gid
     if (gid === state.currentTaskGid) {
       dispatch('hideTaskDetail')
     }
 
-    return api.removeTask({ gid })
+    const request = api.removeTaskByEngine(task)
+    return request
       .finally(() => {
         dispatch('fetchList')
         dispatch('saveSession')
       })
   },
   forcePauseTask ({ dispatch }, task) {
-    const { gid, status } = task
+    const gid = task.id || task.gid
+    const { status } = task
     if (status !== TASK_STATUS.ACTIVE) {
       return Promise.resolve(true)
+    }
+
+    if (task.engine === 'goed2kd') {
+      return api.pauseTaskByEngine(task)
+        .finally(() => {
+          dispatch('fetchList')
+          dispatch('saveSession')
+        })
     }
 
     return api.forcePauseTask({ gid })
@@ -209,7 +284,14 @@ const actions = {
       })
   },
   pauseTask ({ dispatch }, task) {
-    const { gid } = task
+    const gid = task.id || task.gid
+    if (task.engine === 'goed2kd') {
+      return api.pauseTaskByEngine(task)
+        .finally(() => {
+          dispatch('fetchList')
+          dispatch('saveSession')
+        })
+    }
     const isBT = checkTaskIsBT(task)
     const promise = isBT ? api.forcePauseTask({ gid }) : api.pauseTask({ gid })
     promise.finally(() => {
@@ -219,8 +301,8 @@ const actions = {
     return promise
   },
   resumeTask ({ dispatch }, task) {
-    const { gid } = task
-    return api.resumeTask({ gid })
+    const request = api.resumeTaskByEngine(task)
+    return request
       .finally(() => {
         dispatch('fetchList')
         dispatch('saveSession')
@@ -301,7 +383,9 @@ const actions = {
     }
   },
   batchResumeSelectedTasks ({ state }) {
-    const gids = state.selectedGidList
+    const gids = state.selectedTaskKeyList
+      .filter(taskKey => String(taskKey).startsWith('aria2:'))
+      .map(taskKey => taskKey.split(':')[1])
     if (gids.length === 0) {
       return
     }
@@ -309,7 +393,9 @@ const actions = {
     return api.batchResumeTask({ gids })
   },
   batchPauseSelectedTasks ({ state }) {
-    const gids = state.selectedGidList
+    const gids = state.selectedTaskKeyList
+      .filter(taskKey => String(taskKey).startsWith('aria2:'))
+      .map(taskKey => taskKey.split(':')[1])
     if (gids.length === 0) {
       return
     }

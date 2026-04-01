@@ -4,6 +4,12 @@ export const engineBinMap = {
   linux: 'aria2c'
 }
 
+export const goed2kdBinMap = {
+  darwin: 'goed2kd',
+  win32: 'goed2kd.exe',
+  linux: 'goed2kd'
+}
+
 export const engineArchMap = {
   darwin: {
     x64: 'x64',
