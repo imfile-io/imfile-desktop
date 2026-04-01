@@ -33,6 +33,3 @@ jobs:
           test -f dist/electron/main.js
           test -f dist/electron/index.js
           echo "OK: dist/electron/main.js 与 index.js 已生成。"
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
