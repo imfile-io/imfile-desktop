@@ -50,7 +50,7 @@
     "@babel/runtime": "^7.29.2",
     "@bany/curl-to-json": "^1.2.10",
     "@electron/notarize": "^3.0.0",
-    "@electron/osx-sign": "^1.0.4",
+    "@electron/osx-sign": "^2.0.0",
     "@electron/remote": "^2.1.2",
     "@motrix/multispinner": "^0.2.4",
     "@motrix/nat-api": "^0.3.4",
