@@ -3077,6 +3077,14 @@ buffer@^5.1.0, buffer@^5.5.0:
     base64-js "^1.3.1"
     ieee754 "^1.1.13"
 
+builder-util-runtime@9.2.5:
+  version "9.2.5"
+  resolved "https://registry.yarnpkg.com/builder-util-runtime/-/builder-util-runtime-9.2.5.tgz#0afdffa0adb5c84c14926c7dd2cf3c6e96e9be83"
+  integrity sha512-HjIDfhvqx/8B3TDN4GbABQcgpewTU4LMRTQPkVpKYV3lsuxEJoIfvg09GyWTNmfVNSUAYf+fbTN//JX4TH20pg==
+  dependencies:
+    debug "^4.3.4"
+    sax "^1.2.4"
+
 builder-util-runtime@9.5.1:
   version "9.5.1"
   resolved "https://registry.yarnpkg.com/builder-util-runtime/-/builder-util-runtime-9.5.1.tgz#74125fb374d1ecbf472ae1787485485ff7619702"
@@ -4240,18 +4248,18 @@ electron-to-chromium@^1.5.328:
   resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.329.tgz"
   integrity sha512-/4t+AS1l4S3ZC0Ja7PHFIWeBIxGA3QGqV8/yKsP36v7NcyUCl+bIcmw6s5zVuMIECWwBrAK/6QLzTmbJChBboQ==
 
-electron-updater@^6.1.8:
-  version "6.8.3"
-  resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-6.8.3.tgz#bb0c8ef6509e5c67663f6481a729244d1bce21fb"
-  integrity sha512-Z6sgw3jgbikWKXei1ENdqFOxBP0WlXg3TtKfz0rgw2vIZFJUyI4pD7ZN7jrkm7EoMK+tcm/qTnPUdqfZukBlBQ==
+electron-updater@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-6.3.0.tgz#13a5c3c3f0b2b114fe33181e24a8270096734b3e"
+  integrity sha512-3Xlezhk+dKaSQrOnkQNqCGiuGSSUPO9BV9TQZ4Iig6AyTJ4FzJONE5gFFc382sY53Sh9dwJfzKsA3DxRHt2btw==
   dependencies:
-    builder-util-runtime "9.5.1"
+    builder-util-runtime "9.2.5"
     fs-extra "^10.1.0"
     js-yaml "^4.1.0"
     lazy-val "^1.0.5"
     lodash.escaperegexp "^4.1.2"
     lodash.isequal "^4.5.0"
-    semver "~7.7.3"
+    semver "^7.3.8"
     tiny-typed-emitter "^2.1.0"
 
 electron@41.1.0:
@@ -8572,12 +8580,7 @@ semver-compare@^1.0.0:
   resolved "https://registry.npmjs.org/semver-compare/-/semver-compare-1.0.0.tgz"
   integrity sha512-YM3/ITh2MJ5MtzaM429anh+x2jiLVjqILF4m4oyQB18W7Ggea7BfqdH/wGMK7dDiMghv/6WG7znWMwUDzJiXow==
 
-semver@^5.5.0:
-  version "5.7.1"
-  resolved "https://registry.npmjs.org/semver/-/semver-5.7.1.tgz"
-  integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
-
-semver@^5.6.0:
+semver@^5.5.0, semver@^5.6.0:
   version "5.7.2"
   resolved "https://registry.npmjs.org/semver/-/semver-5.7.2.tgz"
   integrity sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==
@@ -8587,22 +8590,10 @@ semver@^6.1.0, semver@^6.2.0, semver@^6.3.1:
   resolved "https://registry.npmjs.org/semver/-/semver-6.3.1.tgz"
   integrity sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==
 
-semver@^7.0.0, semver@^7.3.8, semver@^7.5.4:
-  version "7.6.2"
-  resolved "https://registry.npmjs.org/semver/-/semver-7.6.2.tgz"
-  integrity sha512-FNAIBWCx9qcRhoHcgcJ0gvU7SN1lYU2ZXuSfl04bSC5OpvDHFyJCjdNHomPXxjQlCBU67YW64PzY7/VIEH7F2w==
-
-semver@^7.2.1, semver@^7.3.5, semver@^7.6.3, semver@~7.7.3:
+semver@^7.0.0, semver@^7.2.1, semver@^7.3.2, semver@^7.3.5, semver@^7.3.6, semver@^7.3.8, semver@^7.5.3, semver@^7.5.4, semver@^7.6.3, semver@~7.7.3:
   version "7.7.4"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.4.tgz#28464e36060e991fa7a11d0279d2d3f3b57a7e8a"
   integrity sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==
-
-semver@^7.3.2, semver@^7.3.6, semver@^7.5.3:
-  version "7.6.0"
-  resolved "https://registry.npmjs.org/semver/-/semver-7.6.0.tgz"
-  integrity sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==
-  dependencies:
-    lru-cache "^6.0.0"
 
 send@~0.19.0, send@~0.19.1:
   version "0.19.2"

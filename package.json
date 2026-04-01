@@ -76,7 +76,7 @@
     "electron-is": "^3.0.0",
     "electron-log": "^5.4.3",
     "electron-store": "^9.0.0",
-    "electron-updater": "^6.1.8",
+    "electron-updater": "^6.3.0",
     "element-ui": "^2.15.14",
     "eslint": "^7.32.0",
     "eslint-friendly-formatter": "^4.0.1",
