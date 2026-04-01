@@ -33,7 +33,8 @@ import {
 } from '@shared/constants'
 
 export const bytesToSize = (bytes, precision = 1) => {
-  const b = parseInt(bytes, 10)
+  const parsed = parseInt(bytes, 10)
+  const b = Number.isFinite(parsed) && parsed >= 0 ? parsed : 0
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
   if (b === 0) { return '0 KB' }
   const i = parseInt(Math.floor(Math.log(b) / Math.log(1024)), 10)
