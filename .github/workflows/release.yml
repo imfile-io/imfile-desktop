@@ -207,5 +207,5 @@ jobs:
           gh release create "imFile-${{ env.VERSION }}" \
             --title "${{ env.VERSION }}" \
             --target ${{ github.sha }} \
-            --notes "Automated release for tag ${{ github.ref_name }}." \
+            --generate-notes \
             "${assets[@]}"
