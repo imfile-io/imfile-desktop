@@ -14,7 +14,7 @@ jobs:
       contents: read
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set build version from tag
         run: |
@@ -70,7 +70,7 @@ jobs:
     environment: release
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set build version from tag
         run: |
@@ -118,7 +118,7 @@ jobs:
       contents: read
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -173,7 +173,7 @@ jobs:
       contents: write
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Prepare Linux artifacts for release
         uses: actions/download-artifact@v4
