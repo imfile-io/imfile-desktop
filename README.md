@@ -14,7 +14,7 @@ English | [简体中文](./README-CN.md)
 
 [Motrix](https://github.com/agalwood/Motrix/) has not been updated for a long time and has accumulated a large number of issues. This project is based on [Motrix](https://github.com/agalwood/Motrix/) Fork and maintain and update it for a long time.
 
-imFile is a full-featured download manager that supports downloading HTTP, FTP, BitTorrent, Magnet, etc.
+imFile is a full-featured download manager that supports downloading HTTP, FTP, BitTorrent, Magnet, ed2k, etc.
 
 imFile has a clean and easy to use interface. I hope you will like it 👻.
 

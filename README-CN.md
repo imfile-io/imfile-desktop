@@ -14,7 +14,7 @@
 
 [Motrix](https://github.com/agalwood/Motrix/) 已经很长时间没有更新，同时积累了大量issues，本项目基于[Motrix](https://github.com/agalwood/Motrix/) 的fork并长期维护更新。
 
-imFile 是一款全能的下载工具，支持下载 HTTP、FTP、BT、磁力链等资源。它的界面简洁易用，希望大家喜欢 👻。
+imFile 是一款全能的下载工具，支持下载 HTTP、FTP、BT、磁力链、ed2k等资源。它的界面简洁易用，希望大家喜欢 👻。
 
 
 
