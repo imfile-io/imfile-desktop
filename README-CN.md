@@ -65,18 +65,20 @@ git clone git@github.com:imfile-io/imfile-desktop.git
 
 ### 安装依赖
 
+需安装 [pnpm](https://pnpm.io/)（Node 24+ 可用 `corepack enable` 启用）。
+
 ```bash
 cd imfile-desktop
-yarn install
+pnpm install
 ```
 
-天朝大陆用户建议使用淘宝的 npm 源
+天朝大陆用户建议使用镜像源
 
 ```bash
-yarn config set registry 'https://registry.npmmirror.com'
+pnpm config set registry 'https://registry.npmmirror.com'
 npm config set registry 'https://registry.npmmirror.com'
-export ELECTRON_MIRROR='https://npm.taobao.org/mirrors/electron/'
-export SASS_BINARY_SITE='https://npm.taobao.org/mirrors/node-sass'
+export ELECTRON_MIRROR='https://npmmirror.com/mirrors/electron/'
+export SASS_BINARY_SITE='https://npmmirror.com/mirrors/node-sass'
 ```
 
 > Error: Electron failed to install correctly, please delete node_modules/electron and try installing again
@@ -86,18 +88,18 @@ export SASS_BINARY_SITE='https://npm.taobao.org/mirrors/node-sass'
 ### 开发模式
 
 ```bash
-yarn run dev
+pnpm run dev
 ```
 
 ### 编译打包
 
 ```bash
-yarn run build
+pnpm run build
 ```
 #### 编译 Apple Silicon 版本
 
 ```bash
-yarn run build:applesilicon
+pnpm run build:applesilicon
 ```
 完成之后可以在项目的 `release` 目录看到编译打包好的应用文件
 

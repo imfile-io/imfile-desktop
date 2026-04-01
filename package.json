@@ -14,6 +14,7 @@
     "type": "git",
     "url": "https://github.com/imfile-io/imfile-desktop.git"
   },
+  "packageManager": "pnpm@9.15.0",
   "scripts": {
     "release": "node .electron-vue/build.js && electron-builder --publish onTagOrDraft",
     "build": "node .electron-vue/build.js && electron-builder",
@@ -28,10 +29,10 @@
     "dev:renderer": "webpack serve --node-env development --hot --color --config .electron-vue/webpack.renderer.config.js --port 9080 --content-base app/dist",
     "lint": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter src",
     "lint:fix": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter --fix src",
-    "pack": "npm run pack:main && npm run pack:renderer",
+    "pack": "pnpm run pack:main && pnpm run pack:renderer",
     "pack:main": "webpack --node-env production --progress --color --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "webpack --node-env production --progress --color --config .electron-vue/webpack.renderer.config.js",
-    "postinstall": "electron-builder install-app-deps && npm run lint:fix"
+    "postinstall": "electron-builder install-app-deps && pnpm run lint:fix"
   },
   "engines": {
     "node": ">=24.0.0"
