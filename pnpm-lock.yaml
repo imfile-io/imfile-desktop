@@ -151,8 +151,8 @@ importers:
         specifier: ^5.6.6
         version: 5.6.6(webpack@5.105.4)
       i18next:
-        specifier: ^23.16.8
-        version: 23.16.8
+        specifier: ^26.0.0
+        version: 26.0.3(typescript@6.0.2)
       lodash:
         specifier: ^4.17.21
         version: 4.17.23
@@ -3301,8 +3301,13 @@ packages:
     resolution: {integrity: sha512-Y93lCzHYgGWdrJ66yIktxiaGULYc6oGiABxhcO5AufBeOyoIdZF7bIfLaOrbM0iGIOXQQgxxRrFEnb+Y6w1n4A==}
     engines: {node: '>=10.18'}
 
-  i18next@23.16.8:
-    resolution: {integrity: sha512-06r/TitrM88Mg5FdUXAKL96dJMzgqLE5dv3ryBAra4KCwD9mJ4ndOTS95ZuymIGoE+2hzfdaMak2X11/es7ZWg==}
+  i18next@26.0.3:
+    resolution: {integrity: sha512-1571kXINxHKY7LksWp8wP+zP0YqHSSpl/OW0Y0owFEf2H3s8gCAffWaZivcz14rMkOvn3R/psiQxVsR9t2Nafg==}
+    peerDependencies:
+      typescript: ^5 || ^6
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   iconv-corefoundation@1.1.7:
     resolution: {integrity: sha512-T10qvkw0zz4wnm560lOEg0PovVqUXuOFhhHAkixw8/sycy7TJt7v/RrkEKEQnAw2viPSJu6iAkErxnzR0g8PpQ==}
@@ -9164,9 +9169,11 @@ snapshots:
 
   hyperdyperid@1.2.0: {}
 
-  i18next@23.16.8:
+  i18next@26.0.3(typescript@6.0.2):
     dependencies:
       '@babel/runtime': 7.29.2
+    optionalDependencies:
+      typescript: 6.0.2
 
   iconv-corefoundation@1.1.7:
     dependencies:
