@@ -66,7 +66,7 @@
     "cfonts": "^3.3.1",
     "chalk": "4.1.2",
     "copy-webpack-plugin": "^14.0.0",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.0.0",
     "css-loader": "^7.1.4",
     "css-minimizer-webpack-plugin": "^8.0.0",
     "del": "^6.1.1",
