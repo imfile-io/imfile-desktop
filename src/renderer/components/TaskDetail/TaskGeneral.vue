@@ -82,101 +82,101 @@
 </template>
 
 <script>
-  import is from 'electron-is'
-  import { mapState } from 'vuex'
-  import {
-    bytesToSize,
-    calcFormLabelWidth,
-    checkTaskIsBT,
-    checkTaskIsSeeder,
-    getTaskName,
-    getTaskUri,
-    localeDateTimeFormat
-  } from '@shared/utils'
-  import { APP_THEME, TASK_STATUS } from '@shared/constants'
-  import { getTaskFullPath } from '@/utils/native'
-  import ShowInFolder from '@/components/Native/ShowInFolder'
-  import TaskStatus from '@/components/Task/TaskStatus'
-  import '@/components/Icons/folder'
-  import '@/components/Icons/link'
+import is from 'electron-is'
+import { mapState } from 'vuex'
+import {
+  bytesToSize,
+  calcFormLabelWidth,
+  checkTaskIsBT,
+  checkTaskIsSeeder,
+  getTaskName,
+  getTaskUri,
+  localeDateTimeFormat
+} from '@shared/utils'
+import { APP_THEME, TASK_STATUS } from '@shared/constants'
+import { getTaskFullPath } from '@/utils/native'
+import ShowInFolder from '@/components/Native/ShowInFolder'
+import TaskStatus from '@/components/Task/TaskStatus'
+import '@/components/Icons/folder'
+import '@/components/Icons/link'
 
-  export default {
-    name: 'mo-task-general',
-    components: {
-      [ShowInFolder.name]: ShowInFolder,
-      [TaskStatus.name]: TaskStatus
-    },
-    props: {
-      task: {
-        type: Object
+export default {
+  name: 'mo-task-general',
+  components: {
+    [ShowInFolder.name]: ShowInFolder,
+    [TaskStatus.name]: TaskStatus
+  },
+  props: {
+    task: {
+      type: Object
+    }
+  },
+  data () {
+    const { locale } = this.$store.state.preference.config
+    return {
+      form: {},
+      formLabelWidth: calcFormLabelWidth(locale),
+      locale
+    }
+  },
+  computed: {
+    isRenderer: () => is.renderer(),
+    ...mapState('app', {
+      systemTheme: state => state.systemTheme
+    }),
+    ...mapState('preference', {
+      theme: state => state.config.theme
+    }),
+    currentTheme () {
+      if (this.theme === APP_THEME.AUTO) {
+        return this.systemTheme
+      } else {
+        return this.theme
       }
     },
-    data () {
-      const { locale } = this.$store.state.preference.config
-      return {
-        form: {},
-        formLabelWidth: calcFormLabelWidth(locale),
-        locale
+    taskFullName () {
+      return getTaskName(this.task, {
+        defaultName: this.$t('task.get-task-name'),
+        maxLen: -1
+      })
+    },
+    taskName () {
+      return getTaskName(this.task, {
+        defaultName: this.$t('task.get-task-name'),
+        maxLen: 32
+      })
+    },
+    isSeeder () {
+      return checkTaskIsSeeder(this.task)
+    },
+    taskStatus () {
+      const { task, isSeeder } = this
+      if (isSeeder) {
+        return TASK_STATUS.SEEDING
+      } else {
+        return task.status
       }
     },
-    computed: {
-      isRenderer: () => is.renderer(),
-      ...mapState('app', {
-        systemTheme: state => state.systemTheme
-      }),
-      ...mapState('preference', {
-        theme: state => state.config.theme
-      }),
-      currentTheme () {
-        if (this.theme === APP_THEME.AUTO) {
-          return this.systemTheme
-        } else {
-          return this.theme
-        }
-      },
-      taskFullName () {
-        return getTaskName(this.task, {
-          defaultName: this.$t('task.get-task-name'),
-          maxLen: -1
+    path () {
+      return getTaskFullPath(this.task)
+    },
+    isBT () {
+      return checkTaskIsBT(this.task)
+    }
+  },
+  methods: {
+    bytesToSize,
+    localeDateTimeFormat,
+    handleCopyClick () {
+      const { task } = this
+      const uri = getTaskUri(task)
+      navigator.clipboard.writeText(uri)
+        .then(() => {
+          this.$msg.success(this.$t('task.copy-link-success'))
         })
-      },
-      taskName () {
-        return getTaskName(this.task, {
-          defaultName: this.$t('task.get-task-name'),
-          maxLen: 32
-        })
-      },
-      isSeeder () {
-        return checkTaskIsSeeder(this.task)
-      },
-      taskStatus () {
-        const { task, isSeeder } = this
-        if (isSeeder) {
-          return TASK_STATUS.SEEDING
-        } else {
-          return task.status
-        }
-      },
-      path () {
-        return getTaskFullPath(this.task)
-      },
-      isBT () {
-        return checkTaskIsBT(this.task)
-      }
-    },
-    methods: {
-      bytesToSize,
-      localeDateTimeFormat,
-      handleCopyClick () {
-        const { task } = this
-        const uri = getTaskUri(task)
-        navigator.clipboard.writeText(uri)
-          .then(() => {
-            this.$msg.success(this.$t('task.copy-link-success'))
-          })
-      }
     }
   }
+}
 </script>
 
 <style lang="scss">

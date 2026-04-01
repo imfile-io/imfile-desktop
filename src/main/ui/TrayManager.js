@@ -64,19 +64,19 @@ export default class TrayManager extends EventEmitter {
 
   loadImages () {
     switch (platform) {
-    case 'darwin':
-      this.loadImagesForMacOS()
-      break
-    case 'win32':
-      this.loadImagesForWindows()
-      break
-    case 'linux':
-      this.loadImagesForLinux()
-      break
+      case 'darwin':
+        this.loadImagesForMacOS()
+        break
+      case 'win32':
+        this.loadImagesForWindows()
+        break
+      case 'linux':
+        this.loadImagesForLinux()
+        break
 
-    default:
-      this.loadImagesForDefault()
-      break
+      default:
+        this.loadImagesForDefault()
+        break
     }
   }
 

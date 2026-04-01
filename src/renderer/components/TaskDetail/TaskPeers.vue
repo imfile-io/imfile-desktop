@@ -51,28 +51,28 @@
 </template>
 
 <script>
-  import {
+import {
+  bitfieldToPercent,
+  bytesToSize,
+  peerIdParser
+} from '@shared/utils'
+
+export default {
+  name: 'mo-task-peers',
+  methods: {
     bitfieldToPercent,
     bytesToSize,
     peerIdParser
-  } from '@shared/utils'
-
-  export default {
-    name: 'mo-task-peers',
-    methods: {
-      bitfieldToPercent,
-      bytesToSize,
-      peerIdParser
-    },
-    props: {
-      peers: {
-        type: Array,
-        default: function () {
-          return []
-        }
+  },
+  props: {
+    peers: {
+      type: Array,
+      default: function () {
+        return []
       }
     }
   }
+}
 </script>
 
 <style lang="scss">

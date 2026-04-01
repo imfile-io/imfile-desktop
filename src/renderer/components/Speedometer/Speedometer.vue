@@ -17,27 +17,27 @@
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
-  import { bytesToSize } from '@shared/utils'
-  import '@/components/Icons/speedometer'
+import { mapState, mapActions } from 'vuex'
+import { bytesToSize } from '@shared/utils'
+import '@/components/Icons/speedometer'
 
-  export default {
-    name: 'mo-speedometer',
-    computed: {
-      ...mapState('app', [
-        'stat'
-      ]),
-      ...mapState('preference', [
-        'engineMode'
-      ])
-    },
-    methods: {
-      bytesToSize,
-      ...mapActions('preference', [
-        'toggleEngineMode'
-      ])
-    }
+export default {
+  name: 'mo-speedometer',
+  computed: {
+    ...mapState('app', [
+      'stat'
+    ]),
+    ...mapState('preference', [
+      'engineMode'
+    ])
+  },
+  methods: {
+    bytesToSize,
+    ...mapActions('preference', [
+      'toggleEngineMode'
+    ])
   }
+}
 </script>
 
 <style lang="scss">

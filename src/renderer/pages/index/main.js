@@ -37,15 +37,15 @@ function initTrayWorker () {
     const { type, payload } = event.data
 
     switch (type) {
-    case 'initialized':
-    case 'log':
-      console.log('[imFile] Log from Tray Worker: ', payload)
-      break
-    case 'tray:drawed':
-      updateTray(payload)
-      break
-    default:
-      console.warn('[imFile] Tray Worker unhandled message type:', type, payload)
+      case 'initialized':
+      case 'log':
+        console.log('[imFile] Log from Tray Worker: ', payload)
+        break
+      case 'tray:drawed':
+        updateTray(payload)
+        break
+      default:
+        console.warn('[imFile] Tray Worker unhandled message type:', type, payload)
     }
   })
 

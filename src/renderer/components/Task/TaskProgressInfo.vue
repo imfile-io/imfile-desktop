@@ -22,10 +22,10 @@
             {{
               timeFormat(remaining, {
                 i18n: {
-                  'gt1d': $t('app.gt1d'),
-                  'hour': $t('app.hour'),
-                  'minute': $t('app.minute'),
-                  'second': $t('app.second')
+                  gt1d: $t('app.gt1d'),
+                  hour: $t('app.hour'),
+                  minute: $t('app.minute'),
+                  second: $t('app.second')
                 }
               })
             }}
@@ -49,46 +49,46 @@
 </template>
 
 <script>
-  import {
-    bytesToSize,
-    checkTaskIsBT,
-    checkTaskIsSeeder,
-    timeFormat,
-    timeRemaining
-  } from '@shared/utils'
-  import { TASK_STATUS } from '@shared/constants'
-  import '@/components/Icons/arrow-up'
-  import '@/components/Icons/arrow-down'
-  import '@/components/Icons/node'
-  import '@/components/Icons/magnet'
+import {
+  bytesToSize,
+  checkTaskIsBT,
+  checkTaskIsSeeder,
+  timeFormat,
+  timeRemaining
+} from '@shared/utils'
+import { TASK_STATUS } from '@shared/constants'
+import '@/components/Icons/arrow-up'
+import '@/components/Icons/arrow-down'
+import '@/components/Icons/node'
+import '@/components/Icons/magnet'
 
-  export default {
-    name: 'mo-task-progress-info',
-    props: {
-      task: {
-        type: Object
-      }
-    },
-    computed: {
-      isActive () {
-        return this.task.status === TASK_STATUS.ACTIVE
-      },
-      isBT () {
-        return checkTaskIsBT(this.task)
-      },
-      isSeeder () {
-        return checkTaskIsSeeder(this.task)
-      },
-      remaining () {
-        const { totalLength, completedLength, downloadSpeed } = this.task
-        return timeRemaining(totalLength, completedLength, downloadSpeed)
-      }
-    },
-    methods: {
-      bytesToSize,
-      timeFormat
+export default {
+  name: 'mo-task-progress-info',
+  props: {
+    task: {
+      type: Object
     }
+  },
+  computed: {
+    isActive () {
+      return this.task.status === TASK_STATUS.ACTIVE
+    },
+    isBT () {
+      return checkTaskIsBT(this.task)
+    },
+    isSeeder () {
+      return checkTaskIsSeeder(this.task)
+    },
+    remaining () {
+      const { totalLength, completedLength, downloadSpeed } = this.task
+      return timeRemaining(totalLength, completedLength, downloadSpeed)
+    }
+  },
+  methods: {
+    bytesToSize,
+    timeFormat
   }
+}
 </script>
 
 <style lang="scss">

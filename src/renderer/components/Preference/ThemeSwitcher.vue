@@ -15,53 +15,53 @@
 </template>
 
 <script>
-  import { APP_THEME } from '@shared/constants'
+import { APP_THEME } from '@shared/constants'
 
-  export default {
-    name: 'mo-theme-switcher',
-    props: {
-      value: {
-        type: String,
-        default: APP_THEME.AUTO
-      }
-    },
-    data () {
-      return {
-        currentValue: this.value
-      }
-    },
-    computed: {
-      themeOptions () {
-        return [
-          {
-            className: 'theme-item-auto',
-            value: APP_THEME.AUTO,
-            text: this.$t('preferences.theme-auto')
-          },
-          {
-            className: 'theme-item-light',
-            value: APP_THEME.LIGHT,
-            text: this.$t('preferences.theme-light')
-          },
-          {
-            className: 'theme-item-dark',
-            value: APP_THEME.DARK,
-            text: this.$t('preferences.theme-dark')
-          }
-        ]
-      }
-    },
-    watch: {
-      currentValue (val) {
-        this.$emit('change', val)
-      }
-    },
-    methods: {
-      handleChange (theme) {
-        this.currentValue = theme
-      }
+export default {
+  name: 'mo-theme-switcher',
+  props: {
+    value: {
+      type: String,
+      default: APP_THEME.AUTO
+    }
+  },
+  data () {
+    return {
+      currentValue: this.value
+    }
+  },
+  computed: {
+    themeOptions () {
+      return [
+        {
+          className: 'theme-item-auto',
+          value: APP_THEME.AUTO,
+          text: this.$t('preferences.theme-auto')
+        },
+        {
+          className: 'theme-item-light',
+          value: APP_THEME.LIGHT,
+          text: this.$t('preferences.theme-light')
+        },
+        {
+          className: 'theme-item-dark',
+          value: APP_THEME.DARK,
+          text: this.$t('preferences.theme-dark')
+        }
+      ]
+    }
+  },
+  watch: {
+    currentValue (val) {
+      this.$emit('change', val)
+    }
+  },
+  methods: {
+    handleChange (theme) {
+      this.currentValue = theme
     }
   }
+}
 </script>
 
 <style lang="scss">

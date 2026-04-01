@@ -175,7 +175,7 @@
     </button>
 </template>
     <template v-slot:footer>
-<div  class="dialog-footer">
+<div class="dialog-footer">
       <el-row>
         <el-col :span="9" :xs="9">
           <el-checkbox class="chk" v-model="showAdvanced">
@@ -200,206 +200,206 @@
 </template>
 
 <script>
-  import is from 'electron-is'
-  import { mapState } from 'vuex'
-  import { isEmpty } from 'lodash'
-  import HistoryDirectory from '@/components/Preference/HistoryDirectory'
-  import SelectDirectory from '@/components/Native/SelectDirectory'
-  import SelectTorrent from '@/components/Task/SelectTorrent'
-  import {
-    initTaskForm,
-    buildUriPayload,
-    buildTorrentPayload
-  } from '@/utils/task'
-  import { ADD_TASK_TYPE } from '@shared/constants'
-  import { detectResource } from '@shared/utils'
-  import { Close } from '@element-plus/icons-vue'
-  import '@/components/Icons/inbox'
+import is from 'electron-is'
+import { mapState } from 'vuex'
+import { isEmpty } from 'lodash'
+import HistoryDirectory from '@/components/Preference/HistoryDirectory'
+import SelectDirectory from '@/components/Native/SelectDirectory'
+import SelectTorrent from '@/components/Task/SelectTorrent'
+import {
+  initTaskForm,
+  buildUriPayload,
+  buildTorrentPayload
+} from '@/utils/task'
+import { ADD_TASK_TYPE } from '@shared/constants'
+import { detectResource } from '@shared/utils'
+import { Close } from '@element-plus/icons-vue'
+import '@/components/Icons/inbox'
 
-  export default {
-    name: 'mo-add-task',
-    components: {
-      Close,
-      [HistoryDirectory.name]: HistoryDirectory,
-      [SelectDirectory.name]: SelectDirectory,
-      [SelectTorrent.name]: SelectTorrent
+export default {
+  name: 'mo-add-task',
+  components: {
+    Close,
+    [HistoryDirectory.name]: HistoryDirectory,
+    [SelectDirectory.name]: SelectDirectory,
+    [SelectTorrent.name]: SelectTorrent
+  },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false
     },
-    props: {
-      visible: {
-        type: Boolean,
-        default: false
-      },
-      type: {
-        type: String,
-        default: ADD_TASK_TYPE.URI
+    type: {
+      type: String,
+      default: ADD_TASK_TYPE.URI
+    }
+  },
+  data () {
+    return {
+      formLabelWidth: '110px',
+      showAdvanced: false,
+      form: {},
+      rules: {}
+    }
+  },
+  computed: {
+    isRenderer: () => is.renderer(),
+    isMas: () => is.mas(),
+    ...mapState('app', {
+      taskList: state => state.taskList
+    }),
+    ...mapState('preference', {
+      config: state => state.config
+    }),
+    taskType () {
+      return this.type
+    },
+    dialogTop () {
+      return this.showAdvanced ? '8vh' : '15vh'
+    }
+  },
+  watch: {
+    taskType (current, previous) {
+      if (this.visible && previous === ADD_TASK_TYPE.URI) {
+        return
+      }
+
+      if (current === ADD_TASK_TYPE.URI) {
+        setTimeout(() => {
+          this.$refs.uri && this.$refs.uri.focus()
+        }, 50)
       }
     },
-    data () {
-      return {
-        formLabelWidth: '110px',
-        showAdvanced: false,
-        form: {},
-        rules: {}
-      }
-    },
-    computed: {
-      isRenderer: () => is.renderer(),
-      isMas: () => is.mas(),
-      ...mapState('app', {
-        taskList: state => state.taskList
-      }),
-      ...mapState('preference', {
-        config: state => state.config
-      }),
-      taskType () {
-        return this.type
-      },
-      dialogTop () {
-        return this.showAdvanced ? '8vh' : '15vh'
-      }
-    },
-    watch: {
-      taskType (current, previous) {
-        if (this.visible && previous === ADD_TASK_TYPE.URI) {
-          return
-        }
-
-        if (current === ADD_TASK_TYPE.URI) {
-          setTimeout(() => {
-            this.$refs.uri && this.$refs.uri.focus()
-          }, 50)
-        }
-      },
-      visible (current) {
-        if (current === true) {
-          document.addEventListener('keydown', this.handleHotkey)
-        } else {
-          document.removeEventListener('keydown', this.handleHotkey)
-        }
-      }
-    },
-    methods: {
-      async autofillResourceLink () {
-        const content = await navigator.clipboard.readText()
-        const hasResource = detectResource(content)
-        if (!hasResource) {
-          return
-        }
-
-        if (isEmpty(this.form.uris)) {
-          this.form.uris = content
-        }
-      },
-      beforeClose (done) {
-        if (isEmpty(this.form.uris) && isEmpty(this.form.torrent)) {
-          this.handleClose()
-        }
-        done()
-      },
-      handleOpen () {
-        this.form = initTaskForm(this.$store.state)
-        if (this.taskType === ADD_TASK_TYPE.URI) {
-          this.autofillResourceLink()
-          setTimeout(() => {
-            this.$refs.uri && this.$refs.uri.focus()
-          }, 50)
-        }
-      },
-      handleOpened () {
-        this.detectThunderResource(this.form.uris)
-      },
-      handleCancel () {
-        this.$store.dispatch('app/hideAddTaskDialog')
-      },
-      handleClose () {
-        this.$store.dispatch('app/hideAddTaskDialog')
-        this.$store.dispatch('app/updateAddTaskOptions', {})
-      },
-      handleClosed () {
-        this.reset()
-      },
-      handleHotkey (event) {
-        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-          event.preventDefault()
-
-          this.submitForm('taskForm')
-        }
-      },
-      handleTabClick (tab) {
-        this.$store.dispatch('app/changeAddTaskType', tab.name)
-      },
-      handleUriPaste () {
-        setImmediate(() => {
-          const uris = this.$refs.uri.value
-          this.detectThunderResource(uris)
-        })
-      },
-      detectThunderResource (uris = '') {
-        if (uris.includes('thunder://')) {
-          this.$msg({
-            type: 'warning',
-            message: this.$t('task.thunder-link-tips'),
-            duration: 6000
-          })
-        }
-      },
-      handleTorrentChange (torrent, selectedFileIndex) {
-        this.form.torrent = torrent
-        this.form.selectFile = selectedFileIndex
-      },
-      handleHistoryDirectorySelected (dir) {
-        this.form.dir = dir
-      },
-      handleNativeDirectorySelected (dir) {
-        this.form.dir = dir
-        this.$store.dispatch('preference/recordHistoryDirectory', dir)
-      },
-      reset () {
-        this.showAdvanced = false
-        this.form = initTaskForm(this.$store.state)
-      },
-      addTask (type, form) {
-        let payload = null
-        if (type === ADD_TASK_TYPE.URI) {
-          payload = buildUriPayload(form)
-          this.$store.dispatch('task/addUri', payload).catch(err => {
-            this.$msg.error(err.message)
-          })
-        } else if (type === ADD_TASK_TYPE.TORRENT) {
-          payload = buildTorrentPayload(form)
-          this.$store.dispatch('task/addTorrent', payload).catch(err => {
-            this.$msg.error(err.message)
-          })
-        } else if (type === 'metalink') {
-        // @TODO addMetalink
-        } else {
-          console.error('[imFile] Add task fail', form)
-        }
-      },
-      submitForm (formName) {
-        this.$refs[formName].validate(valid => {
-          if (!valid) {
-            return false
-          }
-
-          try {
-            this.addTask(this.type, this.form)
-
-            this.$store.dispatch('app/hideAddTaskDialog')
-            if (this.form.newTaskShowDownloading) {
-              this.$router.push({
-                path: '/task/active'
-              }).catch(err => {
-                console.log(err)
-              })
-            }
-          } catch (err) {
-            this.$msg.error(this.$t(err.message))
-          }
-        })
+    visible (current) {
+      if (current === true) {
+        document.addEventListener('keydown', this.handleHotkey)
+      } else {
+        document.removeEventListener('keydown', this.handleHotkey)
       }
     }
+  },
+  methods: {
+    async autofillResourceLink () {
+      const content = await navigator.clipboard.readText()
+      const hasResource = detectResource(content)
+      if (!hasResource) {
+        return
+      }
+
+      if (isEmpty(this.form.uris)) {
+        this.form.uris = content
+      }
+    },
+    beforeClose (done) {
+      if (isEmpty(this.form.uris) && isEmpty(this.form.torrent)) {
+        this.handleClose()
+      }
+      done()
+    },
+    handleOpen () {
+      this.form = initTaskForm(this.$store.state)
+      if (this.taskType === ADD_TASK_TYPE.URI) {
+        this.autofillResourceLink()
+        setTimeout(() => {
+          this.$refs.uri && this.$refs.uri.focus()
+        }, 50)
+      }
+    },
+    handleOpened () {
+      this.detectThunderResource(this.form.uris)
+    },
+    handleCancel () {
+      this.$store.dispatch('app/hideAddTaskDialog')
+    },
+    handleClose () {
+      this.$store.dispatch('app/hideAddTaskDialog')
+      this.$store.dispatch('app/updateAddTaskOptions', {})
+    },
+    handleClosed () {
+      this.reset()
+    },
+    handleHotkey (event) {
+      if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault()
+
+        this.submitForm('taskForm')
+      }
+    },
+    handleTabClick (tab) {
+      this.$store.dispatch('app/changeAddTaskType', tab.name)
+    },
+    handleUriPaste () {
+      setImmediate(() => {
+        const uris = this.$refs.uri.value
+        this.detectThunderResource(uris)
+      })
+    },
+    detectThunderResource (uris = '') {
+      if (uris.includes('thunder://')) {
+        this.$msg({
+          type: 'warning',
+          message: this.$t('task.thunder-link-tips'),
+          duration: 6000
+        })
+      }
+    },
+    handleTorrentChange (torrent, selectedFileIndex) {
+      this.form.torrent = torrent
+      this.form.selectFile = selectedFileIndex
+    },
+    handleHistoryDirectorySelected (dir) {
+      this.form.dir = dir
+    },
+    handleNativeDirectorySelected (dir) {
+      this.form.dir = dir
+      this.$store.dispatch('preference/recordHistoryDirectory', dir)
+    },
+    reset () {
+      this.showAdvanced = false
+      this.form = initTaskForm(this.$store.state)
+    },
+    addTask (type, form) {
+      let payload = null
+      if (type === ADD_TASK_TYPE.URI) {
+        payload = buildUriPayload(form)
+        this.$store.dispatch('task/addUri', payload).catch(err => {
+          this.$msg.error(err.message)
+        })
+      } else if (type === ADD_TASK_TYPE.TORRENT) {
+        payload = buildTorrentPayload(form)
+        this.$store.dispatch('task/addTorrent', payload).catch(err => {
+          this.$msg.error(err.message)
+        })
+      } else if (type === 'metalink') {
+        // @TODO addMetalink
+      } else {
+        console.error('[imFile] Add task fail', form)
+      }
+    },
+    submitForm (formName) {
+      this.$refs[formName].validate(valid => {
+        if (!valid) {
+          return false
+        }
+
+        try {
+          this.addTask(this.type, this.form)
+
+          this.$store.dispatch('app/hideAddTaskDialog')
+          if (this.form.newTaskShowDownloading) {
+            this.$router.push({
+              path: '/task/active'
+            }).catch(err => {
+              console.log(err)
+            })
+          }
+        } catch (err) {
+          this.$msg.error(this.$t(err.message))
+        }
+      })
+    }
   }
+}
 </script>
 
 <style lang="scss">

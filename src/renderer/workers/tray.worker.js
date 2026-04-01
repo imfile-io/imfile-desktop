@@ -59,10 +59,10 @@ self.postMessage({
 self.addEventListener('message', (event) => {
   const { type, payload } = event.data
   switch (type) {
-  case 'tray:draw':
-    drawTray(payload)
-    break
-  default:
-    logger(JSON.stringify(event.data))
+    case 'tray:draw':
+      drawTray(payload)
+      break
+    default:
+      logger(JSON.stringify(event.data))
   }
 })

@@ -1,5 +1,5 @@
 <template>
-  <el-aside width="78px" :class="['aside', 'hidden-sm-and-down', { 'draggable': asideDraggable }]" :style="vibrancy">
+  <el-aside width="78px" :class="['aside', 'hidden-sm-and-down', { draggable: asideDraggable }]" :style="vibrancy">
     <div class="aside-inner">
       <mo-logo-mini />
       <ul class="menu top-menu">
@@ -23,51 +23,51 @@
 </template>
 
 <script>
-  import is from 'electron-is'
-  import { mapState } from 'vuex'
-  import { ADD_TASK_TYPE } from '@shared/constants'
-  import LogoMini from '@/components/Logo/LogoMini'
-  import '@/components/Icons/menu-task'
-  import '@/components/Icons/menu-add'
-  import '@/components/Icons/menu-preference'
-  import '@/components/Icons/menu-about'
+import is from 'electron-is'
+import { mapState } from 'vuex'
+import { ADD_TASK_TYPE } from '@shared/constants'
+import LogoMini from '@/components/Logo/LogoMini'
+import '@/components/Icons/menu-task'
+import '@/components/Icons/menu-add'
+import '@/components/Icons/menu-preference'
+import '@/components/Icons/menu-about'
 
-  export default {
-    name: 'mo-aside',
-    components: {
-      [LogoMini.name]: LogoMini
+export default {
+  name: 'mo-aside',
+  components: {
+    [LogoMini.name]: LogoMini
+  },
+  computed: {
+    ...mapState('app', {
+      currentPage: state => state.currentPage
+    }),
+    asideDraggable () {
+      return is.macOS()
     },
-    computed: {
-      ...mapState('app', {
-        currentPage: state => state.currentPage
-      }),
-      asideDraggable () {
-        return is.macOS()
-      },
-      vibrancy () {
-        return is.macOS()
-          ? {
+    vibrancy () {
+      return is.macOS()
+        ? {
             backgroundColor: 'transparent'
           }
-          : {}
-      }
+        : {}
+    }
+  },
+  methods: {
+    showAddTask (taskType = ADD_TASK_TYPE.URI) {
+      this.$store.dispatch('app/showAddTaskDialog', taskType)
     },
-    methods: {
-      showAddTask (taskType = ADD_TASK_TYPE.URI) {
-        this.$store.dispatch('app/showAddTaskDialog', taskType)
-      },
-      showAboutPanel () {
-        this.$store.dispatch('app/showAboutPanel')
-      },
-      nav (page) {
-        this.$router.push({
-          path: page
-        }).catch(err => {
-          console.log(err)
-        })
-      }
+    showAboutPanel () {
+      this.$store.dispatch('app/showAboutPanel')
+    },
+    nav (page) {
+      this.$router.push({
+        path: page
+      }).catch(err => {
+        console.log(err)
+      })
     }
   }
+}
 </script>
 
 <style lang="scss">

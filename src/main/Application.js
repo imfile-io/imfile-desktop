@@ -391,9 +391,9 @@ export default class Application extends EventEmitter {
       const { enable, server, bypass, scope = [] } = newValue
       const system = enable && server && scope.includes(PROXY_SCOPES.DOWNLOAD)
         ? {
-          'all-proxy': server,
-          'no-proxy': bypass
-        }
+            'all-proxy': server,
+            'no-proxy': bypass
+          }
         : {}
       this.configManager.setSystemConfig(system)
       this.engineClient.call('changeGlobalOption', system)

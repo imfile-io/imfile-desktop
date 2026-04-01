@@ -337,18 +337,18 @@ export default class Api {
   fetchTaskList (params = {}) {
     const { type } = params
     switch (type) {
-    case 'seeding':
-      return this.fetchSeedingTaskList(params)
-    case 'active':
-      return this.fetchDownloadingTaskList(params)
-    case 'waiting':
-      return this.fetchWaitingTaskList(params)
-    case 'stopped':
-      return this.fetchStoppedTaskList(params)
-    case 'done':
-      return this.fetchStoppedTaskList(params)
-    default:
-      return this.fetchDownloadingTaskList(params)
+      case 'seeding':
+        return this.fetchSeedingTaskList(params)
+      case 'active':
+        return this.fetchDownloadingTaskList(params)
+      case 'waiting':
+        return this.fetchWaitingTaskList(params)
+      case 'stopped':
+        return this.fetchStoppedTaskList(params)
+      case 'done':
+        return this.fetchStoppedTaskList(params)
+      default:
+        return this.fetchDownloadingTaskList(params)
     }
   }
 

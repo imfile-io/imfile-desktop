@@ -5,29 +5,29 @@
 </template>
 
 <script>
-  import '@/components/Icons/folder'
-  import {
-    showItemInFolder
-  } from '@/utils/native'
+import '@/components/Icons/folder'
+import {
+  showItemInFolder
+} from '@/utils/native'
 
-  export default {
-    name: 'mo-show-in-folder',
-    props: {
-      path: {
-        type: String
+export default {
+  name: 'mo-show-in-folder',
+  props: {
+    path: {
+      type: String
+    }
+  },
+  computed: {
+  },
+  methods: {
+    onFolderClick () {
+      if (!this.path) {
+        return
       }
-    },
-    computed: {
-    },
-    methods: {
-      onFolderClick () {
-        if (!this.path) {
-          return
-        }
-        showItemInFolder(this.path, {
-          errorMsg: this.$t('task.file-not-exist')
-        })
-      }
+      showItemInFolder(this.path, {
+        errorMsg: this.$t('task.file-not-exist')
+      })
     }
   }
+}
 </script>

@@ -47,7 +47,7 @@ export default class ConfigManager {
     this.systemConfig = new Store({
       name: 'system',
       cwd: null,
-      /* eslint-disable quote-props */
+
       defaults: {
         'all-proxy': EMPTY_STRING,
         'allow-overwrite': false,
@@ -57,11 +57,11 @@ export default class ConfigManager {
         'bt-load-saved-metadata': true,
         'bt-save-metadata': true,
         'bt-tracker': EMPTY_STRING,
-        'continue': true,
+        continue: true,
         'dht-file-path': getDhtPath(IP_VERSION.V4),
         'dht-file-path6': getDhtPath(IP_VERSION.V6),
         'dht-listen-port': 26701,
-        'dir': getUserDownloadsPath(),
+        dir: getUserDownloadsPath(),
         'enable-dht6': true,
         'follow-metalink': true,
         'follow-torrent': true,
@@ -73,15 +73,15 @@ export default class ConfigManager {
         'max-overall-upload-limit': 0,
         'no-proxy': EMPTY_STRING,
         'pause-metadata': false,
-        'pause': true,
+        pause: true,
         'rpc-listen-port': ENGINE_RPC_PORT,
         'rpc-secret': EMPTY_STRING,
         'seed-ratio': 2,
         'seed-time': 2880,
-        'split': getMaxConnectionPerServer(),
+        split: getMaxConnectionPerServer(),
         'user-agent': CHROME_UA
       }
-      /* eslint-enable quote-props */
+
     })
     this.fixSystemConfig()
   }
@@ -98,7 +98,7 @@ export default class ConfigManager {
       //     enum: ['auto', 'light', 'dark']
       //   }
       // },
-      /* eslint-disable quote-props */
+
       defaults: {
         'auto-check-update': is.macOS(),
         'auto-hide-window': false,
@@ -112,23 +112,23 @@ export default class ConfigManager {
         'keep-window-state': false,
         'last-check-update-time': 0,
         'last-sync-tracker-time': 0,
-        'locale': app.getLocale(),
+        locale: app.getLocale(),
         'log-level': 'warn',
         'new-task-show-downloading': true,
         'no-confirm-before-delete-task': false,
         'open-at-login': false,
-        'protocols': { 'magnet': true, 'thunder': false },
-        'proxy': {
-          'enable': false,
-          'server': EMPTY_STRING,
-          'bypass': EMPTY_STRING,
-          'scope': PROXY_SCOPE_OPTIONS
+        protocols: { magnet: true, thunder: false },
+        proxy: {
+          enable: false,
+          server: EMPTY_STRING,
+          bypass: EMPTY_STRING,
+          scope: PROXY_SCOPE_OPTIONS
         },
         'resume-all-when-app-launched': true,
         'run-mode': APP_RUN_MODE.STANDARD,
         'show-progress-bar': true,
         'task-notification': true,
-        'theme': APP_THEME.LIGHT,
+        theme: APP_THEME.LIGHT,
         'tracker-source': [
           NGOSANG_TRACKERS_BEST_IP_URL_CDN,
           NGOSANG_TRACKERS_BEST_URL_CDN
@@ -138,7 +138,7 @@ export default class ConfigManager {
         'update-channel': 'latest',
         'window-state': {}
       }
-      /* eslint-enable quote-props */
+
     })
     this.fixUserConfig()
   }

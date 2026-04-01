@@ -8,22 +8,22 @@ const toNumber = (value, defaultValue = 0) => {
 const normalizeGoed2kdStatus = (status = '') => {
   const value = String(status || '').toLowerCase()
   switch (value) {
-  case 'downloading':
-  case 'active':
-  case 'running':
-    return 'active'
-  case 'paused':
-  case 'pause':
-    return 'paused'
-  case 'finished':
-  case 'complete':
-  case 'completed':
-    return 'complete'
-  case 'error':
-  case 'failed':
-    return 'error'
-  default:
-    return 'waiting'
+    case 'downloading':
+    case 'active':
+    case 'running':
+      return 'active'
+    case 'paused':
+    case 'pause':
+      return 'paused'
+    case 'finished':
+    case 'complete':
+    case 'completed':
+      return 'complete'
+    case 'error':
+    case 'failed':
+      return 'error'
+    default:
+      return 'waiting'
   }
 }
 

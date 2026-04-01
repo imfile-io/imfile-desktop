@@ -18,9 +18,9 @@
 </template>
 
 <script>
-  export default {
-    name: 'mo-logo-mini'
-  }
+export default {
+  name: 'mo-logo-mini'
+}
 </script>
 
 <style lang="scss">

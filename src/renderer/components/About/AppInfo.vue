@@ -20,41 +20,41 @@
 </template>
 
 <script>
-  import is from 'electron-is'
-  import Logo from '@/components/Logo/Logo'
+import is from 'electron-is'
+import Logo from '@/components/Logo/Logo'
 
-  export default {
-    name: 'mo-app-info',
-    components: {
-      [Logo.name]: Logo
+export default {
+  name: 'mo-app-info',
+  components: {
+    [Logo.name]: Logo
+  },
+  props: {
+    version: {
+      type: String,
+      default: ''
     },
-    props: {
-      version: {
-        type: String,
-        default: ''
-      },
-      version_chrome: {
-        type: String,
-        default: process.versions.chrome
-      },
-      version_electron: {
-        type: String,
-        default: process.versions.electron
-      },
-      engine: {
-        type: Object,
-        default () {
-          return {
-            version: '',
-            enabledFeatures: []
-          }
+    version_chrome: {
+      type: String,
+      default: process.versions.chrome
+    },
+    version_electron: {
+      type: String,
+      default: process.versions.electron
+    },
+    engine: {
+      type: Object,
+      default () {
+        return {
+          version: '',
+          enabledFeatures: []
         }
       }
-    },
-    methods: {
-      isMas: is.mas
     }
+  },
+  methods: {
+    isMas: is.mas
   }
+}
 </script>
 
 <style lang="scss">
