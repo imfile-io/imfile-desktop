@@ -61,7 +61,8 @@ export default class WindowManager extends EventEmitter {
     result.attrs.width *= widthScale
     result.attrs.height *= heightScale
 
-    if (is.linux()) {
+    // Windows 开发模式下进程为 electron.exe，若不设置 icon，任务栏会显示 Electron 默认图标
+    if (is.linux() || is.windows()) {
       result.attrs.icon = join(__static, './512x512.png')
     }
 

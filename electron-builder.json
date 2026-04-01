@@ -89,6 +89,7 @@
       "category": "public.app-category.utilities"
     },
     "win": {
+      "icon": "build/icon.ico",
       "target": [
         {
           "target": "nsis",
