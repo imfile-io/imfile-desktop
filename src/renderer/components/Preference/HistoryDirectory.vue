@@ -15,14 +15,14 @@
         >
           <span class="mo-directory-path" :title="directory">{{directory}}</span>
           <span class="mo-directory-actions">
-            <i
-              class="el-icon-star-off icon-history-favorited"
+            <el-icon
+              class="icon-history-favorited"
               @click.stop="() => handleCancelFavoriteItem(directory)"
-            />
-            <i
-              class="el-icon-delete icon-history-remove"
+            ><Star /></el-icon>
+            <el-icon
+              class="icon-history-remove"
               @click.stop="() => handleRemoveItem(directory)"
-            />
+            ><Delete /></el-icon>
           </span>
         </li>
       </ul>
@@ -35,107 +35,113 @@
         >
           <span class="mo-directory-path" :title="directory">{{directory}}</span>
           <span class="mo-directory-actions">
-            <i
+            <el-icon
               v-if="showFavoriteAction"
-              class="el-icon-star-off icon-history-favorite"
+              class="icon-history-favorite"
               @click.stop="() => handleFavoriteItem(directory)"
-            />
-            <i
-              class="el-icon-delete icon-history-remove"
+            ><Star /></el-icon>
+            <el-icon
+              class="icon-history-remove"
               @click.stop="() => handleRemoveItem(directory)"
-            />
+            ><Delete /></el-icon>
           </span>
         </li>
       </ul>
-      <el-button
-        slot="reference"
+      <template v-slot:reference>
+<el-button
+
         :disabled="popoverDisabled"
       >
-        <i class="el-icon-time" />
+        <el-icon><Clock /></el-icon>
       </el-button>
+</template>
     </el-popover>
   </div>
 </template>
 
 <script>
-  import { mapState } from 'vuex'
-  import { MAX_NUM_OF_DIRECTORIES } from '@shared/constants'
-  import { cloneArray } from '@shared/utils'
+import { Clock, Delete, Star } from '@element-plus/icons-vue'
+import { mapState } from 'vuex'
+import { MAX_NUM_OF_DIRECTORIES } from '@shared/constants'
+import { cloneArray } from '@shared/utils'
 
-  export default {
-    name: 'mo-history-directory',
-    components: {
+export default {
+  name: 'mo-history-directory',
+  components: {
+    Clock,
+    Delete,
+    Star
+  },
+  props: {
+    width: {
+      type: Number,
+      default: 360
     },
-    props: {
-      width: {
-        type: Number,
-        default: 360
+    placement: {
+      type: String,
+      default: 'bottom-start'
+    }
+  },
+  data () {
+    return {
+      visible: false
+    }
+  },
+  computed: {
+    ...mapState('preference', {
+      historyDirectories: state => {
+        return cloneArray(state.config.historyDirectories, true)
       },
-      placement: {
-        type: String,
-        default: 'bottom-start'
+      favoriteDirectories: state => {
+        return cloneArray(state.config.favoriteDirectories, true)
       }
+    }),
+    empty () {
+      const { favoriteDirectories, historyDirectories } = this
+      return favoriteDirectories.length + historyDirectories.length === 0
     },
-    data () {
-      return {
-        visible: false
-      }
-    },
-    computed: {
-      ...mapState('preference', {
-        historyDirectories: state => {
-          return cloneArray(state.config.historyDirectories, true)
-        },
-        favoriteDirectories: state => {
-          return cloneArray(state.config.favoriteDirectories, true)
-        }
-      }),
-      empty () {
-        const { favoriteDirectories, historyDirectories } = this
-        return favoriteDirectories.length + historyDirectories.length === 0
-      },
-      popoverDisabled () {
-        const { favoriteDirectories, historyDirectories } = this
-        return favoriteDirectories.length === 0 &&
+    popoverDisabled () {
+      const { favoriteDirectories, historyDirectories } = this
+      return favoriteDirectories.length === 0 &&
           historyDirectories.length === 0
-      },
-      showDivider () {
-        const { favoriteDirectories, historyDirectories } = this
-        return favoriteDirectories.length > 0 &&
-          historyDirectories.length > 0
-      },
-      showFavoriteAction () {
-        const { favoriteDirectories } = this
-        return favoriteDirectories.length < MAX_NUM_OF_DIRECTORIES
-      }
     },
-    methods: {
-      handleIconClick () {
-        if (this.popoverDisabled) {
-          return
-        }
-
-        const { visible } = this
-        this.visible = !visible
-      },
-      handleSelectItem (directory) {
-        this.$emit('selected', directory.trim())
-        this.visible = false
-      },
-      handleFavoriteItem (directory) {
-        console.log('handleFavoriteItem==>', directory)
-        this.$store.dispatch('preference/favoriteDirectory', directory)
-      },
-      handleCancelFavoriteItem (directory) {
-        console.log('handleCancelFavoriteItem==>', directory)
-        this.$store.dispatch('preference/cancelFavoriteDirectory', directory)
-      },
-      handleRemoveItem (directory) {
-        console.log('handleRemoveItem==>', directory)
-        this.$store.dispatch('preference/removeDirectory', directory)
+    showDivider () {
+      const { favoriteDirectories, historyDirectories } = this
+      return favoriteDirectories.length > 0 &&
+          historyDirectories.length > 0
+    },
+    showFavoriteAction () {
+      const { favoriteDirectories } = this
+      return favoriteDirectories.length < MAX_NUM_OF_DIRECTORIES
+    }
+  },
+  methods: {
+    handleIconClick () {
+      if (this.popoverDisabled) {
+        return
       }
+
+      const { visible } = this
+      this.visible = !visible
+    },
+    handleSelectItem (directory) {
+      this.$emit('selected', directory.trim())
+      this.visible = false
+    },
+    handleFavoriteItem (directory) {
+      console.log('handleFavoriteItem==>', directory)
+      this.$store.dispatch('preference/favoriteDirectory', directory)
+    },
+    handleCancelFavoriteItem (directory) {
+      console.log('handleCancelFavoriteItem==>', directory)
+      this.$store.dispatch('preference/cancelFavoriteDirectory', directory)
+    },
+    handleRemoveItem (directory) {
+      console.log('handleRemoveItem==>', directory)
+      this.$store.dispatch('preference/removeDirectory', directory)
     }
   }
+}
 </script>
 
 <style lang="scss">

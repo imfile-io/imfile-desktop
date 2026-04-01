@@ -17,66 +17,66 @@
 </template>
 
 <script>
-  import is from 'electron-is'
-  import { mapState } from 'vuex'
+import is from 'electron-is'
+import { mapState } from 'vuex'
 
-  import { APP_THEME } from '@shared/constants'
-  import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
-  import Browser from '@/components/Browser'
-  import '@/components/Icons/info-square'
+import { APP_THEME } from '@shared/constants'
+import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
+import Browser from '@/components/Browser'
+import '@/components/Icons/info-square'
 
-  export default {
-    name: 'mo-preference-lab',
-    components: {
-      [SubnavSwitcher.name]: SubnavSwitcher,
-      [Browser.name]: Browser
-    },
-    data () {
-      const { locale } = this.$store.state.preference.config
-      return {
-        locale
+export default {
+  name: 'mo-preference-lab',
+  components: {
+    [SubnavSwitcher.name]: SubnavSwitcher,
+    [Browser.name]: Browser
+  },
+  data () {
+    const { locale } = this.$store.state.preference.config
+    return {
+      locale
+    }
+  },
+  computed: {
+    isRenderer: () => is.renderer(),
+    ...mapState('app', {
+      systemTheme: state => state.systemTheme
+    }),
+    ...mapState('preference', {
+      config: state => state.config,
+      theme: state => state.config.theme
+    }),
+    currentTheme () {
+      if (this.theme === APP_THEME.AUTO) {
+        return this.systemTheme
+      } else {
+        return this.theme
       }
     },
-    computed: {
-      isRenderer: () => is.renderer(),
-      ...mapState('app', {
-        systemTheme: state => state.systemTheme
-      }),
-      ...mapState('preference', {
-        config: state => state.config,
-        theme: state => state.config.theme
-      }),
-      currentTheme () {
-        if (this.theme === APP_THEME.AUTO) {
-          return this.systemTheme
-        } else {
-          return this.theme
+    url () {
+      const { currentTheme, locale } = this
+      const result = `https://imfile.org/lab?lite=true&theme=${currentTheme}&lang=${locale}`
+      return result
+    },
+    title () {
+      return this.$t('preferences.lab')
+    },
+    subnavs () {
+      return [
+        {
+          key: 'basic',
+          title: this.$t('preferences.basic'),
+          route: '/preference/basic'
+        },
+        {
+          key: 'advanced',
+          title: this.$t('preferences.advanced'),
+          route: '/preference/advanced'
         }
-      },
-      url () {
-        const { currentTheme, locale } = this
-        const result = `https://imfile.org/lab?lite=true&theme=${currentTheme}&lang=${locale}`
-        return result
-      },
-      title () {
-        return this.$t('preferences.lab')
-      },
-      subnavs () {
-        return [
-          {
-            key: 'basic',
-            title: this.$t('preferences.basic'),
-            route: '/preference/basic'
-          },
-          {
-            key: 'advanced',
-            title: this.$t('preferences.advanced'),
-            route: '/preference/advanced'
-          }
-        ]
-      }
+      ]
     }
   }
+}
 </script>
 
 <style lang="scss">

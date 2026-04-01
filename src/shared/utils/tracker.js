@@ -18,9 +18,9 @@ export const convertToAxiosProxy = (proxyServer = '') => {
 
   const auth = username || password
     ? {
-      username,
-      password
-    }
+        username,
+        password
+      }
     : undefined
 
   if (auth) {

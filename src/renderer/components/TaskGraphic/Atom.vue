@@ -13,38 +13,38 @@
 </template>
 
 <script>
-  export default {
-    name: 'mo-task-graphic-atom',
-    props: {
-      status: {
-        type: Number
-      },
-      width: {
-        type: Number,
-        default: 10
-      },
-      height: {
-        type: Number,
-        default: 10
-      },
-      radius: {
-        type: Number,
-        default: 2
-      },
-      x: {
-        type: Number
-      },
-      y: {
-        type: Number
-      }
+export default {
+  name: 'mo-task-graphic-atom',
+  props: {
+    status: {
+      type: Number
     },
-    computed: {
-      klass () {
-        const { status } = this
-        return `graphic-atom graphic-atom-s${status}`
-      }
+    width: {
+      type: Number,
+      default: 10
+    },
+    height: {
+      type: Number,
+      default: 10
+    },
+    radius: {
+      type: Number,
+      default: 2
+    },
+    x: {
+      type: Number
+    },
+    y: {
+      type: Number
+    }
+  },
+  computed: {
+    klass () {
+      const { status } = this
+      return `graphic-atom graphic-atom-s${status}`
     }
   }
+}
 </script>
 
 <style lang="scss">

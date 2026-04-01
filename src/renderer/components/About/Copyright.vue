@@ -23,15 +23,15 @@
 </template>
 
 <script>
-  export default {
-    name: 'mo-copyright',
-    data () {
-      const year = new Date().getFullYear()
-      return {
-        year
-      }
+export default {
+  name: 'mo-copyright',
+  data () {
+    const year = new Date().getFullYear()
+    return {
+      year
     }
   }
+}
 </script>
 
 <style lang="scss">

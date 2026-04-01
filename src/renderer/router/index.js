@@ -1,19 +1,17 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
-Vue.use(Router)
-
-export default new Router({
+export default createRouter({
+  history: createWebHashHistory(),
   routes: [
     {
       path: '/',
       name: 'main',
-      component: require('@/components/Main').default,
+      component: () => import('@/components/Main.vue'),
       children: [
         {
           path: '/task',
           alias: '/',
-          component: require('@/components/Task/Index').default,
+          component: () => import('@/components/Task/Index.vue'),
           props: {
             status: 'active'
           }
@@ -21,21 +19,21 @@ export default new Router({
         {
           path: '/task/:status',
           name: 'task',
-          component: require('@/components/Task/Index').default,
+          component: () => import('@/components/Task/Index.vue'),
           props: true
         },
         {
           path: '/preference',
           name: 'preference',
-          component: require('@/components/Preference/Index').default,
+          component: () => import('@/components/Preference/Index.vue'),
           props: true,
           children: [
             {
               path: 'basic',
               alias: '',
               components: {
-                subnav: require('@/components/Subnav/PreferenceSubnav').default,
-                form: require('@/components/Preference/Basic').default
+                subnav: () => import('@/components/Subnav/PreferenceSubnav.vue'),
+                form: () => import('@/components/Preference/Basic.vue')
               },
               props: {
                 subnav: { current: 'basic' }
@@ -44,8 +42,8 @@ export default new Router({
             {
               path: 'advanced',
               components: {
-                subnav: require('@/components/Subnav/PreferenceSubnav').default,
-                form: require('@/components/Preference/Advanced').default
+                subnav: () => import('@/components/Subnav/PreferenceSubnav.vue'),
+                form: () => import('@/components/Preference/Advanced.vue')
               },
               props: {
                 subnav: { current: 'advanced' }
@@ -54,8 +52,8 @@ export default new Router({
             {
               path: 'lab',
               components: {
-                subnav: require('@/components/Subnav/PreferenceSubnav').default,
-                form: require('@/components/Preference/Lab').default
+                subnav: () => import('@/components/Subnav/PreferenceSubnav.vue'),
+                form: () => import('@/components/Preference/Lab.vue')
               },
               props: {
                 subnav: { current: 'lab' }
@@ -66,7 +64,7 @@ export default new Router({
       ]
     },
     {
-      path: '*',
+      path: '/:pathMatch(.*)*',
       redirect: '/'
     }
   ]

@@ -3,7 +3,8 @@ import { APP_THEME, TRAY_CANVAS_CONFIG } from '@shared/constants'
 // Temp Fix: Cannot find module 'lodash'
 // import { bytesToSize } from '@shared/utils'
 const bytesToSize = (bytes) => {
-  const b = parseInt(bytes, 10)
+  const parsed = parseInt(bytes, 10)
+  const b = Number.isFinite(parsed) && parsed >= 0 ? parsed : 0
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
   if (b === 0) { return '0 KB' }
   const i = parseInt(Math.floor(Math.log(b) / Math.log(1024)), 10)
@@ -78,13 +79,13 @@ export const draw = async ({
 
 export const transferCanvasTo = (canvas, type) => {
   switch (type) {
-  case 'DATA_URL':
-    return canvas.toDataURL()
-  case 'BLOB':
-    return canvas.convertToBlob()
-  case 'BITMAP':
-    return canvas.transferToImageBitmap()
-  default:
-    return canvas.convertToBlob()
+    case 'DATA_URL':
+      return canvas.toDataURL()
+    case 'BLOB':
+      return canvas.convertToBlob()
+    case 'BITMAP':
+      return canvas.transferToImageBitmap()
+    default:
+      return canvas.convertToBlob()
   }
 }

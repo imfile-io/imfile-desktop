@@ -22,43 +22,43 @@ export default class DockManager extends EventEmitter {
 
   show = enabled
     ? () => {
-      if (app.dock.isVisible()) {
-        return
-      }
+        if (app.dock.isVisible()) {
+          return
+        }
 
-      return app.dock.show()
-    }
+        return app.dock.show()
+      }
     : () => {}
 
   hide = enabled
     ? () => {
-      if (!app.dock.isVisible()) {
-        return
-      }
+        if (!app.dock.isVisible()) {
+          return
+        }
 
-      app.dock.hide()
-    }
+        app.dock.hide()
+      }
     : () => {}
 
   // macOS setBadge not working
   // @see https://github.com/electron/electron/issues/25745#issuecomment-702826143
   setBadge = enabled
     ? (text) => {
-      app.dock.setBadge(text)
-    }
+        app.dock.setBadge(text)
+      }
     : (text) => {}
 
   handleSpeedChange = enabled
     ? (speed) => {
-      const { downloadSpeed } = speed
-      const text = downloadSpeed > 0 ? `${bytesToSize(downloadSpeed)}/s` : ''
-      this.setBadge(text)
-    }
+        const { downloadSpeed } = speed
+        const text = downloadSpeed > 0 ? `${bytesToSize(downloadSpeed)}/s` : ''
+        this.setBadge(text)
+      }
     : (text) => {}
 
   openDock = enabled
     ? (path) => {
-      app.dock.downloadFinished(path)
-    }
+        app.dock.downloadFinished(path)
+      }
     : (path) => {}
 }

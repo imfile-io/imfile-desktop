@@ -4,7 +4,7 @@
     <ul>
       <li
         @click="() => nav('basic')"
-        :class="[ current === 'basic' ? 'active' : '' ]"
+        :class="[current === 'basic' ? 'active' : '']"
         >
         <i class="subnav-icon">
           <mo-icon name='preference-basic' width="20" height="20" />
@@ -13,7 +13,7 @@
       </li>
       <li
         @click="() => nav('advanced')"
-        :class="[ current === 'advanced' ? 'active' : '' ]"
+        :class="[current === 'advanced' ? 'active' : '']"
         >
         <i class="subnav-icon">
           <mo-icon name='preference-advanced' width="20" height="20" />
@@ -25,30 +25,30 @@
 </template>
 
 <script>
-  import '@/components/Icons/preference-basic'
-  import '@/components/Icons/preference-advanced'
+import '@/components/Icons/preference-basic'
+import '@/components/Icons/preference-advanced'
 
-  export default {
-    name: 'mo-preference-subnav',
-    props: {
-      current: {
-        type: String,
-        default: 'basic'
-      }
-    },
-    computed: {
-      title () {
-        return this.$t('subnav.preferences')
-      }
-    },
-    methods: {
-      nav (category = 'basic') {
-        this.$router.push({
-          path: `/preference/${category}`
-        }).catch(err => {
-          console.log(err)
-        })
-      }
+export default {
+  name: 'mo-preference-subnav',
+  props: {
+    current: {
+      type: String,
+      default: 'basic'
+    }
+  },
+  computed: {
+    title () {
+      return this.$t('subnav.preferences')
+    }
+  },
+  methods: {
+    nav (category = 'basic') {
+      this.$router.push({
+        path: `/preference/${category}`
+      }).catch(err => {
+        console.log(err)
+      })
     }
   }
+}
 </script>

@@ -10,36 +10,34 @@
       <em>{{ engineMode }}</em>
     </div>
     <div class="value" v-if="stat.numActive > 0">
-      <em>{{ stat.uploadSpeed | bytesToSize }}/s</em>
-      <span>{{ stat.downloadSpeed | bytesToSize }}/s</span>
+      <em>{{ bytesToSize(stat.uploadSpeed) }}/s</em>
+      <span>{{ bytesToSize(stat.downloadSpeed) }}/s</span>
     </div>
   </div>
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
-  import { bytesToSize } from '@shared/utils'
-  import '@/components/Icons/speedometer'
+import { mapState, mapActions } from 'vuex'
+import { bytesToSize } from '@shared/utils'
+import '@/components/Icons/speedometer'
 
-  export default {
-    name: 'mo-speedometer',
-    computed: {
-      ...mapState('app', [
-        'stat'
-      ]),
-      ...mapState('preference', [
-        'engineMode'
-      ])
-    },
-    filters: {
-      bytesToSize
-    },
-    methods: {
-      ...mapActions('preference', [
-        'toggleEngineMode'
-      ])
-    }
+export default {
+  name: 'mo-speedometer',
+  computed: {
+    ...mapState('app', [
+      'stat'
+    ]),
+    ...mapState('preference', [
+      'engineMode'
+    ])
+  },
+  methods: {
+    bytesToSize,
+    ...mapActions('preference', [
+      'toggleEngineMode'
+    ])
   }
+}
 </script>
 
 <style lang="scss">

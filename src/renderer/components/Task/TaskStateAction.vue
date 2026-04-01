@@ -34,69 +34,64 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
-  import { bytesToSize, timeFormat } from '@shared/utils'
-  import BatchDeleteTaskBtn from '@/components/Task/BatchDeleteTaskBtn.vue'
-  import '@/components/Icons/task-pause'
-  import '@/components/Icons/task-play'
-  export default {
-    name: 'state-task-actions',
-    components: {
-      [BatchDeleteTaskBtn.name]: BatchDeleteTaskBtn
+import { mapState } from 'vuex'
+import BatchDeleteTaskBtn from '@/components/Task/BatchDeleteTaskBtn.vue'
+import '@/components/Icons/task-pause'
+import '@/components/Icons/task-play'
+export default {
+  name: 'state-task-actions',
+  components: {
+    [BatchDeleteTaskBtn.name]: BatchDeleteTaskBtn
+  },
+  props: ['task'],
+  data () {
+    return {
+      refreshing: false
+    }
+  },
+  computed: {
+    ...mapState('task', {
+      currentList: state => state.currentList,
+      selectedTaskKeyListCount: state => state.selectedTaskKeyList.length
+    })
+  },
+  methods: {
+    onResumeAllClick () {
+      this.$store.dispatch('task/resumeAllTask')
+        .then(() => {
+          // this.$msg.success(this.$t('task.resume-all-task-success'))
+        })
+        .catch(({ code }) => {
+          if (code === 1) {
+            this.$msg.error(this.$t('task.resume-all-task-fail'))
+          }
+        })
     },
-    props: ['task'],
-    data () {
-      return {
-        refreshing: false
-      }
+    onPauseAllClick () {
+      this.$store.dispatch('task/pauseAllTask')
+        .then(() => {
+          // this.$msg.success(this.$t('task.pause-all-task-success'))
+        })
+        .catch(({ code }) => {
+          if (code === 1) {
+            this.$msg.error(this.$t('task.pause-all-task-fail'))
+          }
+        })
     },
-    computed: {
-      ...mapState('task', {
-        currentList: state => state.currentList,
-        selectedTaskKeyListCount: state => state.selectedTaskKeyList.length
-      })
+    onRefreshClick () {
+      this.refreshSpin()
+      this.$store.dispatch('task/fetchList')
     },
-    filters: {
-      bytesToSize,
-      timeFormat
-    },
-    methods: {
-      onResumeAllClick () {
-        this.$store.dispatch('task/resumeAllTask')
-          .then(() => {
-            // this.$msg.success(this.$t('task.resume-all-task-success'))
-          })
-          .catch(({ code }) => {
-            if (code === 1) {
-              this.$msg.error(this.$t('task.resume-all-task-fail'))
-            }
-          })
-      },
-      onPauseAllClick () {
-        this.$store.dispatch('task/pauseAllTask')
-          .then(() => {
-            // this.$msg.success(this.$t('task.pause-all-task-success'))
-          })
-          .catch(({ code }) => {
-            if (code === 1) {
-              this.$msg.error(this.$t('task.pause-all-task-fail'))
-            }
-          })
-      },
-      onRefreshClick () {
-        this.refreshSpin()
-        this.$store.dispatch('task/fetchList')
-      },
-      refreshSpin () {
-        this.t && clearTimeout(this.t)
+    refreshSpin () {
+      this.t && clearTimeout(this.t)
 
-        this.refreshing = true
-        this.t = setTimeout(() => {
-          this.refreshing = false
-        }, 500)
-      }
+      this.refreshing = true
+      this.t = setTimeout(() => {
+        this.refreshing = false
+      }, 500)
     }
   }
+}
 </script>
 
 <style lang="scss">

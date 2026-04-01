@@ -8,27 +8,27 @@
 </template>
 
 <script>
-  import { dialog } from '@electron/remote'
-  import '@/components/Icons/folder'
+import { dialog } from '@electron/remote'
+import '@/components/Icons/folder'
 
-  export default {
-    name: 'mo-select-directory',
-    props: {
-    },
-    methods: {
-      onFolderClick () {
-        const self = this
-        dialog.showOpenDialog({
-          properties: ['openDirectory', 'createDirectory']
-        }).then(({ canceled, filePaths }) => {
-          if (canceled || filePaths.length === 0) {
-            return
-          }
+export default {
+  name: 'mo-select-directory',
+  props: {
+  },
+  methods: {
+    onFolderClick () {
+      const self = this
+      dialog.showOpenDialog({
+        properties: ['openDirectory', 'createDirectory']
+      }).then(({ canceled, filePaths }) => {
+        if (canceled || filePaths.length === 0) {
+          return
+        }
 
-          const [path] = filePaths
-          self.$emit('selected', path)
-        })
-      }
+        const [path] = filePaths
+        self.$emit('selected', path)
+      })
     }
   }
+}
 </script>

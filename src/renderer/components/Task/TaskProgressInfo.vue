@@ -10,22 +10,22 @@
     <div class="task-speed-info" v-if="isActive">
         <div class="task-speed-text">
           <i><mo-icon name="arrow-up" width="10" height="14" /></i>
-          <span>{{ task.uploadSpeed | bytesToSize }}/s</span>
+          <span>{{ bytesToSize(task.uploadSpeed) }}/s</span>
         </div>
         <div class="task-speed-text">
           <i><mo-icon name="arrow-down" width="10" height="14" /></i>
-          <span>{{ task.downloadSpeed | bytesToSize }}/s</span>
+          <span>{{ bytesToSize(task.downloadSpeed) }}/s</span>
         </div>
         <div class="task-speed-text hidden-sm-and-down" v-if="remaining > 0">
           <span class="remaining-label-value">
             {{ $t('task.remaining-prefix') }}
             {{
-              remaining | timeFormat({
+              timeFormat(remaining, {
                 i18n: {
-                  'gt1d': $t('app.gt1d'),
-                  'hour': $t('app.hour'),
-                  'minute': $t('app.minute'),
-                  'second': $t('app.second')
+                  gt1d: $t('app.gt1d'),
+                  hour: $t('app.hour'),
+                  minute: $t('app.minute'),
+                  second: $t('app.second')
                 }
               })
             }}
@@ -49,46 +49,46 @@
 </template>
 
 <script>
-  import {
-    bytesToSize,
-    checkTaskIsBT,
-    checkTaskIsSeeder,
-    timeFormat,
-    timeRemaining
-  } from '@shared/utils'
-  import { TASK_STATUS } from '@shared/constants'
-  import '@/components/Icons/arrow-up'
-  import '@/components/Icons/arrow-down'
-  import '@/components/Icons/node'
-  import '@/components/Icons/magnet'
+import {
+  bytesToSize,
+  checkTaskIsBT,
+  checkTaskIsSeeder,
+  timeFormat,
+  timeRemaining
+} from '@shared/utils'
+import { TASK_STATUS } from '@shared/constants'
+import '@/components/Icons/arrow-up'
+import '@/components/Icons/arrow-down'
+import '@/components/Icons/node'
+import '@/components/Icons/magnet'
 
-  export default {
-    name: 'mo-task-progress-info',
-    props: {
-      task: {
-        type: Object
-      }
-    },
-    computed: {
-      isActive () {
-        return this.task.status === TASK_STATUS.ACTIVE
-      },
-      isBT () {
-        return checkTaskIsBT(this.task)
-      },
-      isSeeder () {
-        return checkTaskIsSeeder(this.task)
-      },
-      remaining () {
-        const { totalLength, completedLength, downloadSpeed } = this.task
-        return timeRemaining(totalLength, completedLength, downloadSpeed)
-      }
-    },
-    filters: {
-      bytesToSize,
-      timeFormat
+export default {
+  name: 'mo-task-progress-info',
+  props: {
+    task: {
+      type: Object
     }
+  },
+  computed: {
+    isActive () {
+      return this.task.status === TASK_STATUS.ACTIVE
+    },
+    isBT () {
+      return checkTaskIsBT(this.task)
+    },
+    isSeeder () {
+      return checkTaskIsSeeder(this.task)
+    },
+    remaining () {
+      const { totalLength, completedLength, downloadSpeed } = this.task
+      return timeRemaining(totalLength, completedLength, downloadSpeed)
+    }
+  },
+  methods: {
+    bytesToSize,
+    timeFormat
   }
+}
 </script>
 
 <style lang="scss">

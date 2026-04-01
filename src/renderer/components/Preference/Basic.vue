@@ -2,10 +2,10 @@
   <el-container class="content panel" direction="vertical">
     <el-header class="panel-header" height="84">
       <el-row class="panel-row">
-        <el-col :span="4" @click.native="() => nav('basic')" class="active">
+        <el-col :span="4" @click="() => nav('basic')" class="active">
           <h4>{{ $t('preferences.basic') }}</h4>
         </el-col>
-        <el-col :span="4" @click.native="() => nav('advanced')">
+        <el-col :span="4" @click="() => nav('advanced')">
           <h4>{{ $t('preferences.advanced') }}</h4>
         </el-col>
       </el-row>
@@ -20,7 +20,7 @@
         class="form-preference"
         ref="basicForm"
         label-position="right"
-        size="mini"
+        size="small"
         :model="form"
         :rules="rules"
       >
@@ -122,11 +122,13 @@
               slot="prepend"
               @selected="handleHistoryDirectorySelected"
             /> -->
-            <mo-select-directory
+            <template v-slot:append>
+<mo-select-directory
               v-if="isRenderer"
-              slot="append"
+
               @selected="handleNativeDirectorySelected"
             />
+</template>
           </el-input>
           <div class="el-form-item__info" v-if="isMas" style="margin-top: 8px;">
             {{ $t('preferences.mas-default-dir-tips') }}
@@ -302,365 +304,365 @@
 </template>
 
 <script>
-  import is from 'electron-is'
-  import { dialog } from '@electron/remote'
-  import { mapState } from 'vuex'
-  import { cloneDeep, extend, isEmpty } from 'lodash'
-  import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
-  import HistoryDirectory from '@/components/Preference/HistoryDirectory'
-  import SelectDirectory from '@/components/Native/SelectDirectory'
-  import ThemeSwitcher from '@/components/Preference/ThemeSwitcher'
-  import { availableLanguages, getLanguage } from '@shared/locales'
-  import { getLocaleManager } from '@/components/Locale'
-  import {
-    calcFormLabelWidth,
-    changedConfig,
-    checkIsNeedRestart,
-    convertLineToComma,
-    diffConfig,
-    extractSpeedUnit
-  } from '@shared/utils'
-  import {
-    APP_RUN_MODE,
-    EMPTY_STRING,
-    ENGINE_MAX_CONCURRENT_DOWNLOADS,
-    ENGINE_RPC_PORT
-  } from '@shared/constants'
-  import { reduceTrackerString } from '@shared/utils/tracker'
+import is from 'electron-is'
+import { dialog } from '@electron/remote'
+import { mapState } from 'vuex'
+import { cloneDeep, extend, isEmpty } from 'lodash'
+import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
+import HistoryDirectory from '@/components/Preference/HistoryDirectory'
+import SelectDirectory from '@/components/Native/SelectDirectory'
+import ThemeSwitcher from '@/components/Preference/ThemeSwitcher'
+import { availableLanguages, getLanguage } from '@shared/locales'
+import { getLocaleManager } from '@/components/Locale'
+import {
+  calcFormLabelWidth,
+  changedConfig,
+  checkIsNeedRestart,
+  convertLineToComma,
+  diffConfig,
+  extractSpeedUnit
+} from '@shared/utils'
+import {
+  APP_RUN_MODE,
+  EMPTY_STRING,
+  ENGINE_MAX_CONCURRENT_DOWNLOADS,
+  ENGINE_RPC_PORT
+} from '@shared/constants'
+import { reduceTrackerString } from '@shared/utils/tracker'
 
-  const initForm = (config) => {
-    const {
-      autoHideWindow,
-      btForceEncryption,
-      btSaveMetadata,
-      dir,
-      engineMaxConnectionPerServer,
-      followMetalink,
-      followTorrent,
-      hideAppMenu,
-      keepSeeding,
-      keepWindowState,
-      locale,
-      maxConcurrentDownloads,
-      maxConnectionPerServer,
-      maxOverallDownloadLimit,
-      maxOverallUploadLimit,
-      newTaskShowDownloading,
-      noConfirmBeforeDeleteTask,
-      openAtLogin,
-      pauseMetadata,
-      resumeAllWhenAppLaunched,
-      runMode,
-      seedRatio,
-      seedTime,
-      showProgressBar,
-      taskNotification,
-      theme,
-      traySpeedometer
-    } = config
+const initForm = (config) => {
+  const {
+    autoHideWindow,
+    btForceEncryption,
+    btSaveMetadata,
+    dir,
+    engineMaxConnectionPerServer,
+    followMetalink,
+    followTorrent,
+    hideAppMenu,
+    keepSeeding,
+    keepWindowState,
+    locale,
+    maxConcurrentDownloads,
+    maxConnectionPerServer,
+    maxOverallDownloadLimit,
+    maxOverallUploadLimit,
+    newTaskShowDownloading,
+    noConfirmBeforeDeleteTask,
+    openAtLogin,
+    pauseMetadata,
+    resumeAllWhenAppLaunched,
+    runMode,
+    seedRatio,
+    seedTime,
+    showProgressBar,
+    taskNotification,
+    theme,
+    traySpeedometer
+  } = config
 
-    const btAutoDownloadContent = followTorrent &&
+  const btAutoDownloadContent = followTorrent &&
       followMetalink &&
       !pauseMetadata
 
-    const result = {
-      autoHideWindow,
-      btAutoDownloadContent,
-      btForceEncryption,
-      btSaveMetadata,
-      continue: config.continue,
-      dir,
-      engineMaxConnectionPerServer,
-      followMetalink,
-      followTorrent,
-      hideAppMenu,
-      keepSeeding,
-      keepWindowState,
-      locale,
-      maxConcurrentDownloads,
-      maxConnectionPerServer,
-      maxOverallDownloadLimit,
-      maxOverallUploadLimit,
-      newTaskShowDownloading,
-      noConfirmBeforeDeleteTask,
-      openAtLogin,
-      pauseMetadata,
-      resumeAllWhenAppLaunched,
-      runMode,
-      seedRatio,
-      seedTime,
-      showProgressBar,
-      taskNotification,
-      theme,
-      traySpeedometer
-    }
-    return result
+  const result = {
+    autoHideWindow,
+    btAutoDownloadContent,
+    btForceEncryption,
+    btSaveMetadata,
+    continue: config.continue,
+    dir,
+    engineMaxConnectionPerServer,
+    followMetalink,
+    followTorrent,
+    hideAppMenu,
+    keepSeeding,
+    keepWindowState,
+    locale,
+    maxConcurrentDownloads,
+    maxConnectionPerServer,
+    maxOverallDownloadLimit,
+    maxOverallUploadLimit,
+    newTaskShowDownloading,
+    noConfirmBeforeDeleteTask,
+    openAtLogin,
+    pauseMetadata,
+    resumeAllWhenAppLaunched,
+    runMode,
+    seedRatio,
+    seedTime,
+    showProgressBar,
+    taskNotification,
+    theme,
+    traySpeedometer
   }
+  return result
+}
 
-  export default {
-    name: 'mo-preference-basic',
-    components: {
-      [SubnavSwitcher.name]: SubnavSwitcher,
-      [HistoryDirectory.name]: HistoryDirectory,
-      [SelectDirectory.name]: SelectDirectory,
-      [ThemeSwitcher.name]: ThemeSwitcher
+export default {
+  name: 'mo-preference-basic',
+  components: {
+    [SubnavSwitcher.name]: SubnavSwitcher,
+    [HistoryDirectory.name]: HistoryDirectory,
+    [SelectDirectory.name]: SelectDirectory,
+    [ThemeSwitcher.name]: ThemeSwitcher
+  },
+  data () {
+    const { locale } = this.$store.state.preference.config
+    const formOriginal = initForm(this.$store.state.preference.config)
+    let form = {}
+    form = initForm(extend(form, formOriginal, changedConfig.basic))
+
+    return {
+      form,
+      formLabelWidth: calcFormLabelWidth(locale),
+      formOriginal,
+      locales: availableLanguages,
+      rules: {}
+    }
+  },
+  computed: {
+    isRenderer: () => is.renderer(),
+    isMac: () => is.macOS(),
+    isMas: () => is.mas(),
+    isLinux () { return is.linux() },
+    title () {
+      return this.$t('preferences.basic')
     },
-    data () {
-      const { locale } = this.$store.state.preference.config
-      const formOriginal = initForm(this.$store.state.preference.config)
-      let form = {}
-      form = initForm(extend(form, formOriginal, changedConfig.basic))
-
-      return {
-        form,
-        formLabelWidth: calcFormLabelWidth(locale),
-        formOriginal,
-        locales: availableLanguages,
-        rules: {}
+    maxConcurrentDownloads () {
+      return ENGINE_MAX_CONCURRENT_DOWNLOADS
+    },
+    maxOverallDownloadLimitParsed: {
+      get () {
+        return parseInt(this.form.maxOverallDownloadLimit)
+      },
+      set (value) {
+        const limit = value > 0 ? `${value}${this.downloadUnit}` : 0
+        this.form.maxOverallDownloadLimit = limit
       }
     },
-    computed: {
-      isRenderer: () => is.renderer(),
-      isMac: () => is.macOS(),
-      isMas: () => is.mas(),
-      isLinux () { return is.linux() },
-      title () {
-        return this.$t('preferences.basic')
+    maxOverallUploadLimitParsed: {
+      get () {
+        return parseInt(this.form.maxOverallUploadLimit)
       },
-      maxConcurrentDownloads () {
-        return ENGINE_MAX_CONCURRENT_DOWNLOADS
+      set (value) {
+        const limit = value > 0 ? `${value}${this.uploadUnit}` : 0
+        this.form.maxOverallUploadLimit = limit
+      }
+    },
+    downloadUnit: {
+      get () {
+        const { maxOverallDownloadLimit } = this.form
+        return extractSpeedUnit(maxOverallDownloadLimit)
       },
-      maxOverallDownloadLimitParsed: {
-        get () {
-          return parseInt(this.form.maxOverallDownloadLimit)
+      set (value) {
+        return value
+      }
+    },
+    uploadUnit: {
+      get () {
+        const { maxOverallUploadLimit } = this.form
+        return extractSpeedUnit(maxOverallUploadLimit)
+      },
+      set (value) {
+        return value
+      }
+    },
+    runModes () {
+      let result = [
+        {
+          label: this.$t('preferences.run-mode-standard'),
+          value: APP_RUN_MODE.STANDARD
         },
-        set (value) {
-          const limit = value > 0 ? `${value}${this.downloadUnit}` : 0
-          this.form.maxOverallDownloadLimit = limit
+        {
+          label: this.$t('preferences.run-mode-tray'),
+          value: APP_RUN_MODE.TRAY
         }
-      },
-      maxOverallUploadLimitParsed: {
-        get () {
-          return parseInt(this.form.maxOverallUploadLimit)
-        },
-        set (value) {
-          const limit = value > 0 ? `${value}${this.uploadUnit}` : 0
-          this.form.maxOverallUploadLimit = limit
-        }
-      },
-      downloadUnit: {
-        get () {
-          const { maxOverallDownloadLimit } = this.form
-          return extractSpeedUnit(maxOverallDownloadLimit)
-        },
-        set (value) {
-          return value
-        }
-      },
-      uploadUnit: {
-        get () {
-          const { maxOverallUploadLimit } = this.form
-          return extractSpeedUnit(maxOverallUploadLimit)
-        },
-        set (value) {
-          return value
-        }
-      },
-      runModes () {
-        let result = [
-          {
-            label: this.$t('preferences.run-mode-standard'),
-            value: APP_RUN_MODE.STANDARD
-          },
-          {
-            label: this.$t('preferences.run-mode-tray'),
-            value: APP_RUN_MODE.TRAY
-          }
-        ]
+      ]
 
-        if (this.isMac) {
-          result = [
-            ...result,
-            {
-              label: this.$t('preferences.run-mode-hide-tray'),
-              value: APP_RUN_MODE.HIDE_TRAY
-            }
-          ]
-        }
+      if (this.isMac) {
+        result = [
+          ...result,
+          {
+            label: this.$t('preferences.run-mode-hide-tray'),
+            value: APP_RUN_MODE.HIDE_TRAY
+          }
+        ]
+      }
 
-        return result
-      },
-      speedUnits () {
-        return [
-          {
-            label: 'KB/s',
-            value: 'K'
-          },
-          {
-            label: 'MB/s',
-            value: 'M'
-          }
-        ]
-      },
-      subnavs () {
-        return [
-          {
-            key: 'basic',
-            title: this.$t('preferences.basic'),
-            route: '/preference/basic'
-          },
-          {
-            key: 'advanced',
-            title: this.$t('preferences.advanced'),
-            route: '/preference/advanced'
-          }
-        ]
-      },
-      showHideAppMenuOption () {
-        return is.windows() || is.linux()
-      },
-      rpcDefaultPort () {
-        return ENGINE_RPC_PORT
-      },
-      ...mapState('preference', {
-        config: state => state.config
+      return result
+    },
+    speedUnits () {
+      return [
+        {
+          label: 'KB/s',
+          value: 'K'
+        },
+        {
+          label: 'MB/s',
+          value: 'M'
+        }
+      ]
+    },
+    subnavs () {
+      return [
+        {
+          key: 'basic',
+          title: this.$t('preferences.basic'),
+          route: '/preference/basic'
+        },
+        {
+          key: 'advanced',
+          title: this.$t('preferences.advanced'),
+          route: '/preference/advanced'
+        }
+      ]
+    },
+    showHideAppMenuOption () {
+      return is.windows() || is.linux()
+    },
+    rpcDefaultPort () {
+      return ENGINE_RPC_PORT
+    },
+    ...mapState('preference', {
+      config: state => state.config
+    })
+  },
+  methods: {
+    nav (category = 'basic') {
+      this.$router.push({
+        path: `/preference/${category}`
+      }).catch(err => {
+        console.log(err)
       })
     },
-    methods: {
-      nav (category = 'basic') {
-        this.$router.push({
-          path: `/preference/${category}`
-        }).catch(err => {
-          console.log(err)
-        })
-      },
-      handleLocaleChange (locale) {
-        const lng = getLanguage(locale)
-        getLocaleManager().changeLanguage(lng)
-      },
-      handleThemeChange (theme) {
-        this.form.theme = theme
-      },
-      handleDownloadChange (value) {
-        const speedLimit = parseInt(this.form.maxOverallDownloadLimit, 10)
-        this.downloadUnit = value
-        const limit = speedLimit > 0 ? `${speedLimit}${value}` : 0
-        this.form.maxOverallDownloadLimit = limit
-      },
-      handleUploadChange (value) {
-        const speedLimit = parseInt(this.form.maxOverallUploadLimit, 10)
-        this.uploadUnit = value
-        const limit = speedLimit > 0 ? `${speedLimit}${value}` : 0
-        this.form.maxOverallUploadLimit = limit
-      },
-      onKeepSeedingChange (enable) {
-        this.form.seedRatio = enable ? 0 : 1
-        this.form.seedTime = enable ? 525600 : 60
-      },
-      handleHistoryDirectorySelected (dir) {
-        this.form.dir = dir
-      },
-      handleNativeDirectorySelected (dir) {
-        this.form.dir = dir
-        this.$store.dispatch('preference/recordHistoryDirectory', dir)
-      },
-      onDirectorySelected (dir) {
-        this.form.dir = dir
-      },
-      syncFormConfig () {
-        this.$store.dispatch('preference/fetchPreference')
-          .then((config) => {
-            this.form = initForm(config)
-            this.formOriginal = cloneDeep(this.form)
-          })
-      },
-      submitForm (formName) {
-        this.$refs[formName].validate((valid) => {
-          if (!valid) {
-            console.error('[imFile] preference form valid:', valid)
-            return false
-          }
-
-          const data = {
-            ...diffConfig(this.formOriginal, this.form),
-            ...changedConfig.advanced
-          }
-
-          const {
-            autoHideWindow,
-            btAutoDownloadContent,
-            btTracker,
-            rpcListenPort
-          } = data
-
-          if ('btAutoDownloadContent' in data) {
-            data.followTorrent = btAutoDownloadContent
-            data.followMetalink = btAutoDownloadContent
-            data.pauseMetadata = !btAutoDownloadContent
-          }
-
-          if (btTracker) {
-            data.btTracker = reduceTrackerString(convertLineToComma(btTracker))
-          }
-
-          if (rpcListenPort === EMPTY_STRING) {
-            data.rpcListenPort = this.rpcDefaultPort
-          }
-
-          console.log('[imFile] preference changed data:', data)
-
-          this.$store.dispatch('preference/save', data)
-            .then(() => {
-              this.$store.dispatch('app/fetchEngineOptions')
-              this.syncFormConfig()
-              this.$msg.success(this.$t('preferences.save-success-message'))
-            })
-            .catch(() => {
-              this.$msg.success(this.$t('preferences.save-fail-message'))
-            })
-
-          changedConfig.basic = {}
-          changedConfig.advanced = {}
-
-          if (this.isRenderer) {
-            if ('autoHideWindow' in data) {
-              this.$electron.ipcRenderer.send('command',
-                                              'application:auto-hide-window', autoHideWindow)
-            }
-
-            if (checkIsNeedRestart(data)) {
-              this.$electron.ipcRenderer.send('command', 'application:relaunch')
-            }
-          }
-        })
-      },
-      resetForm (formName) {
-        this.syncFormConfig()
-      }
+    handleLocaleChange (locale) {
+      const lng = getLanguage(locale)
+      getLocaleManager().changeLanguage(lng)
     },
-    beforeRouteLeave (to, from, next) {
-      changedConfig.basic = diffConfig(this.formOriginal, this.form)
-      if (to.path === '/preference/advanced') {
+    handleThemeChange (theme) {
+      this.form.theme = theme
+    },
+    handleDownloadChange (value) {
+      const speedLimit = parseInt(this.form.maxOverallDownloadLimit, 10)
+      this.downloadUnit = value
+      const limit = speedLimit > 0 ? `${speedLimit}${value}` : 0
+      this.form.maxOverallDownloadLimit = limit
+    },
+    handleUploadChange (value) {
+      const speedLimit = parseInt(this.form.maxOverallUploadLimit, 10)
+      this.uploadUnit = value
+      const limit = speedLimit > 0 ? `${speedLimit}${value}` : 0
+      this.form.maxOverallUploadLimit = limit
+    },
+    onKeepSeedingChange (enable) {
+      this.form.seedRatio = enable ? 0 : 1
+      this.form.seedTime = enable ? 525600 : 60
+    },
+    handleHistoryDirectorySelected (dir) {
+      this.form.dir = dir
+    },
+    handleNativeDirectorySelected (dir) {
+      this.form.dir = dir
+      this.$store.dispatch('preference/recordHistoryDirectory', dir)
+    },
+    onDirectorySelected (dir) {
+      this.form.dir = dir
+    },
+    syncFormConfig () {
+      this.$store.dispatch('preference/fetchPreference')
+        .then((config) => {
+          this.form = initForm(config)
+          this.formOriginal = cloneDeep(this.form)
+        })
+    },
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (!valid) {
+          console.error('[imFile] preference form valid:', valid)
+          return false
+        }
+
+        const data = {
+          ...diffConfig(this.formOriginal, this.form),
+          ...changedConfig.advanced
+        }
+
+        const {
+          autoHideWindow,
+          btAutoDownloadContent,
+          btTracker,
+          rpcListenPort
+        } = data
+
+        if ('btAutoDownloadContent' in data) {
+          data.followTorrent = btAutoDownloadContent
+          data.followMetalink = btAutoDownloadContent
+          data.pauseMetadata = !btAutoDownloadContent
+        }
+
+        if (btTracker) {
+          data.btTracker = reduceTrackerString(convertLineToComma(btTracker))
+        }
+
+        if (rpcListenPort === EMPTY_STRING) {
+          data.rpcListenPort = this.rpcDefaultPort
+        }
+
+        console.log('[imFile] preference changed data:', data)
+
+        this.$store.dispatch('preference/save', data)
+          .then(() => {
+            this.$store.dispatch('app/fetchEngineOptions')
+            this.syncFormConfig()
+            this.$msg.success(this.$t('preferences.save-success-message'))
+          })
+          .catch(() => {
+            this.$msg.success(this.$t('preferences.save-fail-message'))
+          })
+
+        changedConfig.basic = {}
+        changedConfig.advanced = {}
+
+        if (this.isRenderer) {
+          if ('autoHideWindow' in data) {
+            this.$electron.ipcRenderer.send('command',
+              'application:auto-hide-window', autoHideWindow)
+          }
+
+          if (checkIsNeedRestart(data)) {
+            this.$electron.ipcRenderer.send('command', 'application:relaunch')
+          }
+        }
+      })
+    },
+    resetForm (formName) {
+      this.syncFormConfig()
+    }
+  },
+  beforeRouteLeave (to, from, next) {
+    changedConfig.basic = diffConfig(this.formOriginal, this.form)
+    if (to.path === '/preference/advanced') {
+      next()
+    } else {
+      if (isEmpty(changedConfig.basic) && isEmpty(changedConfig.advanced)) {
         next()
       } else {
-        if (isEmpty(changedConfig.basic) && isEmpty(changedConfig.advanced)) {
-          next()
-        } else {
-          dialog.showMessageBox({
-            type: 'warning',
-            title: this.$t('preferences.not-saved'),
-            message: this.$t('preferences.not-saved-confirm'),
-            buttons: [this.$t('app.yes'), this.$t('app.no')],
-            cancelId: 1
-          }).then(({ response }) => {
-            if (response === 0) {
-              changedConfig.basic = {}
-              changedConfig.advanced = {}
-              next()
-            }
-          })
-        }
+        dialog.showMessageBox({
+          type: 'warning',
+          title: this.$t('preferences.not-saved'),
+          message: this.$t('preferences.not-saved-confirm'),
+          buttons: [this.$t('app.yes'), this.$t('app.no')],
+          cancelId: 1
+        }).then(({ response }) => {
+          if (response === 0) {
+            changedConfig.basic = {}
+            changedConfig.advanced = {}
+            next()
+          }
+        })
       }
     }
   }
+}
 </script>

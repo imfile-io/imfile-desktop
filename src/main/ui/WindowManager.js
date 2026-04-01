@@ -21,14 +21,14 @@ const baseBrowserOptions = {
 // fix: BrowserWindow rendering bug under linux
 const defaultBrowserOptions = is.macOS()
   ? {
-    ...baseBrowserOptions,
-    vibrancy: 'ultra-dark',
-    visualEffectState: 'active',
-    backgroundColor: '#00000000'
-  }
+      ...baseBrowserOptions,
+      vibrancy: 'ultra-dark',
+      visualEffectState: 'active',
+      backgroundColor: '#00000000'
+    }
   : {
-    ...baseBrowserOptions
-  }
+      ...baseBrowserOptions
+    }
 
 export default class WindowManager extends EventEmitter {
   constructor (options = {}) {

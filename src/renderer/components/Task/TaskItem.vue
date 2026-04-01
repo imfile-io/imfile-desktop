@@ -2,7 +2,7 @@
   <div :key="task.taskKey" class="task-item" v-on:dblclick="onDbClick">
     <el-row type="flex">
       <el-col :span="2">
-        <div class="flex items-center justify-center h-full"><el-checkbox :value="selectedTaskKeyList.includes(task.taskKey)"></el-checkbox></div>
+        <div class="flex items-center justify-center h-full"><el-checkbox :model-value="selectedTaskKeyList.includes(task.taskKey)"></el-checkbox></div>
       </el-col>
       <el-col :span="22">
         <el-row>
@@ -16,9 +16,9 @@
               v-if="task.completedLength > 0 || task.totalLength > 0"
               class="task-progress-num"
             >
-              <span>{{ task.completedLength | bytesToSize(2) }}</span>
+              <span>{{ bytesToSize(task.completedLength, 2) }}</span>
               <span v-if="task.totalLength > 0">
-                / {{ task.totalLength | bytesToSize(2) }}</span
+                / {{ bytesToSize(task.totalLength, 2) }}</span
               >
             </div>
           </el-col>
@@ -40,80 +40,80 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
-  import { bytesToSize, checkTaskIsSeeder, getTaskName } from '@shared/utils'
-  import { TASK_STATUS } from '@shared/constants'
-  import { openItem, getTaskFullPath } from '@/utils/native'
-  import TaskItemActions from './TaskItemActions'
-  import TaskProgress from './TaskProgress'
-  import TaskProgressInfo from './TaskProgressInfo'
+import { mapState } from 'vuex'
+import { bytesToSize, checkTaskIsSeeder, getTaskName } from '@shared/utils'
+import { TASK_STATUS } from '@shared/constants'
+import { openItem, getTaskFullPath } from '@/utils/native'
+import TaskItemActions from './TaskItemActions'
+import TaskProgress from './TaskProgress'
+import TaskProgressInfo from './TaskProgressInfo'
 
-  export default {
-    name: 'mo-task-item',
-    components: {
-      [TaskItemActions.name]: TaskItemActions,
-      [TaskProgress.name]: TaskProgress,
-      [TaskProgressInfo.name]: TaskProgressInfo
+export default {
+  name: 'mo-task-item',
+  components: {
+    [TaskItemActions.name]: TaskItemActions,
+    [TaskProgress.name]: TaskProgress,
+    [TaskProgressInfo.name]: TaskProgressInfo
+  },
+  props: {
+    task: {
+      type: Object
+    }
+  },
+  computed: {
+    ...mapState('task', {
+      selectedTaskKeyList: state => state.selectedTaskKeyList
+    }),
+    taskFullName () {
+      return getTaskName(this.task, {
+        defaultName: this.$t('task.get-task-name'),
+        maxLen: -1
+      })
     },
-    props: {
-      task: {
-        type: Object
+    taskName () {
+      return getTaskName(this.task, {
+        defaultName: this.$t('task.get-task-name')
+      })
+    },
+    isSeeder () {
+      return checkTaskIsSeeder(this.task)
+    },
+    taskStatus () {
+      const { task, isSeeder } = this
+      if (isSeeder) {
+        return TASK_STATUS.SEEDING
+      } else {
+        return task.status
+      }
+    }
+  },
+  methods: {
+    bytesToSize (v, p) {
+      return bytesToSize(v, p)
+    },
+    onDbClick () {
+      const { status } = this.task
+      const { COMPLETE, WAITING, PAUSED } = TASK_STATUS
+      if (status === COMPLETE) {
+        this.openTask()
+      } else if ([WAITING, PAUSED].includes(status) !== -1) {
+        this.toggleTask()
       }
     },
-    computed: {
-      ...mapState('task', {
-        selectedTaskKeyList: state => state.selectedTaskKeyList
-      }),
-      taskFullName () {
-        return getTaskName(this.task, {
-          defaultName: this.$t('task.get-task-name'),
-          maxLen: -1
-        })
-      },
-      taskName () {
-        return getTaskName(this.task, {
-          defaultName: this.$t('task.get-task-name')
-        })
-      },
-      isSeeder () {
-        return checkTaskIsSeeder(this.task)
-      },
-      taskStatus () {
-        const { task, isSeeder } = this
-        if (isSeeder) {
-          return TASK_STATUS.SEEDING
-        } else {
-          return task.status
-        }
+    async openTask () {
+      const { taskName } = this
+      this.$msg.info(this.$t('task.opening-task-message', { taskName }))
+      const fullPath = getTaskFullPath(this.task)
+      const result = await openItem(fullPath)
+      if (result) {
+        this.$msg.error(this.$t('task.file-not-exist'))
       }
     },
-    methods: {
-      onDbClick () {
-        const { status } = this.task
-        const { COMPLETE, WAITING, PAUSED } = TASK_STATUS
-        if (status === COMPLETE) {
-          this.openTask()
-        } else if ([WAITING, PAUSED].includes(status) !== -1) {
-          this.toggleTask()
-        }
-      },
-      async openTask () {
-        const { taskName } = this
-        this.$msg.info(this.$t('task.opening-task-message', { taskName }))
-        const fullPath = getTaskFullPath(this.task)
-        const result = await openItem(fullPath)
-        if (result) {
-          this.$msg.error(this.$t('task.file-not-exist'))
-        }
-      },
-      toggleTask () {
-        this.$store.dispatch('task/toggleTask', this.task)
-      }
-    },
-    filters: {
-      bytesToSize
+    toggleTask () {
+      this.$store.dispatch('task/toggleTask', this.task)
     }
   }
+}
 </script>
 
 <style lang="scss">

@@ -1,7 +1,7 @@
 import { access, constants } from 'node:fs'
 import { resolve } from 'node:path'
 import { shell, nativeTheme } from '@electron/remote'
-import { Message } from 'element-ui'
+import { ElMessage as Message } from 'element-plus'
 
 import {
   getFileNameFromFile,

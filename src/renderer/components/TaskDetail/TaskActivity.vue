@@ -33,17 +33,17 @@
     </el-form-item>
     <el-form-item>
       <div class="form-static-value">
-        <span>{{ task.completedLength | bytesToSize(2) }}</span>
-        <span v-if="task.totalLength > 0"> / {{ task.totalLength | bytesToSize(2) }}</span>
+        <span>{{ bytesToSize(task.completedLength, 2) }}</span>
+        <span v-if="task.totalLength > 0"> / {{ bytesToSize(task.totalLength, 2) }}</span>
         <span class="task-time-remaining" v-if="isActive && remaining > 0">
           {{
-            remaining | timeFormat({
+            timeFormat(remaining, {
               prefix: $t('task.remaining-prefix'),
               i18n: {
-                'gt1d': $t('app.gt1d'),
-                'hour': $t('app.hour'),
-                'minute': $t('app.minute'),
-                'second': $t('app.second')
+                gt1d: $t('app.gt1d'),
+                hour: $t('app.hour'),
+                minute: $t('app.minute'),
+                second: $t('app.second')
               }
             })
           }}
@@ -62,17 +62,17 @@
     </el-form-item>
     <el-form-item :label="`${$t('task.task-download-speed')}: `">
       <div class="form-static-value">
-        <span>{{ task.downloadSpeed | bytesToSize }}/s</span>
+        <span>{{ bytesToSize(task.downloadSpeed) }}/s</span>
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-upload-speed')}: `" v-if="isBT">
       <div class="form-static-value">
-        <span>{{ task.uploadSpeed | bytesToSize }}/s</span>
+        <span>{{ bytesToSize(task.uploadSpeed) }}/s</span>
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-upload-length')}: `" v-if="isBT">
       <div class="form-static-value">
-        <span>{{ task.uploadLength | bytesToSize }}</span>
+        <span>{{ bytesToSize(task.uploadLength) }}</span>
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-ratio')}: `" v-if="isBT">
@@ -84,127 +84,125 @@
 </template>
 
 <script>
-  import is from 'electron-is'
-  import {
+import is from 'electron-is'
+import {
+  bytesToSize,
+  calcFormLabelWidth,
+  calcProgress,
+  calcRatio,
+  checkTaskIsBT,
+  checkTaskIsSeeder,
+  timeFormat,
+  timeRemaining
+} from '@shared/utils'
+import { TASK_STATUS } from '@shared/constants'
+import TaskGraphic from '@/components/TaskGraphic/Index'
+import TaskProgress from '@/components/Task/TaskProgress'
+
+export default {
+  name: 'mo-task-activity',
+  components: {
+    [TaskGraphic.name]: TaskGraphic,
+    [TaskProgress.name]: TaskProgress
+  },
+  props: {
+    gid: {
+      type: String
+    },
+    task: {
+      type: Object
+    },
+    files: {
+      type: Array,
+      default: function () {
+        return []
+      }
+    },
+    peers: {
+      type: Array,
+      default: function () {
+        return []
+      }
+    },
+    visible: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data () {
+    const { locale } = this.$store.state.preference.config
+    return {
+      form: {},
+      formLabelWidth: calcFormLabelWidth(locale),
+      locale,
+      graphicWidth: 0
+    }
+  },
+  computed: {
+    isRenderer: () => is.renderer(),
+    isBT () {
+      return checkTaskIsBT(this.task)
+    },
+    isSeeder () {
+      return checkTaskIsSeeder(this.task)
+    },
+    taskStatus () {
+      const { task, isSeeder } = this
+      if (isSeeder) {
+        return TASK_STATUS.SEEDING
+      } else {
+        return task.status
+      }
+    },
+    isActive () {
+      return this.taskStatus === TASK_STATUS.ACTIVE
+    },
+    percent () {
+      const { totalLength, completedLength } = this.task
+      const percent = calcProgress(totalLength, completedLength)
+      return `${percent}%`
+    },
+    remaining () {
+      const { totalLength, completedLength, downloadSpeed } = this.task
+      return timeRemaining(totalLength, completedLength, downloadSpeed)
+    },
+    ratio () {
+      if (!this.isBT) {
+        return 0
+      }
+
+      const { totalLength, uploadLength } = this.task
+      const ratio = calcRatio(totalLength, uploadLength)
+      return ratio
+    }
+  },
+  mounted () {
+    setImmediate(() => {
+      this.updateGraphicWidth()
+    })
+  },
+  methods: {
     bytesToSize,
-    calcFormLabelWidth,
-    calcProgress,
-    calcRatio,
-    checkTaskIsBT,
-    checkTaskIsSeeder,
     timeFormat,
-    timeRemaining
-  } from '@shared/utils'
-  import { TASK_STATUS } from '@shared/constants'
-  import TaskGraphic from '@/components/TaskGraphic/Index'
-  import TaskProgress from '@/components/Task/TaskProgress'
+    updateGraphicWidth () {
+      if (!this.$refs.graphicBox) {
+        return
+      }
+      this.graphicWidth = this.calcInnerWidth(this.$refs.graphicBox)
+    },
+    calcInnerWidth (ele) {
+      if (!ele) {
+        return 0
+      }
 
-  export default {
-    name: 'mo-task-activity',
-    components: {
-      [TaskGraphic.name]: TaskGraphic,
-      [TaskProgress.name]: TaskProgress
-    },
-    props: {
-      gid: {
-        type: String
-      },
-      task: {
-        type: Object
-      },
-      files: {
-        type: Array,
-        default: function () {
-          return []
-        }
-      },
-      peers: {
-        type: Array,
-        default: function () {
-          return []
-        }
-      },
-      visible: {
-        type: Boolean,
-        default: false
-      }
-    },
-    data () {
-      const { locale } = this.$store.state.preference.config
-      return {
-        form: {},
-        formLabelWidth: calcFormLabelWidth(locale),
-        locale,
-        graphicWidth: 0
-      }
-    },
-    computed: {
-      isRenderer: () => is.renderer(),
-      isBT () {
-        return checkTaskIsBT(this.task)
-      },
-      isSeeder () {
-        return checkTaskIsSeeder(this.task)
-      },
-      taskStatus () {
-        const { task, isSeeder } = this
-        if (isSeeder) {
-          return TASK_STATUS.SEEDING
-        } else {
-          return task.status
-        }
-      },
-      isActive () {
-        return this.taskStatus === TASK_STATUS.ACTIVE
-      },
-      percent () {
-        const { totalLength, completedLength } = this.task
-        const percent = calcProgress(totalLength, completedLength)
-        return `${percent}%`
-      },
-      remaining () {
-        const { totalLength, completedLength, downloadSpeed } = this.task
-        return timeRemaining(totalLength, completedLength, downloadSpeed)
-      },
-      ratio () {
-        if (!this.isBT) {
-          return 0
-        }
-
-        const { totalLength, uploadLength } = this.task
-        const ratio = calcRatio(totalLength, uploadLength)
-        return ratio
-      }
-    },
-    filters: {
-      bytesToSize,
-      timeFormat
-    },
-    mounted () {
-      setImmediate(() => {
-        this.updateGraphicWidth()
-      })
-    },
-    methods: {
-      updateGraphicWidth () {
-        if (!this.$refs.graphicBox) {
-          return
-        }
-        this.graphicWidth = this.calcInnerWidth(this.$refs.graphicBox)
-      },
-      calcInnerWidth (ele) {
-        if (!ele) {
-          return 0
-        }
-
-        const style = getComputedStyle(ele, null)
-        const width = parseInt(style.width, 10)
-        const paddingLeft = parseInt(style.paddingLeft, 10)
-        const paddingRight = parseInt(style.paddingRight, 10)
-        return width - paddingLeft - paddingRight
-      }
+      const style = getComputedStyle(ele, null)
+      const width = parseInt(style.width, 10)
+      const paddingLeft = parseInt(style.paddingLeft, 10)
+      const paddingRight = parseInt(style.paddingRight, 10)
+      return width - paddingLeft - paddingRight
     }
   }
+}
 </script>
 
 <style lang="scss">

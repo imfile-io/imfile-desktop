@@ -1,4 +1,4 @@
-image: Visual Studio 2017
+image: Visual Studio 2022
 
 platform:
   - x64
@@ -7,17 +7,20 @@ cache:
   - node_modules
   - '%USERPROFILE%\.electron'
 
+environment:
+  nodejs_version: "24"
+
 init:
   - git config --global core.autocrlf input
 
 install:
-  - ps: Install-Product node 12.14.1 x64
-  - git reset --hard HEAD
-  - npm install
+  - ps: Install-Product node $env:nodejs_version
+  - npm install -g pnpm@9
+  - pnpm install --frozen-lockfile
   - node --version
 
 build_script:
-  - npm run release
+  - pnpm run release
 
 test: off
 

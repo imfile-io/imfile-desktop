@@ -18,11 +18,13 @@
     </el-form-item>
     <el-form-item :label="`${$t('task.task-dir')} `">
       <el-input placeholder="" readonly v-model="path">
-        <mo-show-in-folder
-          slot="append"
+        <template v-slot:append>
+<mo-show-in-folder
+
           v-if="isRenderer"
           :path="path"
         />
+</template>
       </el-input>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-status')} `">
@@ -58,7 +60,7 @@
     </el-form-item>
     <el-form-item :label="`${$t('task.task-piece-length')} `" v-if="isBT">
       <div class="form-static-value">
-        {{ task.pieceLength | bytesToSize }}
+        {{ bytesToSize(task.pieceLength) }}
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-num-pieces')} `" v-if="isBT">
@@ -68,7 +70,7 @@
     </el-form-item>
     <el-form-item :label="`${$t('task.task-bittorrent-creation-date')} `" v-if="isBT">
       <div class="form-static-value">
-        {{ task.bittorrent.creationDate | localeDateTimeFormat(locale) }}
+        {{ localeDateTimeFormat(task.bittorrent.creationDate, locale) }}
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-bittorrent-comment')} `" v-if="isBT">
@@ -80,103 +82,101 @@
 </template>
 
 <script>
-  import is from 'electron-is'
-  import { mapState } from 'vuex'
-  import {
-    bytesToSize,
-    calcFormLabelWidth,
-    checkTaskIsBT,
-    checkTaskIsSeeder,
-    getTaskName,
-    getTaskUri,
-    localeDateTimeFormat
-  } from '@shared/utils'
-  import { APP_THEME, TASK_STATUS } from '@shared/constants'
-  import { getTaskFullPath } from '@/utils/native'
-  import ShowInFolder from '@/components/Native/ShowInFolder'
-  import TaskStatus from '@/components/Task/TaskStatus'
-  import '@/components/Icons/folder'
-  import '@/components/Icons/link'
+import is from 'electron-is'
+import { mapState } from 'vuex'
+import {
+  bytesToSize,
+  calcFormLabelWidth,
+  checkTaskIsBT,
+  checkTaskIsSeeder,
+  getTaskName,
+  getTaskUri,
+  localeDateTimeFormat
+} from '@shared/utils'
+import { APP_THEME, TASK_STATUS } from '@shared/constants'
+import { getTaskFullPath } from '@/utils/native'
+import ShowInFolder from '@/components/Native/ShowInFolder'
+import TaskStatus from '@/components/Task/TaskStatus'
+import '@/components/Icons/folder'
+import '@/components/Icons/link'
 
-  export default {
-    name: 'mo-task-general',
-    components: {
-      [ShowInFolder.name]: ShowInFolder,
-      [TaskStatus.name]: TaskStatus
-    },
-    props: {
-      task: {
-        type: Object
+export default {
+  name: 'mo-task-general',
+  components: {
+    [ShowInFolder.name]: ShowInFolder,
+    [TaskStatus.name]: TaskStatus
+  },
+  props: {
+    task: {
+      type: Object
+    }
+  },
+  data () {
+    const { locale } = this.$store.state.preference.config
+    return {
+      form: {},
+      formLabelWidth: calcFormLabelWidth(locale),
+      locale
+    }
+  },
+  computed: {
+    isRenderer: () => is.renderer(),
+    ...mapState('app', {
+      systemTheme: state => state.systemTheme
+    }),
+    ...mapState('preference', {
+      theme: state => state.config.theme
+    }),
+    currentTheme () {
+      if (this.theme === APP_THEME.AUTO) {
+        return this.systemTheme
+      } else {
+        return this.theme
       }
     },
-    data () {
-      const { locale } = this.$store.state.preference.config
-      return {
-        form: {},
-        formLabelWidth: calcFormLabelWidth(locale),
-        locale
+    taskFullName () {
+      return getTaskName(this.task, {
+        defaultName: this.$t('task.get-task-name'),
+        maxLen: -1
+      })
+    },
+    taskName () {
+      return getTaskName(this.task, {
+        defaultName: this.$t('task.get-task-name'),
+        maxLen: 32
+      })
+    },
+    isSeeder () {
+      return checkTaskIsSeeder(this.task)
+    },
+    taskStatus () {
+      const { task, isSeeder } = this
+      if (isSeeder) {
+        return TASK_STATUS.SEEDING
+      } else {
+        return task.status
       }
     },
-    computed: {
-      isRenderer: () => is.renderer(),
-      ...mapState('app', {
-        systemTheme: state => state.systemTheme
-      }),
-      ...mapState('preference', {
-        theme: state => state.config.theme
-      }),
-      currentTheme () {
-        if (this.theme === APP_THEME.AUTO) {
-          return this.systemTheme
-        } else {
-          return this.theme
-        }
-      },
-      taskFullName () {
-        return getTaskName(this.task, {
-          defaultName: this.$t('task.get-task-name'),
-          maxLen: -1
+    path () {
+      return getTaskFullPath(this.task)
+    },
+    isBT () {
+      return checkTaskIsBT(this.task)
+    }
+  },
+  methods: {
+    bytesToSize,
+    localeDateTimeFormat,
+    handleCopyClick () {
+      const { task } = this
+      const uri = getTaskUri(task)
+      navigator.clipboard.writeText(uri)
+        .then(() => {
+          this.$msg.success(this.$t('task.copy-link-success'))
         })
-      },
-      taskName () {
-        return getTaskName(this.task, {
-          defaultName: this.$t('task.get-task-name'),
-          maxLen: 32
-        })
-      },
-      isSeeder () {
-        return checkTaskIsSeeder(this.task)
-      },
-      taskStatus () {
-        const { task, isSeeder } = this
-        if (isSeeder) {
-          return TASK_STATUS.SEEDING
-        } else {
-          return task.status
-        }
-      },
-      path () {
-        return getTaskFullPath(this.task)
-      },
-      isBT () {
-        return checkTaskIsBT(this.task)
-      }
-    },
-    filters: {
-      bytesToSize,
-      localeDateTimeFormat
-    },
-    methods: {
-      handleCopyClick () {
-        const { task } = this
-        const uri = getTaskUri(task)
-        navigator.clipboard.writeText(uri)
-          .then(() => {
-            this.$msg.success(this.$t('task.copy-link-success'))
-          })
-      }
     }
   }
+}
 </script>
 
 <style lang="scss">

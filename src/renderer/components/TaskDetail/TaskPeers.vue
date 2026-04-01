@@ -10,39 +10,39 @@
         <el-table-column
           :label="`${$t('task.task-peer-host')}: `"
           min-width="140">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             {{ `${scope.row.ip}:${scope.row.port}` }}
           </template>
         </el-table-column>
         <el-table-column
           :label="`${$t('task.task-peer-client')}: `"
           min-width="125">
-          <template slot-scope="scope">
-            {{ scope.row.peerId | peerIdParser }}
+          <template v-slot="scope">
+            {{ peerIdParser(scope.row.peerId) }}
           </template>
         </el-table-column>
         <el-table-column
           :label="`%`"
           align="right"
           width="55">
-          <template slot-scope="scope">
-            {{ scope.row.bitfield | bitfieldToPercent }}%
+          <template v-slot="scope">
+            {{ bitfieldToPercent(scope.row.bitfield) }}%
           </template>
         </el-table-column>
         <el-table-column
           :label="`↑`"
           align="right"
           width="90">
-          <template slot-scope="scope">
-            {{ scope.row.uploadSpeed | bytesToSize }}/s
+          <template v-slot="scope">
+            {{ bytesToSize(scope.row.uploadSpeed) }}/s
           </template>
         </el-table-column>
         <el-table-column
           :label="`↓`"
           align="right"
           width="90">
-          <template slot-scope="scope">
-            {{ scope.row.downloadSpeed | bytesToSize }}/s
+          <template v-slot="scope">
+            {{ bytesToSize(scope.row.downloadSpeed) }}/s
           </template>
         </el-table-column>
       </el-table>
@@ -51,28 +51,28 @@
 </template>
 
 <script>
-  import {
+import {
+  bitfieldToPercent,
+  bytesToSize,
+  peerIdParser
+} from '@shared/utils'
+
+export default {
+  name: 'mo-task-peers',
+  methods: {
     bitfieldToPercent,
     bytesToSize,
     peerIdParser
-  } from '@shared/utils'
-
-  export default {
-    name: 'mo-task-peers',
-    filters: {
-      bitfieldToPercent,
-      bytesToSize,
-      peerIdParser
-    },
-    props: {
-      peers: {
-        type: Array,
-        default: function () {
-          return []
-        }
+  },
+  props: {
+    peers: {
+      type: Array,
+      default: function () {
+        return []
       }
     }
   }
+}
 </script>
 
 <style lang="scss">

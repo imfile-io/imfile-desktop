@@ -14,17 +14,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: yarn
+          cache: pnpm
 
       - name: Install dependencies
-        run: yarn install --network-timeout 100000
+        run: pnpm install --frozen-lockfile
 
       - name: Build application (webpack)
-        run: yarn build:github
+        run: pnpm run build:github
 
       # 构建失败时上面一步已非零退出；此处再断言关键产物，避免「空目录也通过」的误判。
       - name: 验证构建产物

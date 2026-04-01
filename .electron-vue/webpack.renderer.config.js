@@ -5,6 +5,9 @@ process.env.BABEL_ENV = 'renderer'
 const path = require('node:path')
 const Webpack = require('webpack')
 const { VueLoaderPlugin } = require('vue-loader')
+const Components = require('unplugin-vue-components/webpack')
+const AutoImport = require('unplugin-auto-import/webpack')
+const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin')
@@ -52,9 +55,7 @@ let rendererConfig = {
               additionalData: '@import "@/components/Theme/Variables.scss";',
               sassOptions: {
                 includePaths: [__dirname, 'src'],
-                // element-ui theme-chalk 等依赖在较新 Sass 下会触发 function-units 等弃用提示
                 quietDeps: true,
-                // $-- 变量在 @use 模块下会被视为「私有」，与 Element 主题不兼容；在迁移到 @use/@forward 前抑制 @import 弃用
                 silenceDeprecations: ['import']
               }
             },
@@ -108,17 +109,7 @@ let rendererConfig = {
       },
       {
         test: /\.vue$/,
-        use: {
-          loader: 'vue-loader',
-          options: {
-            extractCSS: process.env.NODE_ENV === 'production',
-            loaders: {
-              sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1&api=modern',
-              scss: 'vue-style-loader!css-loader!sass-loader?api=modern',
-              less: 'vue-style-loader!css-loader!less-loader'
-            }
-          }
-        }
+        use: 'vue-loader'
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -139,7 +130,30 @@ let rendererConfig = {
     __filename: devMode
   },
   plugins: [
+    AutoImport({
+      resolvers: [
+        ElementPlusResolver({
+          importStyle: 'css'
+        })
+      ],
+      dts: false
+    }),
+    Components({
+      resolvers: [
+        ElementPlusResolver({
+          importStyle: 'css'
+        })
+      ],
+      dts: false
+    }),
     new VueLoaderPlugin(),
+    // vue.esm-bundler 需在构建期注入特性开关，否则运行时报 __VUE_PROD_DEVTOOLS__ 等未定义
+    // https://vuejs.org/api/compile-time-flags.html
+    new Webpack.DefinePlugin({
+      __VUE_OPTIONS_API__: JSON.stringify(true),
+      __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false)
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css'
@@ -161,10 +175,11 @@ let rendererConfig = {
         : false
     }),
     new Webpack.HotModuleReplacementPlugin(),
-    new Webpack.NoEmitOnErrorsPlugin(),
     new ESLintPlugin({
+      configType: 'flat',
+      context: path.join(__dirname, '..'),
       extensions: ['js', 'vue'],
-      formatter: require('eslint-friendly-formatter')
+      formatter: require('eslint-friendly-formatter/index.js')
     })
   ],
   output: {
@@ -178,12 +193,13 @@ let rendererConfig = {
     alias: {
       '@': path.join(__dirname, '../src/renderer'),
       '@shared': path.join(__dirname, '../src/shared'),
-      'vue$': 'vue/dist/vue.esm.js'
+      'vue$': 'vue/dist/vue.esm-bundler.js'
     },
     extensions: ['.js', '.vue', '.json', '.css', '.node']
   },
   target: 'electron-renderer',
   optimization: {
+    emitOnErrors: false,
     minimize: !devMode,
     minimizer: [
       new TerserPlugin({

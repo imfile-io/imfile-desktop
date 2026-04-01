@@ -16,39 +16,39 @@
 </template>
 
 <script>
-  import { getCurrentWindow } from '@electron/remote'
-  import '@/components/Icons/win-minimize'
-  import '@/components/Icons/win-maximize'
-  import '@/components/Icons/win-close'
+import { getCurrentWindow } from '@electron/remote'
+import '@/components/Icons/win-minimize'
+import '@/components/Icons/win-maximize'
+import '@/components/Icons/win-close'
 
-  export default {
-    name: 'mo-title-bar',
-    props: {
-      showActions: {
-        type: Boolean
+export default {
+  name: 'mo-title-bar',
+  props: {
+    showActions: {
+      type: Boolean
+    }
+  },
+  computed: {
+    win () {
+      return getCurrentWindow()
+    }
+  },
+  methods: {
+    handleMinimize () {
+      this.win.minimize()
+    },
+    handleMaximize () {
+      if (this.win.isMaximized()) {
+        this.win.unmaximize()
+      } else {
+        this.win.maximize()
       }
     },
-    computed: {
-      win () {
-        return getCurrentWindow()
-      }
-    },
-    methods: {
-      handleMinimize () {
-        this.win.minimize()
-      },
-      handleMaximize () {
-        if (this.win.isMaximized()) {
-          this.win.unmaximize()
-        } else {
-          this.win.maximize()
-        }
-      },
-      handleClose () {
-        this.win.close()
-      }
+    handleClose () {
+      this.win.close()
     }
   }
+}
 </script>
 
 <style lang="scss">
