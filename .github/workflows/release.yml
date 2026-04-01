@@ -19,7 +19,7 @@ jobs:
       - name: Set build version from tag
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          npm version "$VERSION" --no-git-tag-version
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
 
       - name: Cache node modules
         id: cache-npm
@@ -75,7 +75,7 @@ jobs:
       - name: Set build version from tag
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          npm version "$VERSION" --no-git-tag-version
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
 
       - name: Cache node modules
         id: cache-npm
@@ -125,7 +125,7 @@ jobs:
       - name: Set build version from tag
         run: |
           $version = $env:GITHUB_REF_NAME -replace '^v',''
-          npm version $version --no-git-tag-version
+          npm version $version --no-git-tag-version --allow-same-version
 
       - name: Cache node modules
         id: cache-npm
