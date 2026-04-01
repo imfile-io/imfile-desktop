@@ -40,9 +40,9 @@
               {{
                 $t('preferences.last-check-update-time') + ': ' +
                 (
-                  form.lastCheckUpdateTime !== 0 ?
-                    new Date(form.lastCheckUpdateTime).toLocaleString() :
-                    new Date().toLocaleString()
+                  form.lastCheckUpdateTime !== 0
+                    ? new Date(form.lastCheckUpdateTime).toLocaleString()
+                    : new Date().toLocaleString()
                 )
               }}
               <span class="action-link" @click.prevent="onCheckUpdateClick">
@@ -237,7 +237,7 @@
                 @change="onRpcListenPortChange"
               >
                 <template v-slot:append>
-<i  @click.prevent="onRpcPortDiceClick">
+<i @click.prevent="onRpcPortDiceClick">
                   <mo-icon name="dice" width="12" height="12" />
                 </i>
 </template>
@@ -260,7 +260,7 @@
                 v-model="form.rpcSecret"
               >
                 <template v-slot:append>
-<i  @click.prevent="onRpcSecretDiceClick">
+<i @click.prevent="onRpcSecretDiceClick">
                   <mo-icon name="dice" width="12" height="12" />
                 </i>
 </template>
@@ -307,7 +307,7 @@
                 v-model="form.listenPort"
               >
                 <template v-slot:append>
-<i  @click.prevent="onBtPortDiceClick">
+<i @click.prevent="onBtPortDiceClick">
                   <mo-icon name="dice" width="12" height="12" />
                 </i>
 </template>
@@ -329,7 +329,7 @@
                 v-model="form.dhtListenPort"
               >
                 <template v-slot:append>
-<i  @click.prevent="onDhtPortDiceClick">
+<i @click.prevent="onDhtPortDiceClick">
                   <mo-icon name="dice" width="12" height="12" />
                 </i>
 </template>
@@ -457,377 +457,377 @@
 </template>
 
 <script>
-  import is from 'electron-is'
-  import { dialog } from '@electron/remote'
-  import { mapState } from 'vuex'
-  import { cloneDeep, extend, isEmpty } from 'lodash'
-  import randomize from 'randomatic'
-  import ShowInFolder from '@/components/Native/ShowInFolder'
-  import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
-  import userAgentMap from '@shared/ua'
-  import {
-    EMPTY_STRING,
-    ENGINE_RPC_PORT,
-    LOG_LEVELS,
-    TRACKER_SOURCE_OPTIONS,
-    PROXY_SCOPE_OPTIONS
-  } from '@shared/constants'
-  import {
-    buildRpcUrl,
-    calcFormLabelWidth,
-    changedConfig,
-    checkIsNeedRestart,
-    convertCommaToLine,
-    convertLineToComma,
-    diffConfig,
-    generateRandomInt
-  } from '@shared/utils'
-  import { convertTrackerDataToLine, reduceTrackerString } from '@shared/utils/tracker'
-  import '@/components/Icons/dice'
-  import '@/components/Icons/sync'
-  import '@/components/Icons/refresh'
-  import { getLanguage } from '@shared/locales'
-  import { getLocaleManager } from '@/components/Locale'
+import is from 'electron-is'
+import { dialog } from '@electron/remote'
+import { mapState } from 'vuex'
+import { cloneDeep, extend, isEmpty } from 'lodash'
+import randomize from 'randomatic'
+import ShowInFolder from '@/components/Native/ShowInFolder'
+import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
+import userAgentMap from '@shared/ua'
+import {
+  EMPTY_STRING,
+  ENGINE_RPC_PORT,
+  LOG_LEVELS,
+  TRACKER_SOURCE_OPTIONS,
+  PROXY_SCOPE_OPTIONS
+} from '@shared/constants'
+import {
+  buildRpcUrl,
+  calcFormLabelWidth,
+  changedConfig,
+  checkIsNeedRestart,
+  convertCommaToLine,
+  convertLineToComma,
+  diffConfig,
+  generateRandomInt
+} from '@shared/utils'
+import { convertTrackerDataToLine, reduceTrackerString } from '@shared/utils/tracker'
+import '@/components/Icons/dice'
+import '@/components/Icons/sync'
+import '@/components/Icons/refresh'
+import { getLanguage } from '@shared/locales'
+import { getLocaleManager } from '@/components/Locale'
 
-  const initForm = (config) => {
-    const {
-      autoCheckUpdate,
-      autoSyncTracker,
-      btTracker,
-      dhtListenPort,
-      enableUpnp,
-      hideAppMenu,
-      lastCheckUpdateTime,
-      lastSyncTrackerTime,
-      listenPort,
-      logLevel,
-      protocols,
-      proxy,
-      rpcListenPort,
-      rpcSecret,
-      trackerSource,
-      useProxy,
-      userAgent
-    } = config
-    const result = {
-      autoCheckUpdate,
-      autoSyncTracker,
-      btTracker: convertCommaToLine(btTracker),
-      dhtListenPort,
-      enableUpnp,
-      hideAppMenu,
-      lastCheckUpdateTime,
-      lastSyncTrackerTime,
-      listenPort,
-      logLevel,
-      proxy: cloneDeep(proxy),
-      protocols: { ...protocols },
-      rpcListenPort,
-      rpcSecret,
-      trackerSource,
-      useProxy,
-      userAgent
-    }
-    return result
+const initForm = (config) => {
+  const {
+    autoCheckUpdate,
+    autoSyncTracker,
+    btTracker,
+    dhtListenPort,
+    enableUpnp,
+    hideAppMenu,
+    lastCheckUpdateTime,
+    lastSyncTrackerTime,
+    listenPort,
+    logLevel,
+    protocols,
+    proxy,
+    rpcListenPort,
+    rpcSecret,
+    trackerSource,
+    useProxy,
+    userAgent
+  } = config
+  const result = {
+    autoCheckUpdate,
+    autoSyncTracker,
+    btTracker: convertCommaToLine(btTracker),
+    dhtListenPort,
+    enableUpnp,
+    hideAppMenu,
+    lastCheckUpdateTime,
+    lastSyncTrackerTime,
+    listenPort,
+    logLevel,
+    proxy: cloneDeep(proxy),
+    protocols: { ...protocols },
+    rpcListenPort,
+    rpcSecret,
+    trackerSource,
+    useProxy,
+    userAgent
   }
+  return result
+}
 
-  export default {
-    name: 'mo-preference-advanced',
-    components: {
-      [SubnavSwitcher.name]: SubnavSwitcher,
-      [ShowInFolder.name]: ShowInFolder
-    },
-    data () {
-      const { locale } = this.$store.state.preference.config
-      const formOriginal = initForm(this.$store.state.preference.config)
-      let form = {}
-      form = initForm(extend(form, formOriginal, changedConfig.advanced))
+export default {
+  name: 'mo-preference-advanced',
+  components: {
+    [SubnavSwitcher.name]: SubnavSwitcher,
+    [ShowInFolder.name]: ShowInFolder
+  },
+  data () {
+    const { locale } = this.$store.state.preference.config
+    const formOriginal = initForm(this.$store.state.preference.config)
+    let form = {}
+    form = initForm(extend(form, formOriginal, changedConfig.advanced))
 
-      return {
-        form,
-        formLabelWidth: calcFormLabelWidth(locale),
-        formOriginal,
-        hideRpcSecret: true,
-        proxyScopeOptions: PROXY_SCOPE_OPTIONS,
-        rules: {},
-        trackerSourceOptions: TRACKER_SOURCE_OPTIONS,
-        trackerSyncing: false
-      }
+    return {
+      form,
+      formLabelWidth: calcFormLabelWidth(locale),
+      formOriginal,
+      hideRpcSecret: true,
+      proxyScopeOptions: PROXY_SCOPE_OPTIONS,
+      rules: {},
+      trackerSourceOptions: TRACKER_SOURCE_OPTIONS,
+      trackerSyncing: false
+    }
+  },
+  computed: {
+    isRenderer: () => is.renderer(),
+    title () {
+      return this.$t('preferences.advanced')
     },
-    computed: {
-      isRenderer: () => is.renderer(),
-      title () {
-        return this.$t('preferences.advanced')
-      },
-      subnavs () {
-        return [
-          {
-            key: 'basic',
-            title: this.$t('preferences.basic'),
-            route: '/preference/basic'
-          },
-          {
-            key: 'advanced',
-            title: this.$t('preferences.advanced'),
-            route: '/preference/advanced'
-          }
-        ]
-      },
-      rpcDefaultPort () {
-        return ENGINE_RPC_PORT
-      },
-      logLevels () {
-        return LOG_LEVELS
-      },
-      ...mapState('preference', {
-        config: state => state.config,
-        aria2ConfPath: state => state.config.aria2ConfPath,
-        logPath: state => state.config.logPath,
-        sessionPath: state => state.config.sessionPath
+    subnavs () {
+      return [
+        {
+          key: 'basic',
+          title: this.$t('preferences.basic'),
+          route: '/preference/basic'
+        },
+        {
+          key: 'advanced',
+          title: this.$t('preferences.advanced'),
+          route: '/preference/advanced'
+        }
+      ]
+    },
+    rpcDefaultPort () {
+      return ENGINE_RPC_PORT
+    },
+    logLevels () {
+      return LOG_LEVELS
+    },
+    ...mapState('preference', {
+      config: state => state.config,
+      aria2ConfPath: state => state.config.aria2ConfPath,
+      logPath: state => state.config.logPath,
+      sessionPath: state => state.config.sessionPath
+    })
+  },
+  watch: {
+    'form.rpcListenPort' (val) {
+      const url = buildRpcUrl({
+        port: this.form.rpcListenPort,
+        secret: val
+      })
+      navigator.clipboard.writeText(url)
+    },
+    'form.rpcSecret' (val) {
+      const url = buildRpcUrl({
+        port: this.form.rpcListenPort,
+        secret: val
+      })
+      navigator.clipboard.writeText(url)
+    }
+  },
+  methods: {
+    nav (category = 'basic') {
+      this.$router.push({
+        path: `/preference/${category}`
+      }).catch(err => {
+        console.log(err)
       })
     },
-    watch: {
-      'form.rpcListenPort' (val) {
-        const url = buildRpcUrl({
-          port: this.form.rpcListenPort,
-          secret: val
+    handleLocaleChange (locale) {
+      const lng = getLanguage(locale)
+      getLocaleManager().changeLanguage(lng)
+    },
+    onCheckUpdateClick () {
+      this.$electron.ipcRenderer.send('command', 'application:check-for-updates')
+      this.$msg.info(this.$t('app.checking-for-updates'))
+      this.$store.dispatch('preference/fetchPreference')
+        .then((config) => {
+          const { lastCheckUpdateTime } = config
+          this.form.lastCheckUpdateTime = lastCheckUpdateTime
         })
-        navigator.clipboard.writeText(url)
-      },
-      'form.rpcSecret' (val) {
-        const url = buildRpcUrl({
-          port: this.form.rpcListenPort,
-          secret: val
+    },
+    syncTrackerFromSource () {
+      this.trackerSyncing = true
+      const { trackerSource } = this.form
+      this.$store.dispatch('preference/fetchBtTracker', trackerSource)
+        .then((data) => {
+          const tracker = convertTrackerDataToLine(data)
+          this.form.lastSyncTrackerTime = Date.now()
+          this.form.btTracker = tracker
+          this.trackerSyncing = false
         })
-        navigator.clipboard.writeText(url)
+        .catch((_) => {
+          this.trackerSyncing = false
+        })
+    },
+    onProtocolsChange (protocol, enabled) {
+      const { protocols } = this.form
+      this.form.protocols = {
+        ...protocols,
+        [protocol]: enabled
       }
     },
-    methods: {
-      nav (category = 'basic') {
-        this.$router.push({
-          path: `/preference/${category}`
-        }).catch(err => {
-          console.log(err)
-        })
-      },
-      handleLocaleChange (locale) {
-        const lng = getLanguage(locale)
-        getLocaleManager().changeLanguage(lng)
-      },
-      onCheckUpdateClick () {
-        this.$electron.ipcRenderer.send('command', 'application:check-for-updates')
-        this.$msg.info(this.$t('app.checking-for-updates'))
-        this.$store.dispatch('preference/fetchPreference')
-          .then((config) => {
-            const { lastCheckUpdateTime } = config
-            this.form.lastCheckUpdateTime = lastCheckUpdateTime
-          })
-      },
-      syncTrackerFromSource () {
-        this.trackerSyncing = true
-        const { trackerSource } = this.form
-        this.$store.dispatch('preference/fetchBtTracker', trackerSource)
-          .then((data) => {
-            const tracker = convertTrackerDataToLine(data)
-            this.form.lastSyncTrackerTime = Date.now()
-            this.form.btTracker = tracker
-            this.trackerSyncing = false
-          })
-          .catch((_) => {
-            this.trackerSyncing = false
-          })
-      },
-      onProtocolsChange (protocol, enabled) {
-        const { protocols } = this.form
-        this.form.protocols = {
-          ...protocols,
-          [protocol]: enabled
-        }
-      },
-      onProxyEnableChange (enable) {
-        this.form.proxy = {
-          ...this.form.proxy,
-          enable
-        }
-      },
-      onProxyServerChange (server) {
-        this.form.proxy = {
-          ...this.form.proxy,
-          server
-        }
-      },
-      handleProxyBypassChange (bypass) {
-        this.form.proxy = {
-          ...this.form.proxy,
-          bypass: convertLineToComma(bypass)
-        }
-      },
-      onProxyScopeChange (scope) {
-        this.form.proxy = {
-          ...this.form.proxy,
-          scope: [...scope]
-        }
-      },
-      changeUA (type) {
-        const ua = userAgentMap[type]
-        if (!ua) {
-          return
-        }
-        this.form.userAgent = ua
-      },
-      onBtPortDiceClick () {
-        const port = generateRandomInt(20000, 24999)
-        this.form.listenPort = port
-      },
-      onDhtPortDiceClick () {
-        const port = generateRandomInt(25000, 29999)
-        this.form.dhtListenPort = port
-      },
-      onRpcListenPortChange (value) {
-        console.log('onRpcListenPortChange===>', value)
-        if (EMPTY_STRING === value) {
-          this.form.rpcListenPort = this.rpcDefaultPort
-        }
-      },
-      onRpcPortDiceClick () {
-        const port = generateRandomInt(ENGINE_RPC_PORT, 20000)
-        this.form.rpcListenPort = port
-      },
-      onRpcSecretDiceClick () {
-        this.hideRpcSecret = false
-        const rpcSecret = randomize('Aa0', 16)
-        this.form.rpcSecret = rpcSecret
+    onProxyEnableChange (enable) {
+      this.form.proxy = {
+        ...this.form.proxy,
+        enable
+      }
+    },
+    onProxyServerChange (server) {
+      this.form.proxy = {
+        ...this.form.proxy,
+        server
+      }
+    },
+    handleProxyBypassChange (bypass) {
+      this.form.proxy = {
+        ...this.form.proxy,
+        bypass: convertLineToComma(bypass)
+      }
+    },
+    onProxyScopeChange (scope) {
+      this.form.proxy = {
+        ...this.form.proxy,
+        scope: [...scope]
+      }
+    },
+    changeUA (type) {
+      const ua = userAgentMap[type]
+      if (!ua) {
+        return
+      }
+      this.form.userAgent = ua
+    },
+    onBtPortDiceClick () {
+      const port = generateRandomInt(20000, 24999)
+      this.form.listenPort = port
+    },
+    onDhtPortDiceClick () {
+      const port = generateRandomInt(25000, 29999)
+      this.form.dhtListenPort = port
+    },
+    onRpcListenPortChange (value) {
+      console.log('onRpcListenPortChange===>', value)
+      if (EMPTY_STRING === value) {
+        this.form.rpcListenPort = this.rpcDefaultPort
+      }
+    },
+    onRpcPortDiceClick () {
+      const port = generateRandomInt(ENGINE_RPC_PORT, 20000)
+      this.form.rpcListenPort = port
+    },
+    onRpcSecretDiceClick () {
+      this.hideRpcSecret = false
+      const rpcSecret = randomize('Aa0', 16)
+      this.form.rpcSecret = rpcSecret
 
-        setTimeout(() => {
-          this.hideRpcSecret = true
-        }, 2000)
-      },
-      onSessionResetClick () {
-        dialog.showMessageBox({
-          type: 'warning',
-          title: this.$t('preferences.session-reset'),
-          message: this.$t('preferences.session-reset-confirm'),
-          buttons: [this.$t('app.yes'), this.$t('app.no')],
-          cancelId: 1
-        }).then(({ response }) => {
-          if (response === 0) {
-            this.$store.dispatch('task/purgeTaskRecord')
-            this.$store.dispatch('task/pauseAllTask')
-              .then(() => {
-                this.$electron.ipcRenderer.send('command', 'application:reset-session')
-              })
-          }
-        })
-      },
-      onFactoryResetClick () {
-        dialog.showMessageBox({
-          type: 'warning',
-          title: this.$t('preferences.factory-reset'),
-          message: this.$t('preferences.factory-reset-confirm'),
-          buttons: [this.$t('app.yes'), this.$t('app.no')],
-          cancelId: 1
-        }).then(({ response }) => {
-          if (response === 0) {
-            this.$electron.ipcRenderer.send('command', 'application:factory-reset')
-          }
-        })
-      },
-      syncFormConfig () {
-        this.$store.dispatch('preference/fetchPreference')
-          .then((config) => {
-            this.form = initForm(config)
-            this.formOriginal = cloneDeep(this.form)
-          })
-      },
-      submitForm (formName) {
-        this.$refs[formName].validate((valid) => {
-          if (!valid) {
-            console.error('[imFile] preference form valid:', valid)
-            return false
-          }
-
-          const data = {
-            ...diffConfig(this.formOriginal, this.form),
-            ...changedConfig.basic
-          }
-
-          const {
-            autoHideWindow,
-            btAutoDownloadContent,
-            btTracker,
-            rpcListenPort
-          } = data
-
-          if ('btAutoDownloadContent' in data) {
-            data.followTorrent = btAutoDownloadContent
-            data.followMetalink = btAutoDownloadContent
-            data.pauseMetadata = !btAutoDownloadContent
-          }
-
-          if (btTracker) {
-            data.btTracker = reduceTrackerString(convertLineToComma(btTracker))
-          }
-
-          if (rpcListenPort === EMPTY_STRING) {
-            data.rpcListenPort = this.rpcDefaultPort
-          }
-
-          console.log('[imFile] preference changed data:', data)
-
-          this.$store.dispatch('preference/save', data)
+      setTimeout(() => {
+        this.hideRpcSecret = true
+      }, 2000)
+    },
+    onSessionResetClick () {
+      dialog.showMessageBox({
+        type: 'warning',
+        title: this.$t('preferences.session-reset'),
+        message: this.$t('preferences.session-reset-confirm'),
+        buttons: [this.$t('app.yes'), this.$t('app.no')],
+        cancelId: 1
+      }).then(({ response }) => {
+        if (response === 0) {
+          this.$store.dispatch('task/purgeTaskRecord')
+          this.$store.dispatch('task/pauseAllTask')
             .then(() => {
-              this.$store.dispatch('app/fetchEngineOptions')
-              this.syncFormConfig()
-              this.$msg.success(this.$t('preferences.save-success-message'))
+              this.$electron.ipcRenderer.send('command', 'application:reset-session')
             })
-            .catch((e) => {
-              this.$msg.success(this.$t('preferences.save-fail-message'))
-            })
-
-          changedConfig.basic = {}
-          changedConfig.advanced = {}
-
-          if (this.isRenderer) {
-            if ('autoHideWindow' in data) {
-              this.$electron.ipcRenderer.send('command',
-                                              'application:auto-hide-window', autoHideWindow)
-            }
-
-            if (checkIsNeedRestart(data)) {
-              this.$electron.ipcRenderer.send('command', 'application:relaunch')
-            }
-          }
-        })
-      },
-      resetForm (formName) {
-        this.syncFormConfig()
-      }
+        }
+      })
     },
-    beforeRouteLeave (to, from, next) {
-      changedConfig.advanced = diffConfig(this.formOriginal, this.form)
-      if (to.path === '/preference/basic') {
+    onFactoryResetClick () {
+      dialog.showMessageBox({
+        type: 'warning',
+        title: this.$t('preferences.factory-reset'),
+        message: this.$t('preferences.factory-reset-confirm'),
+        buttons: [this.$t('app.yes'), this.$t('app.no')],
+        cancelId: 1
+      }).then(({ response }) => {
+        if (response === 0) {
+          this.$electron.ipcRenderer.send('command', 'application:factory-reset')
+        }
+      })
+    },
+    syncFormConfig () {
+      this.$store.dispatch('preference/fetchPreference')
+        .then((config) => {
+          this.form = initForm(config)
+          this.formOriginal = cloneDeep(this.form)
+        })
+    },
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (!valid) {
+          console.error('[imFile] preference form valid:', valid)
+          return false
+        }
+
+        const data = {
+          ...diffConfig(this.formOriginal, this.form),
+          ...changedConfig.basic
+        }
+
+        const {
+          autoHideWindow,
+          btAutoDownloadContent,
+          btTracker,
+          rpcListenPort
+        } = data
+
+        if ('btAutoDownloadContent' in data) {
+          data.followTorrent = btAutoDownloadContent
+          data.followMetalink = btAutoDownloadContent
+          data.pauseMetadata = !btAutoDownloadContent
+        }
+
+        if (btTracker) {
+          data.btTracker = reduceTrackerString(convertLineToComma(btTracker))
+        }
+
+        if (rpcListenPort === EMPTY_STRING) {
+          data.rpcListenPort = this.rpcDefaultPort
+        }
+
+        console.log('[imFile] preference changed data:', data)
+
+        this.$store.dispatch('preference/save', data)
+          .then(() => {
+            this.$store.dispatch('app/fetchEngineOptions')
+            this.syncFormConfig()
+            this.$msg.success(this.$t('preferences.save-success-message'))
+          })
+          .catch((e) => {
+            this.$msg.success(this.$t('preferences.save-fail-message'))
+          })
+
+        changedConfig.basic = {}
+        changedConfig.advanced = {}
+
+        if (this.isRenderer) {
+          if ('autoHideWindow' in data) {
+            this.$electron.ipcRenderer.send('command',
+              'application:auto-hide-window', autoHideWindow)
+          }
+
+          if (checkIsNeedRestart(data)) {
+            this.$electron.ipcRenderer.send('command', 'application:relaunch')
+          }
+        }
+      })
+    },
+    resetForm (formName) {
+      this.syncFormConfig()
+    }
+  },
+  beforeRouteLeave (to, from, next) {
+    changedConfig.advanced = diffConfig(this.formOriginal, this.form)
+    if (to.path === '/preference/basic') {
+      next()
+    } else {
+      if (isEmpty(changedConfig.basic) && isEmpty(changedConfig.advanced)) {
         next()
       } else {
-        if (isEmpty(changedConfig.basic) && isEmpty(changedConfig.advanced)) {
-          next()
-        } else {
-          dialog.showMessageBox({
-            type: 'warning',
-            title: this.$t('preferences.not-saved'),
-            message: this.$t('preferences.not-saved-confirm'),
-            buttons: [this.$t('app.yes'), this.$t('app.no')],
-            cancelId: 1
-          }).then(({ response }) => {
-            if (response === 0) {
-              changedConfig.basic = {}
-              changedConfig.advanced = {}
-              next()
-            }
-          })
-        }
+        dialog.showMessageBox({
+          type: 'warning',
+          title: this.$t('preferences.not-saved'),
+          message: this.$t('preferences.not-saved-confirm'),
+          buttons: [this.$t('app.yes'), this.$t('app.no')],
+          cancelId: 1
+        }).then(({ response }) => {
+          if (response === 0) {
+            changedConfig.basic = {}
+            changedConfig.advanced = {}
+            next()
+          }
+        })
       }
     }
   }
+}
 </script>
 
 <style lang="scss">

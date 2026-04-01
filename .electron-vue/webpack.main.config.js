@@ -42,7 +42,9 @@ let mainConfig = {
   plugins: [
     new Webpack.NoEmitOnErrorsPlugin(),
     new ESLintPlugin({
-      formatter: require('eslint-friendly-formatter')
+      configType: 'flat',
+      context: path.join(__dirname, '..'),
+      formatter: require('eslint-friendly-formatter/index.js')
     })
   ],
   resolve: {

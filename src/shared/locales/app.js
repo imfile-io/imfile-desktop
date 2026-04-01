@@ -24,29 +24,29 @@ import appLocaleZhCN from '@shared/locales/zh-CN'
 import appLocaleZhTW from '@shared/locales/zh-TW'
 
 // Please keep the locale key in alphabetical order.
-/* eslint-disable quote-props */
+
 const resources = {
-  'ar': {
+  ar: {
     translation: {
       ...appLocaleAr
     }
   },
-  'bg': {
+  bg: {
     translation: {
       ...appLocaleBg
     }
   },
-  'ca': {
+  ca: {
     translation: {
       ...appLocaleCa
     }
   },
-  'de': {
+  de: {
     translation: {
       ...appLocaleDe
     }
   },
-  'el': {
+  el: {
     translation: {
       ...appLocaleEl
     }
@@ -56,47 +56,47 @@ const resources = {
       ...appLocaleEnUS
     }
   },
-  'fa': {
+  fa: {
     translation: {
       ...appLocaleFa
     }
   },
-  'fr': {
+  fr: {
     translation: {
       ...appLocaleFr
     }
   },
-  'hu': {
+  hu: {
     translation: {
       ...appLocaleHu
     }
   },
-  'id': {
+  id: {
     translation: {
       ...appLocaleId
     }
   },
-  'it': {
+  it: {
     translation: {
       ...appLocaleIt
     }
   },
-  'ja': {
+  ja: {
     translation: {
       ...appLocaleJa
     }
   },
-  'nl': {
+  nl: {
     translation: {
       ...appLocaleNl
     }
   },
-  'ko': {
+  ko: {
     translation: {
       ...appLocaleKo
     }
   },
-  'pl': {
+  pl: {
     translation: {
       ...appLocalePl
     }
@@ -106,32 +106,32 @@ const resources = {
       ...appLocalePtBR
     }
   },
-  'ro': {
+  ro: {
     translation: {
       ...appLocaleRo
     }
   },
-  'ru': {
+  ru: {
     translation: {
       ...appLocaleRu
     }
   },
-  'th': {
+  th: {
     translation: {
       ...appLocaleTh
     }
   },
-  'tr': {
+  tr: {
     translation: {
       ...appLocaleTr
     }
   },
-  'uk': {
+  uk: {
     translation: {
       ...appLocaleUk
     }
   },
-  'vi': {
+  vi: {
     translation: {
       ...appLocaleVi
     }
@@ -147,6 +147,5 @@ const resources = {
     }
   }
 }
-/* eslint-enable quote-props */
 
 export default resources

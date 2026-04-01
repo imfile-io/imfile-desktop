@@ -5,7 +5,7 @@
       <el-icon class="el-icon--right"><ArrowDown /></el-icon>
     </h4>
     <template v-slot:dropdown>
-<el-dropdown-menu  class="subnav-switch-dropdown">
+<el-dropdown-menu class="subnav-switch-dropdown">
       <el-dropdown-item :command="sn.route" v-for="sn in subnavs" :key="sn.key">
         {{ sn.title }}
       </el-dropdown-item>
@@ -15,31 +15,31 @@
 </template>
 
 <script>
-  import { ArrowDown } from '@element-plus/icons-vue'
+import { ArrowDown } from '@element-plus/icons-vue'
 
-  export default {
-    name: 'mo-subnav-switcher',
-    components: {
-      ArrowDown
+export default {
+  name: 'mo-subnav-switcher',
+  components: {
+    ArrowDown
+  },
+  props: {
+    title: {
+      type: String
     },
-    props: {
-      title: {
-        type: String
-      },
-      subnavs: {
-        type: Array
-      }
-    },
-    methods: {
-      handleRoute (route) {
-        this.$router.push({
-          path: route
-        }).catch(err => {
-          console.log(err)
-        })
-      }
+    subnavs: {
+      type: Array
+    }
+  },
+  methods: {
+    handleRoute (route) {
+      this.$router.push({
+        path: route
+      }).catch(err => {
+        console.log(err)
+      })
     }
   }
+}
 </script>
 
 <style lang='scss'>

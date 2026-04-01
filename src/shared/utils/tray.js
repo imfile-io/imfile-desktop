@@ -79,13 +79,13 @@ export const draw = async ({
 
 export const transferCanvasTo = (canvas, type) => {
   switch (type) {
-  case 'DATA_URL':
-    return canvas.toDataURL()
-  case 'BLOB':
-    return canvas.convertToBlob()
-  case 'BITMAP':
-    return canvas.transferToImageBitmap()
-  default:
-    return canvas.convertToBlob()
+    case 'DATA_URL':
+      return canvas.toDataURL()
+    case 'BLOB':
+      return canvas.convertToBlob()
+    case 'BITMAP':
+      return canvas.transferToImageBitmap()
+    default:
+      return canvas.convertToBlob()
   }
 }

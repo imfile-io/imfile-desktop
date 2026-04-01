@@ -153,8 +153,10 @@ let webConfig = {
     new Webpack.HotModuleReplacementPlugin(),
     new Webpack.NoEmitOnErrorsPlugin(),
     new ESLintPlugin({
+      configType: 'flat',
+      context: path.join(__dirname, '..'),
       extensions: ['js', 'vue'],
-      formatter: require('eslint-friendly-formatter')
+      formatter: require('eslint-friendly-formatter/index.js')
     })
   ],
   output: {

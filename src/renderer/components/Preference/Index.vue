@@ -8,12 +8,12 @@
 </template>
 
 <script>
-  export default {
-    name: 'mo-content-preference',
-    created () {
-      this.$store.dispatch('preference/fetchPreference')
-    }
+export default {
+  name: 'mo-content-preference',
+  created () {
+    this.$store.dispatch('preference/fetchPreference')
   }
+}
 </script>
 
 <style lang="scss">

@@ -44,99 +44,99 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
-  import { remote } from 'parse-torrent'
-  import TaskFiles from '@/components/TaskDetail/TaskFiles'
-  import '@/components/Icons/inbox'
-  import {
-    EMPTY_STRING,
-    NONE_SELECTED_FILES,
-    SELECTED_ALL_FILES
-  } from '@shared/constants'
-  import {
-    buildFileList,
-    listTorrentFiles,
-    getAsBase64
-  } from '@shared/utils'
+import { mapState } from 'vuex'
+import { remote } from 'parse-torrent'
+import TaskFiles from '@/components/TaskDetail/TaskFiles'
+import '@/components/Icons/inbox'
+import {
+  EMPTY_STRING,
+  NONE_SELECTED_FILES,
+  SELECTED_ALL_FILES
+} from '@shared/constants'
+import {
+  buildFileList,
+  listTorrentFiles,
+  getAsBase64
+} from '@shared/utils'
 
-  export default {
-    name: 'mo-select-torrent',
-    components: {
-      [TaskFiles.name]: TaskFiles
-    },
-    props: {
-    },
-    data () {
-      return {
-        name: EMPTY_STRING,
-        currentTorrent: EMPTY_STRING,
-        files: [],
-        selectedFiles: []
+export default {
+  name: 'mo-select-torrent',
+  components: {
+    [TaskFiles.name]: TaskFiles
+  },
+  props: {
+  },
+  data () {
+    return {
+      name: EMPTY_STRING,
+      currentTorrent: EMPTY_STRING,
+      files: [],
+      selectedFiles: []
+    }
+  },
+  computed: {
+    ...mapState('app', {
+      torrents: state => state.addTaskTorrents
+    }),
+    ...mapState('preference', {
+      config: state => state.config
+    }),
+    isTorrentsEmpty () {
+      return this.torrents.length === 0
+    }
+  },
+  watch: {
+    torrents (fileList) {
+      if (fileList.length === 0) {
+        this.reset()
+        return
       }
-    },
-    computed: {
-      ...mapState('app', {
-        torrents: state => state.addTaskTorrents
-      }),
-      ...mapState('preference', {
-        config: state => state.config
-      }),
-      isTorrentsEmpty () {
-        return this.torrents.length === 0
+
+      const file = fileList[0]
+      if (!file.raw) {
+        return
       }
-    },
-    watch: {
-      torrents (fileList) {
-        if (fileList.length === 0) {
-          this.reset()
-          return
-        }
 
-        const file = fileList[0]
-        if (!file.raw) {
-          return
-        }
+      remote(file.raw, { timeout: 60 * 1000 }, (err, parsedTorrent) => {
+        if (err) throw err
+        console.log('[imFile] parsed torrent: ', parsedTorrent)
+        this.files = listTorrentFiles(parsedTorrent.files)
+        this.$refs.torrentFileList.toggleAllSelection()
 
-        remote(file.raw, { timeout: 60 * 1000 }, (err, parsedTorrent) => {
-          if (err) throw err
-          console.log('[imFile] parsed torrent: ', parsedTorrent)
-          this.files = listTorrentFiles(parsedTorrent.files)
-          this.$refs.torrentFileList.toggleAllSelection()
-
-          getAsBase64(file.raw, (torrent) => {
-            this.name = file.name
-            this.currentTorrent = torrent
-            this.$emit('change', torrent, SELECTED_ALL_FILES)
-          })
+        getAsBase64(file.raw, (torrent) => {
+          this.name = file.name
+          this.currentTorrent = torrent
+          this.$emit('change', torrent, SELECTED_ALL_FILES)
         })
+      })
+    }
+  },
+  methods: {
+    reset () {
+      this.name = EMPTY_STRING
+      this.currentTorrent = EMPTY_STRING
+      this.files = []
+      if (this.$refs.torrentFileList) {
+        this.$refs.torrentFileList.clearSelection()
       }
+      this.$emit('change', EMPTY_STRING, NONE_SELECTED_FILES)
     },
-    methods: {
-      reset () {
-        this.name = EMPTY_STRING
-        this.currentTorrent = EMPTY_STRING
-        this.files = []
-        if (this.$refs.torrentFileList) {
-          this.$refs.torrentFileList.clearSelection()
-        }
-        this.$emit('change', EMPTY_STRING, NONE_SELECTED_FILES)
-      },
-      handleChange (file, fileList) {
-        this.$store.dispatch('app/addTaskAddTorrents', { fileList })
-      },
-      handleExceed (files) {
-        const fileList = buildFileList(files[0])
-        this.$store.dispatch('app/addTaskAddTorrents', { fileList })
-      },
-      handleTrashClick () {
-        this.$store.dispatch('app/addTaskAddTorrents', { fileList: [] })
-      },
-      handleSelectionChange (val) {
-        const { currentTorrent } = this
-        this.$emit('change', currentTorrent, val)
-      }
+    handleChange (file, fileList) {
+      this.$store.dispatch('app/addTaskAddTorrents', { fileList })
+    },
+    handleExceed (files) {
+      const fileList = buildFileList(files[0])
+      this.$store.dispatch('app/addTaskAddTorrents', { fileList })
+    },
+    handleTrashClick () {
+      this.$store.dispatch('app/addTaskAddTorrents', { fileList: [] })
+    },
+    handleSelectionChange (val) {
+      const { currentTorrent } = this
+      this.$emit('change', currentTorrent, val)
     }
   }
+}
 </script>
 
 <style lang="scss">

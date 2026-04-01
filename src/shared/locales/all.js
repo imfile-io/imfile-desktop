@@ -53,33 +53,33 @@ import appLocaleZhCN from '@shared/locales/zh-CN'
 import appLocaleZhTW from '@shared/locales/zh-TW'
 
 // Please keep the locale key in alphabetical order.
-/* eslint-disable quote-props */
+
 const resources = {
-  'ar': {
+  ar: {
     translation: {
       el: epAr.el,
       ...appLocaleAr
     }
   },
-  'bg': {
+  bg: {
     translation: {
       el: epBg.el,
       ...appLocaleBg
     }
   },
-  'ca': {
+  ca: {
     translation: {
       el: epCa.el,
       ...appLocaleCa
     }
   },
-  'de': {
+  de: {
     translation: {
       el: epDe.el,
       ...appLocaleDe
     }
   },
-  'el': {
+  el: {
     translation: {
       el: epEl.el,
       ...appLocaleEl
@@ -91,67 +91,67 @@ const resources = {
       ...appLocaleEnUS
     }
   },
-  'es': {
+  es: {
     translation: {
       el: epEs.el,
       ...appLocaleEs
     }
   },
-  'fa': {
+  fa: {
     translation: {
       el: epFa.el,
       ...appLocaleFa
     }
   },
-  'fr': {
+  fr: {
     translation: {
       el: epFr.el,
       ...appLocaleFr
     }
   },
-  'hu': {
+  hu: {
     translation: {
       el: epHu.el,
       ...appLocaleHu
     }
   },
-  'id': {
+  id: {
     translation: {
       el: epId.el,
       ...appLocaleId
     }
   },
-  'it': {
+  it: {
     translation: {
       el: epIt.el,
       ...applocaleIt
     }
   },
-  'ja': {
+  ja: {
     translation: {
       el: epJa.el,
       ...appLocaleJa
     }
   },
-  'ko': {
+  ko: {
     translation: {
       el: epKo.el,
       ...appLocaleKo
     }
   },
-  'nb': {
+  nb: {
     translation: {
       el: epNbNo.el,
       ...appLocaleNb
     }
   },
-  'nl': {
+  nl: {
     translation: {
       el: epNl.el,
       ...appLocaleNl
     }
   },
-  'pl': {
+  pl: {
     translation: {
       el: epPl.el,
       ...appLocalePl
@@ -163,37 +163,37 @@ const resources = {
       ...appLocalePtBR
     }
   },
-  'ro': {
+  ro: {
     translation: {
       el: epRo.el,
       ...appLocaleRo
     }
   },
-  'ru': {
+  ru: {
     translation: {
       el: epRu.el,
       ...appLocaleRu
     }
   },
-  'th': {
+  th: {
     translation: {
       el: epTh.el,
       ...appLocaleTh
     }
   },
-  'tr': {
+  tr: {
     translation: {
       el: epTr.el,
       ...appLocaleTr
     }
   },
-  'uk': {
+  uk: {
     translation: {
       el: epUk.el,
       ...appLocaleUk
     }
   },
-  'vi': {
+  vi: {
     translation: {
       el: epVi.el,
       ...appLocaleVi
@@ -212,6 +212,5 @@ const resources = {
     }
   }
 }
-/* eslint-enable quote-props */
 
 export default resources

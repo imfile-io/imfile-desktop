@@ -12,6 +12,10 @@ thumbs.db
 .npmrc
 npm-debug.log.*
 
+# 仅使用 pnpm，勿提交其他包管理器锁文件
+package-lock.json
+yarn.lock
+
 # Eslint Cache
 .eslintcache*
 

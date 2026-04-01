@@ -8,52 +8,52 @@
     @closed="handleClosed">
     <mo-app-info :version="version" :engine="engineInfo" />
     <template v-slot:footer>
-<mo-copyright  />
+<mo-copyright />
 </template>
   </el-dialog>
 </template>
 
 <script>
-  import { mapState } from 'vuex'
-  import AppInfo from '@/components/About/AppInfo'
-  import Copyright from '@/components/About/Copyright'
-  import { app } from '@electron/remote'
+import { mapState } from 'vuex'
+import AppInfo from '@/components/About/AppInfo'
+import Copyright from '@/components/About/Copyright'
+import { app } from '@electron/remote'
 
-  export default {
-    name: 'mo-about-panel',
-    components: {
-      [AppInfo.name]: AppInfo,
-      [Copyright.name]: Copyright
+export default {
+  name: 'mo-about-panel',
+  components: {
+    [AppInfo.name]: AppInfo,
+    [Copyright.name]: Copyright
+  },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data () {
+    const version = app.getVersion()
+    return {
+      version
+    }
+  },
+  computed: {
+    ...mapState('app', {
+      engineInfo: state => state.engineInfo
+    })
+  },
+  methods: {
+    handleOpen () {
+      this.$store.dispatch('app/fetchEngineInfo')
     },
-    props: {
-      visible: {
-        type: Boolean,
-        default: false
-      }
+    handleClose (done) {
+      this.$store.dispatch('app/hideAboutPanel')
+      done()
     },
-    data () {
-      const version = app.getVersion()
-      return {
-        version
-      }
-    },
-    computed: {
-      ...mapState('app', {
-        engineInfo: state => state.engineInfo
-      })
-    },
-    methods: {
-      handleOpen () {
-        this.$store.dispatch('app/fetchEngineInfo')
-      },
-      handleClose (done) {
-        this.$store.dispatch('app/hideAboutPanel')
-        done()
-      },
-      handleClosed () {
-      }
+    handleClosed () {
     }
   }
+}
 </script>
 
 <style lang="scss">

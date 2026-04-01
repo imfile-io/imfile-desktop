@@ -62,91 +62,91 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
+import { mapState } from 'vuex'
 
-  import { commands } from '@/components/CommandManager/instance'
-  import { ADD_TASK_TYPE } from '@shared/constants'
-  import '@/components/Icons/menu-add'
-  import '@/components/Icons/refresh'
-  import '@/components/Icons/task-start-line'
-  import '@/components/Icons/task-pause-line'
-  import '@/components/Icons/search'
-  import '@/components/Icons/delete'
-  import '@/components/Icons/purge'
-  import '@/components/Icons/more'
-  import '@/components/Icons/task-add'
+import { commands } from '@/components/CommandManager/instance'
+import { ADD_TASK_TYPE } from '@shared/constants'
+import '@/components/Icons/menu-add'
+import '@/components/Icons/refresh'
+import '@/components/Icons/task-start-line'
+import '@/components/Icons/task-pause-line'
+import '@/components/Icons/search'
+import '@/components/Icons/delete'
+import '@/components/Icons/purge'
+import '@/components/Icons/more'
+import '@/components/Icons/task-add'
 
-  export default {
-    name: 'mo-task-actions',
-    components: {
-    },
-    props: ['task'],
-    data () {
-      return {
-        refreshing: false
-      }
-    },
-    computed: {
-      ...mapState('task', {
-        currentList: state => state.currentList,
-        selectedTaskKeyListCount: state => state.selectedTaskKeyList.length
-      })
-    },
-    methods: {
-      refreshSpin () {
-        this.t && clearTimeout(this.t)
+export default {
+  name: 'mo-task-actions',
+  components: {
+  },
+  props: ['task'],
+  data () {
+    return {
+      refreshing: false
+    }
+  },
+  computed: {
+    ...mapState('task', {
+      currentList: state => state.currentList,
+      selectedTaskKeyListCount: state => state.selectedTaskKeyList.length
+    })
+  },
+  methods: {
+    refreshSpin () {
+      this.t && clearTimeout(this.t)
 
-        this.refreshing = true
-        this.t = setTimeout(() => {
-          this.refreshing = false
-        }, 500)
-      },
-      onBatchDeleteClick (event) {
-        const deleteWithFiles = !!event.shiftKey
-        commands.emit('batch-delete-task', { deleteWithFiles })
-      },
-      onRefreshClick () {
-        this.refreshSpin()
-        this.$store.dispatch('task/fetchList')
-      },
-      onResumeAllClick () {
-        this.$store.dispatch('task/resumeAllTask')
-          .then(() => {
-            // this.$msg.success(this.$t('task.resume-all-task-success'))
-          })
-          .catch(({ code }) => {
-            if (code === 1) {
-              this.$msg.error(this.$t('task.resume-all-task-fail'))
-            }
-          })
-      },
-      onPauseAllClick () {
-        this.$store.dispatch('task/pauseAllTask')
-          .then(() => {
-            // this.$msg.success(this.$t('task.pause-all-task-success'))
-          })
-          .catch(({ code }) => {
-            if (code === 1) {
-              this.$msg.error(this.$t('task.pause-all-task-fail'))
-            }
-          })
-      },
-      onPurgeRecordClick () {
-        this.$store.dispatch('task/purgeTaskRecord')
-          .then(() => {
-            this.$msg.success(this.$t('task.purge-record-success'))
-          })
-          .catch(({ code }) => {
-            if (code === 1) {
-              this.$msg.error(this.$t('task.purge-record-fail'))
-            }
-          })
-      },
-      onAddClick () {
-        this.$store.dispatch('app/showAddTaskDialog', ADD_TASK_TYPE.URI)
-      }
+      this.refreshing = true
+      this.t = setTimeout(() => {
+        this.refreshing = false
+      }, 500)
+    },
+    onBatchDeleteClick (event) {
+      const deleteWithFiles = !!event.shiftKey
+      commands.emit('batch-delete-task', { deleteWithFiles })
+    },
+    onRefreshClick () {
+      this.refreshSpin()
+      this.$store.dispatch('task/fetchList')
+    },
+    onResumeAllClick () {
+      this.$store.dispatch('task/resumeAllTask')
+        .then(() => {
+          // this.$msg.success(this.$t('task.resume-all-task-success'))
+        })
+        .catch(({ code }) => {
+          if (code === 1) {
+            this.$msg.error(this.$t('task.resume-all-task-fail'))
+          }
+        })
+    },
+    onPauseAllClick () {
+      this.$store.dispatch('task/pauseAllTask')
+        .then(() => {
+          // this.$msg.success(this.$t('task.pause-all-task-success'))
+        })
+        .catch(({ code }) => {
+          if (code === 1) {
+            this.$msg.error(this.$t('task.pause-all-task-fail'))
+          }
+        })
+    },
+    onPurgeRecordClick () {
+      this.$store.dispatch('task/purgeTaskRecord')
+        .then(() => {
+          this.$msg.success(this.$t('task.purge-record-success'))
+        })
+        .catch(({ code }) => {
+          if (code === 1) {
+            this.$msg.error(this.$t('task.purge-record-fail'))
+          }
+        })
+    },
+    onAddClick () {
+      this.$store.dispatch('app/showAddTaskDialog', ADD_TASK_TYPE.URI)
     }
   }
+}
 </script>
 
 <style lang="scss">

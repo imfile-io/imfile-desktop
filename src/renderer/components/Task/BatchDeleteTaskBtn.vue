@@ -10,18 +10,18 @@
 </template>
 
 <script>
-  import { commands } from '@/components/CommandManager/instance'
-  export default {
-    name: 'mo-batch-delete-task-btn',
-    data () {
-      return {}
-    },
-    computed: {},
-    methods: {
-      onBatchDeleteClick (event) {
-        const deleteWithFiles = !!event.shiftKey
-        commands.emit('batch-delete-task', { deleteWithFiles })
-      }
+import { commands } from '@/components/CommandManager/instance'
+export default {
+  name: 'mo-batch-delete-task-btn',
+  data () {
+    return {}
+  },
+  computed: {},
+  methods: {
+    onBatchDeleteClick (event) {
+      const deleteWithFiles = !!event.shiftKey
+      commands.emit('batch-delete-task', { deleteWithFiles })
     }
   }
+}
 </script>
