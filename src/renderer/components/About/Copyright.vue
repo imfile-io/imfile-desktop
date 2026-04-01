@@ -1,21 +1,21 @@
 <template>
   <el-row class="copyright">
     <el-col :span="6" class="copyright-left">
-      <a target="_blank" rel="noopener noreferrer" href="https://imfile.io/">
+      <a target="_blank" rel="noopener noreferrer" href="https://imfile.org/">
         &copy;{{ year }} imFile
       </a>
     </el-col>
     <!-- <el-col :span="18" class="copyright-right">
-      <a target="_blank" rel="noopener noreferrer" href="https://imfile.io/license">
+      <a target="_blank" rel="noopener noreferrer" href="https://imfile.org/license">
         {{ $t('about.license') }}
       </a>
-      <a target="_blank" rel="noopener noreferrer" href="https://imfile.io/about">
+      <a target="_blank" rel="noopener noreferrer" href="https://imfile.org/about">
         {{ $t('about.about') }}
       </a>
-      <a target="_blank" rel="noopener noreferrer" href="https://imfile.io/support">
+      <a target="_blank" rel="noopener noreferrer" href="https://imfile.org/support">
         {{ $t('about.support') }}
       </a>
-      <a target="_blank" rel="noopener noreferrer" href="https://imfile.io/release">
+      <a target="_blank" rel="noopener noreferrer" href="https://imfile.org/release">
         {{ $t('about.release') }}
       </a>
     </el-col> -->

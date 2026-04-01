@@ -1,7 +1,7 @@
 # imFile
 
 <p>
-  <a href="https://imfile.io/">
+  <a href="https://imfile.org/">
     <img src="./static/512x512.png" width="256" alt="Motrix App Icon" />
   </a>
 </p>
@@ -18,7 +18,7 @@ imFile is a full-featured download manager that supports downloading HTTP, FTP, 
 
 imFile has a clean and easy to use interface. I hope you will like it 👻.
 
-✈️ [Official Website](https://imfile.io/) | 📖 [Manual](https://github.com/imfile-io/imfile-desktop/wiki)
+✈️ [Official Website](https://imfile.org/) | 📖 [Manual](https://github.com/imfile-io/imfile-desktop/wiki)
 
 ## 💽 Installation
 

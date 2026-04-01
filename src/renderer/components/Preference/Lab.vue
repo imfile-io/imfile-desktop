@@ -55,7 +55,7 @@
       },
       url () {
         const { currentTheme, locale } = this
-        const result = `https://imfile.io/lab?lite=true&theme=${currentTheme}&lang=${locale}`
+        const result = `https://imfile.org/lab?lite=true&theme=${currentTheme}&lang=${locale}`
         return result
       },
       title () {

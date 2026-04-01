@@ -1,7 +1,7 @@
 # imFile
 
 <p>
-  <a href="https://imfile.io/">
+  <a href="https://imfile.org/">
     <img src="./static/512x512.png" width="256" alt="Motrix App Icon" />
   </a>
 </p>
@@ -16,11 +16,11 @@
 
 imFile 是一款全能的下载工具，支持下载 HTTP、FTP、BT、磁力链等资源。它的界面简洁易用，希望大家喜欢 👻。
 
-✈️ 去 [官网](https://imfile.io/) 逛逛 
+
 
 ## 💽 安装稳定版
 
-[GitHub](https://github.com/imfile-io/imfile-desktop/releases) 和 [官网](https://imfile.io/) 提供了已经编译好的稳定版安装包，当然你也可以自己克隆代码编译打包。
+[GitHub](https://github.com/imfile-io/imfile-desktop/releases) 和 [官网](https://imfile.org/) 提供了已经编译好的稳定版安装包，当然你也可以自己克隆代码编译打包。
 
 ### Windows
 

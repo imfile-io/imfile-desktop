@@ -891,22 +891,22 @@ export default class Application extends EventEmitter {
     })
 
     this.on('help:official-website', () => {
-      const url = 'https://imfile.io/'
+      const url = 'https://imfile.org/'
       this.openExternal(url)
     })
 
     // this.on('help:manual', () => {
-    //   const url = 'https://imfile.io/manual'
+    //   const url = 'https://imfile.org/manual'
     //   this.openExternal(url)
     // })
 
     // this.on('help:release-notes', () => {
-    //   const url = 'https://imfile.io/release'
+    //   const url = 'https://imfile.org/release'
     //   this.openExternal(url)
     // })
 
     // this.on('help:report-problem', () => {
-    //   const url = 'https://imfile.io/report'
+    //   const url = 'https://imfile.org/report'
     //   this.openExternal(url)
     // })
   }
