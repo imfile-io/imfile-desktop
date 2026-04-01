@@ -147,6 +147,13 @@ let rendererConfig = {
       dts: false
     }),
     new VueLoaderPlugin(),
+    // vue.esm-bundler 需在构建期注入特性开关，否则运行时报 __VUE_PROD_DEVTOOLS__ 等未定义
+    // https://vuejs.org/api/compile-time-flags.html
+    new Webpack.DefinePlugin({
+      __VUE_OPTIONS_API__: JSON.stringify(true),
+      __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false)
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css'
