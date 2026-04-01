@@ -1182,9 +1182,9 @@
     to-fast-properties "^2.0.0"
 
 "@bany/curl-to-json@^1.2.7":
-  version "1.2.8"
-  resolved "https://registry.npmjs.org/@bany/curl-to-json/-/curl-to-json-1.2.8.tgz"
-  integrity sha512-hPt9KUM2sGZ5Ojx3O9utjzUgjRZI3CZPAlLf+cRY9EUzVs7tWt1OpA0bhEUTX2PEEkOeyZ6sC0tAQMOHh9ld+Q==
+  version "1.2.10"
+  resolved "https://registry.yarnpkg.com/@bany/curl-to-json/-/curl-to-json-1.2.10.tgz#36c3f684a2fcaa33080c74da542241d84265ade3"
+  integrity sha512-Hhc5O6gsTQOy1wpzO0gtM9w79/MQT571lI1Kkjd2aF77DG9uzp8v0n0DOhuLBTYIxO/DREV78U3v1vu9Q96ofA==
   dependencies:
     minimist "^1.2.8"
 
