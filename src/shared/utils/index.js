@@ -265,11 +265,12 @@ const resolveGoed2kdTaskName = (task) => {
     raw.link ||
     ''
   const fromLink = parseEd2kFileName(link)
+  // 顺序：服务端文件名优先，其次从 ed2k 链接解析；勿把 task.name（常为 hash 占位）放在 fromLink 之前
   return (
-    task.name ||
     task.file_name ||
     task.file_path ||
     fromLink ||
+    task.name ||
     task.hash ||
     task.id ||
     ''

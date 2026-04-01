@@ -42,13 +42,17 @@ function startRenderer () {
     rendererConfig.mode = 'development'
 
     const compiler = Webpack(rendererConfig)
+    // 勿把仓库根目录设为 static：对 GET /index.html 会先找磁盘上的 ./index.html（不存在），
+    // 直接 404，无法落到 HtmlWebpackPlugin 的内存页面。仅需公开 static/ 时用 publicPath 限定前缀。
     const devServerOptions = {
       ...rendererConfig.devServer,
       port: 9080,
       static: {
-        directory: path.resolve(__dirname, "../"),
-      },
-    };
+        directory: path.resolve(__dirname, '../static'),
+        publicPath: '/static',
+        watch: true
+      }
+    }
 
     const server = new WebpackDevServer(devServerOptions, compiler)
     await server.start()
