@@ -41,7 +41,7 @@ jobs:
           sudo apt install --install-recommends rpm -y 1>&2
 
       - name: Install Node.js, NPM and Yarn
-          uses: actions/setup-node@v6
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: 'npm'
@@ -92,7 +92,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install Node.js, NPM and Yarn
-          uses: actions/setup-node@v6
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: 'npm'
@@ -142,7 +142,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install Node.js, NPM and Yarn
-          uses: actions/setup-node@v6
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: 'npm'
