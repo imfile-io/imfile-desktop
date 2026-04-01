@@ -513,11 +513,6 @@
             key: 'advanced',
             title: this.$t('preferences.advanced'),
             route: '/preference/advanced'
-          },
-          {
-            key: 'lab',
-            title: this.$t('preferences.lab'),
-            route: '/preference/lab'
           }
         ]
       },

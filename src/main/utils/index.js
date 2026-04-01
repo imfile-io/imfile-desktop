@@ -10,7 +10,7 @@ import {
   IS_PORTABLE,
   PORTABLE_EXECUTABLE_DIR
 } from '@shared/constants'
-import { engineBinMap, engineArchMap } from '../configs/engine'
+import { engineBinMap, engineArchMap, goed2kdBinMap } from '../configs/engine'
 import logger from '../core/Logger'
 
 export const getUserDataPath = () => {
@@ -82,6 +82,34 @@ export const getAria2BinPath = (platform, arch) => {
 export const getAria2ConfPath = (platform, arch) => {
   const base = getEnginePath(platform, arch)
   return resolve(base, './aria2.conf')
+}
+
+export const getGoed2kdConfigPath = () => {
+  return resolve(getUserDataPath(), './goed2kd/config/config.json')
+}
+
+export const getGoed2kdBin = (platform) => {
+  return goed2kdBinMap[platform] || ''
+}
+
+export const getDevGoed2kdPath = (platform, arch) => {
+  const ah = getEngineArch(platform, arch)
+  const base = `../../../extra/${platform}/${ah}/goed2kd`
+  return resolve(__dirname, base)
+}
+
+export const getProdGoed2kdPath = () => {
+  return resolve(app.getAppPath(), '../goed2kd')
+}
+
+export const getGoed2kdPath = (platform, arch) => {
+  return is.dev() ? getDevGoed2kdPath(platform, arch) : getProdGoed2kdPath()
+}
+
+export const getGoed2kdBinPath = (platform, arch) => {
+  const base = getGoed2kdPath(platform, arch)
+  const binName = getGoed2kdBin(platform)
+  return resolve(base, `./${binName}`)
 }
 
 export const transformConfig = (config) => {

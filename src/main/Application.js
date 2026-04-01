@@ -24,6 +24,8 @@ import ConfigManager from './core/ConfigManager'
 import { setupLocaleManager } from './ui/Locale'
 import Engine from './core/Engine'
 import EngineClient from './core/EngineClient'
+import Goed2kdEngine from './core/Goed2kdEngine'
+import Goed2kdClient from './core/Goed2kdClient'
 import UPnPManager from './core/UPnPManager'
 import AutoLaunchManager from './core/AutoLaunchManager'
 import UpdateManager from './core/UpdateManager'
@@ -59,6 +61,7 @@ export default class Application extends EventEmitter {
     this.initUPnPManager()
 
     this.startEngine()
+    this.startGoed2kd()
 
     this.initEngineClient()
 
@@ -178,6 +181,95 @@ export default class Application extends EventEmitter {
       logger.warn('[imFile] shutdown engine fail: ', err.message)
     } finally {
       // no finally
+    }
+  }
+
+  startGoed2kd () {
+    this.updateGoed2kdStatus({
+      started: false,
+      healthy: false,
+      pid: null,
+      lastError: '',
+      updatedAt: Date.now()
+    })
+
+    try {
+      this.goed2kdEngine = new Goed2kdEngine()
+      this.goed2kdClient = new Goed2kdClient({
+        getRuntimeOptions: () => this.goed2kdEngine.getRuntimeOptions()
+      })
+      this.updateGoed2kdStatus({
+        started: true,
+        healthy: false,
+        pid: this.goed2kdEngine.instance ? this.goed2kdEngine.instance.pid : null,
+        lastError: '',
+        updatedAt: Date.now()
+      })
+      this.goed2kdEngine.start().then((healthy) => {
+        this.updateGoed2kdStatus({
+          started: Boolean(this.goed2kdEngine && this.goed2kdEngine.instance),
+          healthy,
+          pid: this.goed2kdEngine && this.goed2kdEngine.instance
+            ? this.goed2kdEngine.instance.pid
+            : null,
+          lastError: healthy ? '' : 'health check failed',
+          updatedAt: Date.now()
+        })
+        logger.info('[imFile] goed2kd health status:', healthy)
+      }).catch((err) => {
+        this.updateGoed2kdStatus({
+          started: false,
+          healthy: false,
+          pid: null,
+          lastError: err.message,
+          updatedAt: Date.now()
+        })
+        logger.warn('[imFile] start goed2kd failed:', err.message)
+      })
+    } catch (err) {
+      this.updateGoed2kdStatus({
+        started: false,
+        healthy: false,
+        pid: null,
+        lastError: err.message,
+        updatedAt: Date.now()
+      })
+      logger.warn('[imFile] init goed2kd failed:', err.message)
+    }
+  }
+
+  async stopGoed2kd () {
+    try {
+      if (this.goed2kdEngine) {
+        this.goed2kdEngine.stop()
+      }
+      this.updateGoed2kdStatus({
+        started: false,
+        healthy: false,
+        pid: null,
+        updatedAt: Date.now()
+      })
+    } catch (err) {
+      this.updateGoed2kdStatus({
+        started: false,
+        healthy: false,
+        pid: null,
+        lastError: err.message,
+        updatedAt: Date.now()
+      })
+      logger.warn('[imFile] stop goed2kd fail:', err.message)
+    }
+  }
+
+  updateGoed2kdStatus (patch = {}) {
+    this.goed2kdStatus = {
+      started: false,
+      healthy: false,
+      pid: null,
+      lastError: '',
+      updatedAt: 0,
+      ...(this.goed2kdStatus || {}),
+      ...patch
     }
   }
 
@@ -580,6 +672,7 @@ export default class Application extends EventEmitter {
     try {
       const promises = [
         this.stopEngine(),
+        this.stopGoed2kd(),
         this.shutdownUPnPManager(),
         this.energyManager.stopPowerSaveBlocker(),
         this.trayManager.destroy()
@@ -1022,6 +1115,68 @@ export default class Application extends EventEmitter {
         ...context
       }
       return result
+    })
+
+    ipcMain.handle('get-goed2kd-status', async () => {
+      return {
+        started: false,
+        healthy: false,
+        pid: null,
+        lastError: '',
+        updatedAt: 0,
+        ...(this.goed2kdStatus || {})
+      }
+    })
+
+    ipcMain.handle('goed2kd:add-ed2k', async (event, payload = {}) => {
+      try {
+        const link = payload.ed2k || payload.link || ''
+        const data = await this.goed2kdClient.addEd2k(link)
+        return { ok: true, data }
+      } catch (err) {
+        logger.warn('[imFile] goed2kd add failed:', err.message)
+        return { ok: false, message: err.message }
+      }
+    })
+
+    ipcMain.handle('goed2kd:list-downloads', async () => {
+      try {
+        const data = await this.goed2kdClient.listTransfers()
+        return { ok: true, data }
+      } catch (err) {
+        logger.warn('[imFile] goed2kd list failed:', err.message)
+        return { ok: false, message: err.message, data: [] }
+      }
+    })
+
+    ipcMain.handle('goed2kd:pause-download', async (event, payload = {}) => {
+      try {
+        const data = await this.goed2kdClient.pauseTransfer(payload.hash)
+        return { ok: true, data }
+      } catch (err) {
+        logger.warn('[imFile] goed2kd pause failed:', err.message)
+        return { ok: false, message: err.message }
+      }
+    })
+
+    ipcMain.handle('goed2kd:resume-download', async (event, payload = {}) => {
+      try {
+        const data = await this.goed2kdClient.resumeTransfer(payload.hash)
+        return { ok: true, data }
+      } catch (err) {
+        logger.warn('[imFile] goed2kd resume failed:', err.message)
+        return { ok: false, message: err.message }
+      }
+    })
+
+    ipcMain.handle('goed2kd:remove-download', async (event, payload = {}) => {
+      try {
+        const data = await this.goed2kdClient.removeTransfer(payload.hash)
+        return { ok: true, data }
+      } catch (err) {
+        logger.warn('[imFile] goed2kd remove failed:', err.message)
+        return { ok: false, message: err.message }
+      }
     })
   }
 }

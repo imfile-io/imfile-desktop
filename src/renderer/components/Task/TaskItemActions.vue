@@ -1,5 +1,5 @@
 <template>
-  <ul :key="task.gid" class="w-max task-item-actions" v-on:dblclick.stop="() => null">
+  <ul :key="task.taskKey" class="w-max task-item-actions" v-on:dblclick.stop="() => null">
     <li v-for="action in taskActions" :key="action" class="task-item-action">
       <i v-if="action ==='PAUSE'" @click.stop="onPauseClick">
         <mo-icon name="task-pause-line" width="15" height="15" />

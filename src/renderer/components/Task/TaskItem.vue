@@ -1,8 +1,8 @@
 <template>
-  <div :key="task.gid" class="task-item" v-on:dblclick="onDbClick">
+  <div :key="task.taskKey" class="task-item" v-on:dblclick="onDbClick">
     <el-row type="flex">
       <el-col :span="2">
-        <div class="flex items-center justify-center h-full"><el-checkbox :value="selectedGidList.includes(task.gid)"></el-checkbox></div>
+        <div class="flex items-center justify-center h-full"><el-checkbox :value="selectedTaskKeyList.includes(task.taskKey)"></el-checkbox></div>
       </el-col>
       <el-col :span="22">
         <el-row>
@@ -62,7 +62,7 @@
     },
     computed: {
       ...mapState('task', {
-        selectedGidList: state => state.selectedGidList
+        selectedTaskKeyList: state => state.selectedTaskKeyList
       }),
       taskFullName () {
         return getTaskName(this.task, {

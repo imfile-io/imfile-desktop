@@ -75,8 +75,8 @@
     computed: {
       ...mapState('task', {
         taskList: state => state.taskList,
-        selectedGidList: state => state.selectedGidList,
-        selectedGidListCount: state => state.selectedGidList.length
+        selectedTaskKeyList: state => state.selectedTaskKeyList,
+        selectedTaskKeyListCount: state => state.selectedTaskKeyList.length
       }),
       ...mapState('preference', {
         noConfirmBeforeDelete: state => state.config.noConfirmBeforeDeleteTask
@@ -217,14 +217,23 @@
         }
       },
       removeTasks (taskList, isRemoveWithFiles = false) {
-        const gids = taskList.map((task) => task.gid)
+        const gids = taskList
+          .filter(task => task.engine !== 'goed2kd')
+          .map((task) => task.gid)
+        const goed2kdTasks = taskList.filter(task => task.engine === 'goed2kd')
+        const goed2kdRemovals = goed2kdTasks.map(task => this.$store.dispatch('task/removeTask', task))
         this.$store.dispatch('task/batchForcePauseTask', gids)
           .finally(() => {
             if (isRemoveWithFiles) {
               this.batchDeleteTaskFiles(taskList)
             }
 
-            this.removeTaskItems(gids)
+            if (gids.length > 0) {
+              this.removeTaskItems(gids)
+            }
+            if (goed2kdRemovals.length > 0) {
+              Promise.allSettled(goed2kdRemovals)
+            }
           })
       },
       batchDeleteTaskFiles (taskList) {
@@ -353,16 +362,16 @@
         const { deleteWithFiles } = payload
         const {
           noConfirmBeforeDelete,
-          selectedGidList,
-          selectedGidListCount,
+          selectedTaskKeyList,
+          selectedTaskKeyListCount,
           taskList
         } = this
-        if (selectedGidListCount === 0) {
+        if (selectedTaskKeyListCount === 0) {
           return
         }
 
         const selectedTaskList = taskList.filter((task) => {
-          return selectedGidList.includes(task.gid)
+          return selectedTaskKeyList.includes(task.taskKey)
         })
 
         if (noConfirmBeforeDelete) {
@@ -370,7 +379,7 @@
           return
         }
 
-        const count = `${selectedGidListCount}`
+        const count = `${selectedTaskKeyListCount}`
         dialog.showMessageBox({
           type: 'warning',
           title: this.$t('task.delete-selected-task'),

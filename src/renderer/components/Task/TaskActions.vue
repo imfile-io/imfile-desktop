@@ -90,7 +90,7 @@
     computed: {
       ...mapState('task', {
         currentList: state => state.currentList,
-        selectedGidListCount: state => state.selectedGidList.length
+        selectedTaskKeyListCount: state => state.selectedTaskKeyList.length
       })
     },
     filters: {
