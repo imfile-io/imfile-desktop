@@ -50,28 +50,3 @@ jobs:
         # By default, queries listed here will override any specified in a config file.
         # Prefix the list here with "+" to use these queries and those in the config file.
         # queries: ./path/to/local/query, your-org/your-repo/queries@main
-
-    # Electron：不用 autobuild（对 JS 多为启发式，且易与 webpack/electron-builder 不匹配）。
-    # 显式安装依赖并执行与 CI 一致的 webpack 构建（不含 electron-builder 打包）。
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: 24
-        cache: yarn
-
-    - name: Install dependencies
-      run: yarn install --network-timeout 100000
-
-    - name: Build application (webpack)
-      run: yarn build:github
-
-    # 构建失败时上面一步已非零退出；此处再断言关键产物，避免「空目录也通过」的误判。
-    - name: 验证构建产物
-      run: |
-        set -e
-        test -f dist/electron/main.js
-        test -f dist/electron/index.js
-        echo "OK: dist/electron/main.js 与 index.js 已生成。"
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4

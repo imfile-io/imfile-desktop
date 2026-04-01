@@ -23,5 +23,16 @@ jobs:
       - name: Install dependencies
         run: yarn install --network-timeout 100000
 
-      - name: Build renderer
-        run: node .electron-vue/build.js
+      - name: Build application (webpack)
+        run: yarn build:github
+
+      # 构建失败时上面一步已非零退出；此处再断言关键产物，避免「空目录也通过」的误判。
+      - name: 验证构建产物
+        run: |
+          set -e
+          test -f dist/electron/main.js
+          test -f dist/electron/index.js
+          echo "OK: dist/electron/main.js 与 index.js 已生成。"
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
