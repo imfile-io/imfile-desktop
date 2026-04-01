@@ -801,9 +801,12 @@ export default class Application extends EventEmitter {
       this.relaunch()
     })
 
-    // this.on('application:check-for-updates', () => {
-    //   this.updateManager.check()
-    // })
+    this.on('application:check-for-updates', () => {
+      if (!this.updateManager) {
+        return
+      }
+      this.updateManager.check()
+    })
 
     this.on('application:change-theme', (theme) => {
       this.themeManager.updateSystemTheme(theme)
