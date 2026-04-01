@@ -50,7 +50,7 @@ jobs:
       - run: node .electron-vue/build.js && npx electron-builder --publish=never
 
       - name: Upload Linux build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-linux
           path: |
@@ -101,7 +101,7 @@ jobs:
       - run: node .electron-vue/build.js && npx electron-builder --publish=never
 
       - name: Upload macOS build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-macos
           path: |
@@ -151,7 +151,7 @@ jobs:
       - run: node .electron-vue/build.js && npx electron-builder --publish=never
 
       - name: Upload Windows build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-windows
           path: |
@@ -176,19 +176,19 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Prepare Linux artifacts for release
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release-linux
           path: release-artifacts/linux
 
       - name: Prepare macOS artifacts for release
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release-macos
           path: release-artifacts/macos
 
       - name: Prepare Windows artifacts for release
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release-windows
           path: release-artifacts/windows
