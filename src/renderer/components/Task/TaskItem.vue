@@ -2,7 +2,7 @@
   <div :key="task.taskKey" class="task-item" v-on:dblclick="onDbClick">
     <el-row type="flex">
       <el-col :span="2">
-        <div class="flex items-center justify-center h-full"><el-checkbox :value="selectedTaskKeyList.includes(task.taskKey)"></el-checkbox></div>
+        <div class="flex items-center justify-center h-full"><el-checkbox :model-value="selectedTaskKeyList.includes(task.taskKey)"></el-checkbox></div>
       </el-col>
       <el-col :span="22">
         <el-row>
@@ -16,9 +16,9 @@
               v-if="task.completedLength > 0 || task.totalLength > 0"
               class="task-progress-num"
             >
-              <span>{{ task.completedLength | bytesToSize(2) }}</span>
+              <span>{{ bytesToSize(task.completedLength, 2) }}</span>
               <span v-if="task.totalLength > 0">
-                / {{ task.totalLength | bytesToSize(2) }}</span
+                / {{ bytesToSize(task.totalLength, 2) }}</span
               >
             </div>
           </el-col>
@@ -88,6 +88,9 @@
       }
     },
     methods: {
+      bytesToSize (v, p) {
+        return bytesToSize(v, p)
+      },
       onDbClick () {
         const { status } = this.task
         const { COMPLETE, WAITING, PAUSED } = TASK_STATUS
@@ -109,9 +112,6 @@
       toggleTask () {
         this.$store.dispatch('task/toggleTask', this.task)
       }
-    },
-    filters: {
-      bytesToSize
     }
   }
 </script>

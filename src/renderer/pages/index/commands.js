@@ -1,4 +1,4 @@
-import { Message } from 'element-ui'
+import { ElMessage as Message } from 'element-plus'
 import { base64StringToBlob } from 'blob-util'
 
 import router from '@/router'

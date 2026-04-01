@@ -1,13 +1,15 @@
 <template>
   <el-dialog
-    custom-class="app-about-dialog"
+    class="app-about-dialog"
     width="61.8vw"
-    :visible="visible"
+    :model-value="visible"
     @open="handleOpen"
     :before-close="handleClose"
     @closed="handleClosed">
     <mo-app-info :version="version" :engine="engineInfo" />
-    <mo-copyright slot="footer" />
+    <template v-slot:footer>
+<mo-copyright  />
+</template>
   </el-dialog>
 </template>
 
@@ -46,6 +48,7 @@
       },
       handleClose (done) {
         this.$store.dispatch('app/hideAboutPanel')
+        done()
       },
       handleClosed () {
       }

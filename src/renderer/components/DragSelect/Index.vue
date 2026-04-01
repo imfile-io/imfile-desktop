@@ -119,12 +119,17 @@
       document.addEventListener('mouseup', endDrag)
       document.addEventListener('touchend', endDrag)
 
-      this.$once('on:destroy', () => {
+      this._cleanupDragSelect = () => {
         container.removeEventListener('mousedown', startDrag)
         container.removeEventListener('touchstart', touchStart)
         document.removeEventListener('mouseup', endDrag)
         document.removeEventListener('touchend', endDrag)
-      })
+      }
+    },
+    beforeUnmount () {
+      if (this._cleanupDragSelect) {
+        this._cleanupDragSelect()
+      }
     },
     methods: {
       createBox () {

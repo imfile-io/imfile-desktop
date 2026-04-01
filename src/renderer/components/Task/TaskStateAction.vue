@@ -35,7 +35,6 @@
 
 <script>
   import { mapState } from 'vuex'
-  import { bytesToSize, timeFormat } from '@shared/utils'
   import BatchDeleteTaskBtn from '@/components/Task/BatchDeleteTaskBtn.vue'
   import '@/components/Icons/task-pause'
   import '@/components/Icons/task-play'
@@ -55,10 +54,6 @@
         currentList: state => state.currentList,
         selectedTaskKeyListCount: state => state.selectedTaskKeyList.length
       })
-    },
-    filters: {
-      bytesToSize,
-      timeFormat
     },
     methods: {
       onResumeAllClick () {

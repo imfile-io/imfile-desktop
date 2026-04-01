@@ -1,15 +1,15 @@
 import is from 'electron-is'
 import { ipcRenderer } from 'electron'
-import Vue from 'vue'
-import VueI18Next from '@panter/vue-i18next'
-import { sync } from 'vuex-router-sync'
-import Element, { Loading, Message } from 'element-ui'
+import { createApp } from 'vue'
+import 'element-plus/dist/index.css'
+import { ElLoading, ElMessage } from 'element-plus'
 import axios from 'axios'
 
-import App from './App'
+import App from './App.vue'
 import router from '@/router'
 import store from '@/store'
-import { getLocaleManager } from '@/components/Locale'
+import { createAppI18n } from '@/i18n'
+import { setRendererI18n } from '@/components/Locale'
 import Icon from '@/components/Icons/Icon'
 import Msg from '@/components/Msg'
 import { commands } from '@/components/CommandManager/instance'
@@ -53,43 +53,29 @@ function initTrayWorker () {
 }
 
 function init (config) {
-  if (is.renderer()) {
-    Vue.use(require('vue-electron'))
-  }
+  const i18n = createAppI18n(config.locale)
+  setRendererI18n(i18n)
 
-  Vue.http = Vue.prototype.$http = axios
-  Vue.config.productionTip = false
+  const app = createApp(App)
 
-  const { locale } = config
-  const localeManager = getLocaleManager()
-  localeManager.changeLanguageByLocale(locale)
+  app.config.globalProperties.$http = axios
+  app.config.globalProperties.$electron = { ipcRenderer }
 
-  Vue.use(VueI18Next)
-  const i18n = new VueI18Next(localeManager.getI18n())
-  Vue.use(Element, {
-    size: 'mini',
-    i18n: (key, value) => i18n.t(key, value)
-  })
-  Vue.use(Msg, Message, {
+  app.use(i18n)
+  app.use(Msg, ElMessage, {
     showClose: true
   })
-  Vue.component('mo-icon', Icon)
+  app.component('mo-icon', Icon)
 
-  const loading = Loading.service({
+  const loading = ElLoading.service({
     fullscreen: true,
     background: 'rgba(0, 0, 0, 0.1)'
   })
 
-  sync(store, router)
+  app.use(store)
+  app.use(router)
 
-  /* eslint-disable no-new */
-  global.app = new Vue({
-    components: { App },
-    router,
-    store,
-    i18n,
-    template: '<App/>'
-  }).$mount('#app')
+  global.app = app.mount('#app')
 
   global.app.commands = commands
   require('./commands')

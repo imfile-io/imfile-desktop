@@ -66,7 +66,6 @@
 
   import { commands } from '@/components/CommandManager/instance'
   import { ADD_TASK_TYPE } from '@shared/constants'
-  import { bytesToSize, timeFormat } from '@shared/utils'
   import '@/components/Icons/menu-add'
   import '@/components/Icons/refresh'
   import '@/components/Icons/task-start-line'
@@ -92,10 +91,6 @@
         currentList: state => state.currentList,
         selectedTaskKeyListCount: state => state.selectedTaskKeyList.length
       })
-    },
-    filters: {
-      bytesToSize,
-      timeFormat
     },
     methods: {
       refreshSpin () {

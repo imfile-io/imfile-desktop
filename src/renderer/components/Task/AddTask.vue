@@ -1,8 +1,8 @@
 <template>
   <el-dialog
-    custom-class="tab-title-dialog add-task-dialog"
+    class="tab-title-dialog add-task-dialog"
     width="67vw"
-    :visible="visible"
+    :model-value="visible"
     :top="dialogTop"
     :show-close="false"
     :before-close="beforeClose"
@@ -11,7 +11,7 @@
     @closed="handleClosed"
   >
     <el-form ref="taskForm" label-position="left" :model="form" :rules="rules">
-      <el-tabs :value="type" @tab-click="handleTabClick">
+      <el-tabs :model-value="type" @tab-click="handleTabClick">
         <el-tab-pane :label="$t('task.uri-task')" name="uri" >
           <el-form-item>
             <el-input
@@ -20,7 +20,7 @@
               auto-complete="off"
               :autosize="{ minRows: 3, maxRows: 5 }"
               :placeholder="$t('task.uri-task-tips')"
-              @paste.native="handleUriPaste"
+              @paste="handleUriPaste"
               v-model="form.uris"
             >
             </el-input>
@@ -74,11 +74,13 @@
             slot="prepend"
             @selected="handleHistoryDirectorySelected"
           /> -->
-          <mo-select-directory
+          <template v-slot:append>
+<mo-select-directory
             v-if="isRenderer"
-            slot="append"
+
             @selected="handleNativeDirectorySelected"
           />
+</template>
         </el-input>
       </el-form-item>
       <div class="task-advanced-options" v-if="showAdvanced">
@@ -162,15 +164,18 @@
         </el-form-item>
       </div>
     </el-form>
-    <button
-      slot="title"
+    <template v-slot:title>
+<button
+
       type="button"
       class="el-dialog__headerbtn"
       aria-label="Close"
       @click="handleClose">
-      <i class="el-dialog__close el-icon el-icon-close"></i>
+      <el-icon class="el-dialog__close"><Close /></el-icon>
     </button>
-    <div slot="footer" class="dialog-footer">
+</template>
+    <template v-slot:footer>
+<div  class="dialog-footer">
       <el-row>
         <el-col :span="9" :xs="9">
           <el-checkbox class="chk" v-model="showAdvanced">
@@ -190,6 +195,7 @@
         </el-col>
       </el-row>
     </div>
+</template>
   </el-dialog>
 </template>
 
@@ -207,11 +213,13 @@
   } from '@/utils/task'
   import { ADD_TASK_TYPE } from '@shared/constants'
   import { detectResource } from '@shared/utils'
+  import { Close } from '@element-plus/icons-vue'
   import '@/components/Icons/inbox'
 
   export default {
     name: 'mo-add-task',
     components: {
+      Close,
       [HistoryDirectory.name]: HistoryDirectory,
       [SelectDirectory.name]: SelectDirectory,
       [SelectTorrent.name]: SelectTorrent
@@ -282,10 +290,11 @@
           this.form.uris = content
         }
       },
-      beforeClose () {
+      beforeClose (done) {
         if (isEmpty(this.form.uris) && isEmpty(this.form.torrent)) {
           this.handleClose()
         }
+        done()
       },
       handleOpen () {
         this.form = initTaskForm(this.$store.state)

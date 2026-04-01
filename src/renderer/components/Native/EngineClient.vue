@@ -249,7 +249,7 @@
         this.startPolling()
       }, 100)
     },
-    destroyed () {
+    unmounted () {
       this.$store.dispatch('task/saveSession')
 
       this.unbindEngineEvents()

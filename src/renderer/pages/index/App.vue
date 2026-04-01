@@ -1,16 +1,18 @@
 <template>
-  <div id="app">
-    <mo-title-bar
-      v-if="isRenderer"
-      :showActions="showWindowActions"
-    />
-    <router-view />
-    <mo-engine-client
-      :secret="rpcSecret"
-    />
-    <mo-ipc v-if="isRenderer" />
-    <mo-dynamic-tray v-if="enableTraySpeedometer" />
-  </div>
+  <el-config-provider :locale="elementPlusLocale" :direction="direction" size="small">
+    <div id="app">
+      <mo-title-bar
+        v-if="isRenderer"
+        :showActions="showWindowActions"
+      />
+      <router-view />
+      <mo-engine-client
+        :secret="rpcSecret"
+      />
+      <mo-ipc v-if="isRenderer" />
+      <mo-dynamic-tray v-if="enableTraySpeedometer" />
+    </div>
+  </el-config-provider>
 </template>
 
 <script>
@@ -23,6 +25,7 @@
   import TitleBar from '@/components/Native/TitleBar'
   import { getLanguage } from '@shared/locales'
   import { getLocaleManager } from '@/components/Locale'
+  import { getElementPlusLocale } from '@/utils/elementPlusLocale'
 
   export default {
     name: 'imfile-app',
@@ -51,6 +54,10 @@
         'locale',
         'direction'
       ]),
+      elementPlusLocale () {
+        const lng = getLanguage(this.locale)
+        return getElementPlusLocale(lng)
+      },
       themeClass () {
         if (this.theme === APP_THEME.AUTO) {
           return `theme-${this.systemTheme}`

@@ -423,7 +423,7 @@
       commands.on('copy-task-link', this.handleCopyTaskLink)
       commands.on('show-task-info', this.handleShowTaskInfo)
     },
-    destroyed () {
+    unmounted () {
       commands.off('pause-task', this.handlePauseTask)
       commands.off('resume-task', this.handleResumeTask)
       commands.off('stop-task-seeding', this.handleStopTaskSeeding)

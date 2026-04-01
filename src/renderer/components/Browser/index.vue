@@ -10,8 +10,9 @@
 
 <script>
   import is from 'electron-is'
+  import { ipcRenderer } from 'electron'
   import { webContents } from '@electron/remote'
-  import { Loading } from 'element-ui'
+  import { ElLoading as Loading } from 'element-plus'
 
   export default {
     name: 'mo-browser',
@@ -56,7 +57,7 @@
         const wc = webContents.fromId(iframe.getWebContentsId())
         wc.setWindowOpenHandler((event, url) => {
           event.preventDefault()
-          this.$electron.ipcRenderer.send('command', 'application:open-external', url)
+          ipcRenderer.send('command', 'application:open-external', url)
         })
       }
     }

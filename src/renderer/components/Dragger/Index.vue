@@ -40,7 +40,7 @@
       document.body.addEventListener('dragleave', this.onDragLeave)
       document.body.addEventListener('drop', this.onDrop)
     },
-    destroyed () {
+    unmounted () {
       document.removeEventListener('dragover', this.preventDefault)
       document.body.removeEventListener('dragenter', this.onDragEnter)
       document.body.removeEventListener('dragleave', this.onDragLeave)

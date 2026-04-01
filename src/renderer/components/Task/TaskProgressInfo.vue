@@ -10,17 +10,17 @@
     <div class="task-speed-info" v-if="isActive">
         <div class="task-speed-text">
           <i><mo-icon name="arrow-up" width="10" height="14" /></i>
-          <span>{{ task.uploadSpeed | bytesToSize }}/s</span>
+          <span>{{ bytesToSize(task.uploadSpeed) }}/s</span>
         </div>
         <div class="task-speed-text">
           <i><mo-icon name="arrow-down" width="10" height="14" /></i>
-          <span>{{ task.downloadSpeed | bytesToSize }}/s</span>
+          <span>{{ bytesToSize(task.downloadSpeed) }}/s</span>
         </div>
         <div class="task-speed-text hidden-sm-and-down" v-if="remaining > 0">
           <span class="remaining-label-value">
             {{ $t('task.remaining-prefix') }}
             {{
-              remaining | timeFormat({
+              timeFormat(remaining, {
                 i18n: {
                   'gt1d': $t('app.gt1d'),
                   'hour': $t('app.hour'),
@@ -84,7 +84,7 @@
         return timeRemaining(totalLength, completedLength, downloadSpeed)
       }
     },
-    filters: {
+    methods: {
       bytesToSize,
       timeFormat
     }

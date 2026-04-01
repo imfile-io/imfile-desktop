@@ -1,29 +1,30 @@
-import eleLocaleAr from 'element-ui/lib/locale/lang/ar'
-import eleLocaleBg from 'element-ui/lib/locale/lang/bg'
-import eleLocaleCa from 'element-ui/lib/locale/lang/ca'
-import eleLocaleDe from 'element-ui/lib/locale/lang/de'
-import eleLocaleEl from 'element-ui/lib/locale/lang/el'
-import eleLocaleEn from 'element-ui/lib/locale/lang/en'
-import eleLocaleEs from 'element-ui/lib/locale/lang/es'
-import eleLocaleFa from 'element-ui/lib/locale/lang/fa'
-import eleLocaleFr from 'element-ui/lib/locale/lang/fr'
-import eleLocaleHu from 'element-ui/lib/locale/lang/hu'
-import eleLocaleId from 'element-ui/lib/locale/lang/id'
-import elelocaleIt from 'element-ui/lib/locale/lang/it'
-import eleLocaleJa from 'element-ui/lib/locale/lang/ja'
-import eleLocaleKo from 'element-ui/lib/locale/lang/ko'
-import eleLocaleNb from 'element-ui/lib/locale/lang/nb-NO'
-import eleLocaleNl from 'element-ui/lib/locale/lang/nl'
-import eleLocalePl from 'element-ui/lib/locale/lang/pl'
-import eleLocalePtBR from 'element-ui/lib/locale/lang/pt-br'
-import eleLocaleRo from 'element-ui/lib/locale/lang/ro'
-import eleLocaleRu from 'element-ui/lib/locale/lang/ru-RU'
-import eleLocaleTh from 'element-ui/lib/locale/lang/th'
-import eleLocaleTr from 'element-ui/lib/locale/lang/tr-TR'
-import eleLocaleUk from 'element-ui/lib/locale/lang/ua'
-import eleLocaleVi from 'element-ui/lib/locale/lang/vi'
-import eleLocaleZhCN from 'element-ui/lib/locale/lang/zh-CN'
-import eleLocaleZhTW from 'element-ui/lib/locale/lang/zh-TW'
+import epAr from 'element-plus/es/locale/lang/ar.mjs'
+import epBg from 'element-plus/es/locale/lang/bg.mjs'
+import epCa from 'element-plus/es/locale/lang/ca.mjs'
+import epDe from 'element-plus/es/locale/lang/de.mjs'
+import epEl from 'element-plus/es/locale/lang/el.mjs'
+import epEn from 'element-plus/es/locale/lang/en.mjs'
+import epEs from 'element-plus/es/locale/lang/es.mjs'
+import epFa from 'element-plus/es/locale/lang/fa.mjs'
+import epFr from 'element-plus/es/locale/lang/fr.mjs'
+import epHu from 'element-plus/es/locale/lang/hu.mjs'
+import epId from 'element-plus/es/locale/lang/id.mjs'
+import epIt from 'element-plus/es/locale/lang/it.mjs'
+import epJa from 'element-plus/es/locale/lang/ja.mjs'
+import epKo from 'element-plus/es/locale/lang/ko.mjs'
+import epNbNo from 'element-plus/es/locale/lang/nb-no.mjs'
+import epNl from 'element-plus/es/locale/lang/nl.mjs'
+import epPl from 'element-plus/es/locale/lang/pl.mjs'
+import epPtBr from 'element-plus/es/locale/lang/pt-br.mjs'
+import epRo from 'element-plus/es/locale/lang/ro.mjs'
+import epRu from 'element-plus/es/locale/lang/ru.mjs'
+import epTh from 'element-plus/es/locale/lang/th.mjs'
+import epTr from 'element-plus/es/locale/lang/tr.mjs'
+import epUk from 'element-plus/es/locale/lang/uk.mjs'
+import epVi from 'element-plus/es/locale/lang/vi.mjs'
+import epZhCN from 'element-plus/es/locale/lang/zh-cn.mjs'
+import epZhTW from 'element-plus/es/locale/lang/zh-tw.mjs'
+
 import appLocaleAr from '@shared/locales/ar'
 import appLocaleBg from '@shared/locales/bg'
 import appLocaleCa from '@shared/locales/ca'
@@ -56,157 +57,157 @@ import appLocaleZhTW from '@shared/locales/zh-TW'
 const resources = {
   'ar': {
     translation: {
-      ...eleLocaleAr,
+      el: epAr.el,
       ...appLocaleAr
     }
   },
   'bg': {
     translation: {
-      ...eleLocaleBg,
+      el: epBg.el,
       ...appLocaleBg
     }
   },
   'ca': {
     translation: {
-      ...eleLocaleCa,
+      el: epCa.el,
       ...appLocaleCa
     }
   },
   'de': {
     translation: {
-      ...eleLocaleDe,
+      el: epDe.el,
       ...appLocaleDe
     }
   },
   'el': {
     translation: {
-      ...eleLocaleEl,
+      el: epEl.el,
       ...appLocaleEl
     }
   },
   'en-US': {
     translation: {
-      ...eleLocaleEn,
+      el: epEn.el,
       ...appLocaleEnUS
     }
   },
   'es': {
     translation: {
-      ...eleLocaleEs,
+      el: epEs.el,
       ...appLocaleEs
     }
   },
   'fa': {
     translation: {
-      ...eleLocaleFa,
+      el: epFa.el,
       ...appLocaleFa
     }
   },
   'fr': {
     translation: {
-      ...eleLocaleFr,
+      el: epFr.el,
       ...appLocaleFr
     }
   },
   'hu': {
     translation: {
-      ...eleLocaleHu,
+      el: epHu.el,
       ...appLocaleHu
     }
   },
   'id': {
     translation: {
-      ...eleLocaleId,
+      el: epId.el,
       ...appLocaleId
     }
   },
   'it': {
     translation: {
-      ...elelocaleIt,
+      el: epIt.el,
       ...applocaleIt
     }
   },
   'ja': {
     translation: {
-      ...eleLocaleJa,
+      el: epJa.el,
       ...appLocaleJa
     }
   },
   'ko': {
     translation: {
-      ...eleLocaleKo,
+      el: epKo.el,
       ...appLocaleKo
     }
   },
   'nb': {
     translation: {
-      ...eleLocaleNb,
+      el: epNbNo.el,
       ...appLocaleNb
     }
   },
   'nl': {
     translation: {
-      ...eleLocaleNl,
+      el: epNl.el,
       ...appLocaleNl
     }
   },
   'pl': {
     translation: {
-      ...eleLocalePl,
+      el: epPl.el,
       ...appLocalePl
     }
   },
   'pt-BR': {
     translation: {
-      ...eleLocalePtBR,
+      el: epPtBr.el,
       ...appLocalePtBR
     }
   },
   'ro': {
     translation: {
-      ...eleLocaleRo,
+      el: epRo.el,
       ...appLocaleRo
     }
   },
   'ru': {
     translation: {
-      ...eleLocaleRu,
+      el: epRu.el,
       ...appLocaleRu
     }
   },
   'th': {
     translation: {
-      ...eleLocaleTh,
+      el: epTh.el,
       ...appLocaleTh
     }
   },
   'tr': {
     translation: {
-      ...eleLocaleTr,
+      el: epTr.el,
       ...appLocaleTr
     }
   },
   'uk': {
     translation: {
-      ...eleLocaleUk,
+      el: epUk.el,
       ...appLocaleUk
     }
   },
   'vi': {
     translation: {
-      ...eleLocaleVi,
+      el: epVi.el,
       ...appLocaleVi
     }
   },
   'zh-CN': {
     translation: {
-      ...eleLocaleZhCN,
+      el: epZhCN.el,
       ...appLocaleZhCN
     }
   },
   'zh-TW': {
     translation: {
-      ...eleLocaleZhTW,
+      el: epZhTW.el,
       ...appLocaleZhTW
     }
   }

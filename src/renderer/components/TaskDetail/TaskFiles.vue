@@ -18,32 +18,32 @@
           :label="$t('task.file-name')"
           min-width="200"
           show-overflow-tooltip>
-          <template slot-scope="scope">{{ scope.row.name }}</template>
+          <template v-slot="scope">{{ scope.row.name }}</template>
         </el-table-column>
         <el-table-column
           :label="$t('task.file-extension')"
           width="80">
-          <template slot-scope="scope">{{ scope.row.extension | removeExtensionDot }}</template>
+          <template v-slot="scope">{{ removeExtensionDot(scope.row.extension) }}</template>
         </el-table-column>
         <el-table-column
           v-if="mode === 'DETAIL'"
           :label="`%`"
           align="right"
           width="50">
-          <template slot-scope="scope">{{ calcProgress(scope.row.length, scope.row.completedLength, 1) }}</template>
+          <template v-slot="scope">{{ calcProgress(scope.row.length, scope.row.completedLength, 1) }}</template>
         </el-table-column>
         <el-table-column
           v-if="mode === 'DETAIL'"
           :label="`✓`"
           align="right"
           width="85">
-          <template slot-scope="scope">{{ scope.row.completedLength | bytesToSize }}</template>
+          <template v-slot="scope">{{ bytesToSize(scope.row.completedLength) }}</template>
         </el-table-column>
         <el-table-column
           :label="$t('task.file-size')"
           align="right"
           width="85">
-          <template slot-scope="scope">{{ scope.row.length | bytesToSize }}</template>
+          <template v-slot="scope">{{ bytesToSize(scope.row.length) }}</template>
         </el-table-column>
       </el-table>
     </div>
@@ -105,10 +105,6 @@
 
   export default {
     name: 'mo-task-files',
-    filters: {
-      bytesToSize,
-      removeExtensionDot
-    },
     props: {
       mode: {
         type: String,
@@ -162,6 +158,8 @@
       }
     },
     methods: {
+      bytesToSize,
+      removeExtensionDot,
       calcProgress,
       toggleAllSelection () {
         if (!this.$refs.torrentTable) {

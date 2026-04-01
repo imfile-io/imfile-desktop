@@ -2,10 +2,10 @@
   <el-container class="content panel" direction="vertical">
     <el-header class="panel-header" height="84">
       <el-row class="panel-row">
-        <el-col :span="4" @click.native="() => nav('basic')">
+        <el-col :span="4" @click="() => nav('basic')">
           <h4>{{ $t('preferences.basic') }}</h4>
         </el-col>
-        <el-col :span="4" @click.native="() => nav('advanced')" class="active">
+        <el-col :span="4" @click="() => nav('advanced')" class="active">
           <h4>{{ $t('preferences.advanced') }}</h4>
         </el-col>
       </el-row>
@@ -20,7 +20,7 @@
         class="form-preference"
         ref="advancedForm"
         label-position="right"
-        size="mini"
+        size="small"
         :model="form"
         :rules="rules"
       >
@@ -153,7 +153,7 @@
                         <span style="float: right; margin-right: 24px">
                           <el-tag
                             type="success"
-                            size="mini"
+                            size="small"
                             v-if="item.cdn"
                           >
                             CDN
@@ -236,9 +236,11 @@
                 v-model="form.rpcListenPort"
                 @change="onRpcListenPortChange"
               >
-                <i slot="append" @click.prevent="onRpcPortDiceClick">
+                <template v-slot:append>
+<i  @click.prevent="onRpcPortDiceClick">
                   <mo-icon name="dice" width="12" height="12" />
                 </i>
+</template>
               </el-input>
             </el-col>
           </el-row>
@@ -257,9 +259,11 @@
                 :maxlength="64"
                 v-model="form.rpcSecret"
               >
-                <i slot="append" @click.prevent="onRpcSecretDiceClick">
+                <template v-slot:append>
+<i  @click.prevent="onRpcSecretDiceClick">
                   <mo-icon name="dice" width="12" height="12" />
                 </i>
+</template>
               </el-input>
               <div class="el-form-item__info" style="margin-top: 8px;">
                 <!-- <a target="_blank" href="https://github.com/agalwood/Motrix/wiki/RPC" rel="noopener noreferrer">
@@ -302,9 +306,11 @@
                 :maxlength="8"
                 v-model="form.listenPort"
               >
-                <i slot="append" @click.prevent="onBtPortDiceClick">
+                <template v-slot:append>
+<i  @click.prevent="onBtPortDiceClick">
                   <mo-icon name="dice" width="12" height="12" />
                 </i>
+</template>
               </el-input>
             </el-col>
           </el-row>
@@ -322,9 +328,11 @@
                 :maxlength="8"
                 v-model="form.dhtListenPort"
               >
-                <i slot="append" @click.prevent="onDhtPortDiceClick">
+                <template v-slot:append>
+<i  @click.prevent="onDhtPortDiceClick">
                   <mo-icon name="dice" width="12" height="12" />
                 </i>
+</template>
               </el-input>
             </el-col>
           </el-row>
