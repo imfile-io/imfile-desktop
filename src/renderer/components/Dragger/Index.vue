@@ -6,9 +6,14 @@
 
 <script>
 import { ADD_TASK_TYPE } from '@shared/constants'
+import { useI18n } from 'vue-i18n'
 
 export default {
   name: 'mo-dragger',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   mounted () {
     this.preventDefault = ev => ev.preventDefault()
     let count = 0
@@ -33,7 +38,7 @@ export default {
         .map(item => ({ raw: item, name: item.name }))
         .filter(item => /\.torrent$/.test(item.name))
       if (!fileList.length) {
-        this.$msg.error(this.$t('task.select-torrent'))
+        this.$msg.error(this.t('task.select-torrent'))
       }
     }
 

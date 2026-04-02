@@ -35,11 +35,16 @@
 
 <script>
 import { mapState } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import BatchDeleteTaskBtn from '@/components/Task/BatchDeleteTaskBtn.vue'
 import '@/components/Icons/task-pause'
 import '@/components/Icons/task-play'
 export default {
   name: 'state-task-actions',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   components: {
     [BatchDeleteTaskBtn.name]: BatchDeleteTaskBtn
   },
@@ -63,7 +68,7 @@ export default {
         })
         .catch(({ code }) => {
           if (code === 1) {
-            this.$msg.error(this.$t('task.resume-all-task-fail'))
+            this.$msg.error(this.t('task.resume-all-task-fail'))
           }
         })
     },
@@ -74,7 +79,7 @@ export default {
         })
         .catch(({ code }) => {
           if (code === 1) {
-            this.$msg.error(this.$t('task.pause-all-task-fail'))
+            this.$msg.error(this.t('task.pause-all-task-fail'))
           }
         })
     },
@@ -83,10 +88,10 @@ export default {
       this.$store.dispatch('task/fetchList')
     },
     refreshSpin () {
-      this.t && clearTimeout(this.t)
+      this.refreshTimerId && clearTimeout(this.refreshTimerId)
 
       this.refreshing = true
-      this.t = setTimeout(() => {
+      this.refreshTimerId = setTimeout(() => {
         this.refreshing = false
       }, 500)
     }

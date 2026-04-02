@@ -6,12 +6,17 @@
 
 <script>
 import '@/components/Icons/folder'
+import { useI18n } from 'vue-i18n'
 import {
   showItemInFolder
 } from '@/utils/native'
 
 export default {
   name: 'mo-show-in-folder',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   props: {
     path: {
       type: String
@@ -25,7 +30,7 @@ export default {
         return
       }
       showItemInFolder(this.path, {
-        errorMsg: this.$t('task.file-not-exist')
+        errorMsg: this.t('task.file-not-exist')
       })
     }
   }

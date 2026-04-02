@@ -7,6 +7,7 @@
 <script>
 import is from 'electron-is'
 import { mapState } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import api from '@/api'
 import {
   getTaskFullPath,
@@ -16,6 +17,10 @@ import { checkTaskIsBT, getTaskName } from '@shared/utils'
 
 export default {
   name: 'mo-engine-client',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   computed: {
     isRenderer: () => is.renderer(),
     ...mapState('app', {
@@ -80,7 +85,7 @@ export default {
           const { dir } = task
           this.$store.dispatch('preference/recordHistoryDirectory', dir)
           const taskName = getTaskName(task)
-          const message = this.$t('task.download-start-message', { taskName })
+          const message = this.t('task.download-start-message', { taskName })
           this.$msg.info(message)
         })
     },
@@ -94,7 +99,7 @@ export default {
       this.fetchTaskItem({ gid })
         .then((task) => {
           const taskName = getTaskName(task)
-          const message = this.$t('task.download-pause-message', { taskName })
+          const message = this.t('task.download-pause-message', { taskName })
           this.$msg.info(message)
         })
     },
@@ -103,7 +108,7 @@ export default {
       this.fetchTaskItem({ gid })
         .then((task) => {
           const taskName = getTaskName(task)
-          const message = this.$t('task.download-stop-message', { taskName })
+          const message = this.t('task.download-stop-message', { taskName })
           this.$msg.info(message)
         })
     },
@@ -114,7 +119,7 @@ export default {
           const taskName = getTaskName(task)
           const { errorCode, errorMessage } = task
           console.error(`[imFile] download error gid: ${gid}, #${errorCode}, ${errorMessage}`)
-          const message = this.$t('task.download-error-message', { taskName })
+          const message = this.t('task.download-error-message', { taskName })
           this.$msg({
             type: 'error',
             showClose: true,
@@ -159,10 +164,10 @@ export default {
     showTaskCompleteNotify (task, isBT, path) {
       const taskName = getTaskName(task)
       const message = isBT
-        ? this.$t('task.bt-download-complete-message', { taskName })
-        : this.$t('task.download-complete-message', { taskName })
+        ? this.t('task.bt-download-complete-message', { taskName })
+        : this.t('task.download-complete-message', { taskName })
       const tips = isBT
-        ? '\n' + this.$t('task.bt-download-complete-tips')
+        ? '\n' + this.t('task.bt-download-complete-tips')
         : ''
 
       this.$msg.success(`${message}${tips}`)
@@ -172,22 +177,22 @@ export default {
       }
 
       const notifyMessage = isBT
-        ? this.$t('task.bt-download-complete-notify')
-        : this.$t('task.download-complete-notify')
+        ? this.t('task.bt-download-complete-notify')
+        : this.t('task.download-complete-notify')
 
       const notify = new Notification(notifyMessage, {
         body: `${taskName}${tips}`
       })
       notify.onclick = () => {
         showItemInFolder(path, {
-          errorMsg: this.$t('task.file-not-exist')
+          errorMsg: this.t('task.file-not-exist')
         })
       }
     },
     showTaskErrorNotify (task) {
       const taskName = getTaskName(task)
 
-      const message = this.$t('task.download-fail-message', { taskName })
+      const message = this.t('task.download-fail-message', { taskName })
       this.$msg.success(message)
 
       if (!this.taskNotification) {
@@ -195,7 +200,7 @@ export default {
       }
 
       /* eslint-disable no-new */
-      new Notification(this.$t('task.download-fail-notify'), {
+      new Notification(this.t('task.download-fail-notify'), {
         body: taskName
       })
     },

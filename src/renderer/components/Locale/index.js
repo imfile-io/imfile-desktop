@@ -12,12 +12,8 @@ export function getLocaleManager () {
       if (!rendererI18n) {
         return Promise.resolve()
       }
-      const loc = rendererI18n.global.locale
-      if (typeof loc === 'object' && loc !== null && 'value' in loc) {
-        loc.value = lng
-      } else {
-        rendererI18n.global.locale = lng
-      }
+      // Composition API：global.locale 为 WritableComputedRef
+      rendererI18n.global.locale.value = lng
       return Promise.resolve()
     },
     changeLanguageByLocale (locale) {

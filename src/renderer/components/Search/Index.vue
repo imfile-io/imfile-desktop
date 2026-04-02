@@ -102,6 +102,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import api from '@/api'
 import { GOED2K_SEARCH_MAX_RESULTS } from '@shared/constants'
@@ -117,6 +118,10 @@ const MAX_POLLS = 120
 
 export default {
   name: 'mo-content-search',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   data () {
     return {
       searchButtonLoading: false,
@@ -256,12 +261,12 @@ export default {
       }
       this.$store.commit('search/RESET_SEARCH_STATE')
       this.downloadingByHash = {}
-      ElMessage.success(this.$t('search.reset-done'))
+      ElMessage.success(this.t('search.reset-done'))
     },
     async runSearch () {
       const q = (this.keyword || '').trim()
       if (!q) {
-        ElMessage.warning(this.$t('search.query-required'))
+        ElMessage.warning(this.t('search.query-required'))
         return
       }
       if (this.searchLoading) {
@@ -269,7 +274,7 @@ export default {
       }
       const status = await api.getGoed2kdStatus()
       if (!status || !status.healthy) {
-        ElMessage.error(this.$t('search.engine-not-ready'))
+        ElMessage.error(this.t('search.engine-not-ready'))
         return
       }
       this.setHasSearched(true)
@@ -284,14 +289,14 @@ export default {
         res = await api.startGoed2kSearch({ query: q, scope: 'all' })
       } catch (e) {
         this.setSearchLoading(false)
-        ElMessage.error(e && e.message ? String(e.message) : this.$t('search.search-failed'))
+        ElMessage.error(e && e.message ? String(e.message) : this.t('search.search-failed'))
         return
       } finally {
         this.searchButtonLoading = false
       }
       if (!res.ok) {
         this.setSearchLoading(false)
-        ElMessage.error(res.message || this.$t('search.search-failed'))
+        ElMessage.error(res.message || this.t('search.search-failed'))
         return
       }
       this.applyDto(res.data)
@@ -312,10 +317,10 @@ export default {
       try {
         const res = await api.downloadGoed2kSearchResult(row.hash)
         if (!res.ok) {
-          ElMessage.error(res.message || this.$t('search.download-failed'))
+          ElMessage.error(res.message || this.t('search.download-failed'))
           return
         }
-        ElMessage.success(this.$t('search.download-started'))
+        ElMessage.success(this.t('search.download-started'))
         await this.$store.dispatch('task/fetchAllList')
       } finally {
         const next = { ...this.downloadingByHash }

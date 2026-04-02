@@ -460,6 +460,7 @@
 import is from 'electron-is'
 import { dialog } from '@electron/remote'
 import { mapState } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import { cloneDeep, extend, isEmpty } from 'lodash'
 import randomize from 'randomatic'
 import ShowInFolder from '@/components/Native/ShowInFolder'
@@ -533,6 +534,10 @@ const initForm = (config) => {
 
 export default {
   name: 'mo-preference-advanced',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   components: {
     [SubnavSwitcher.name]: SubnavSwitcher,
     [ShowInFolder.name]: ShowInFolder
@@ -557,18 +562,18 @@ export default {
   computed: {
     isRenderer: () => is.renderer(),
     title () {
-      return this.$t('preferences.advanced')
+      return this.t('preferences.advanced')
     },
     subnavs () {
       return [
         {
           key: 'basic',
-          title: this.$t('preferences.basic'),
+          title: this.t('preferences.basic'),
           route: '/preference/basic'
         },
         {
           key: 'advanced',
-          title: this.$t('preferences.advanced'),
+          title: this.t('preferences.advanced'),
           route: '/preference/advanced'
         }
       ]
@@ -616,7 +621,7 @@ export default {
     },
     onCheckUpdateClick () {
       this.$electron.ipcRenderer.send('command', 'application:check-for-updates')
-      this.$msg.info(this.$t('app.checking-for-updates'))
+      this.$msg.info(this.t('app.checking-for-updates'))
       this.$store.dispatch('preference/fetchPreference')
         .then((config) => {
           const { lastCheckUpdateTime } = config
@@ -705,9 +710,9 @@ export default {
     onSessionResetClick () {
       dialog.showMessageBox({
         type: 'warning',
-        title: this.$t('preferences.session-reset'),
-        message: this.$t('preferences.session-reset-confirm'),
-        buttons: [this.$t('app.yes'), this.$t('app.no')],
+        title: this.t('preferences.session-reset'),
+        message: this.t('preferences.session-reset-confirm'),
+        buttons: [this.t('app.yes'), this.t('app.no')],
         cancelId: 1
       }).then(({ response }) => {
         if (response === 0) {
@@ -722,9 +727,9 @@ export default {
     onFactoryResetClick () {
       dialog.showMessageBox({
         type: 'warning',
-        title: this.$t('preferences.factory-reset'),
-        message: this.$t('preferences.factory-reset-confirm'),
-        buttons: [this.$t('app.yes'), this.$t('app.no')],
+        title: this.t('preferences.factory-reset'),
+        message: this.t('preferences.factory-reset-confirm'),
+        buttons: [this.t('app.yes'), this.t('app.no')],
         cancelId: 1
       }).then(({ response }) => {
         if (response === 0) {
@@ -778,10 +783,10 @@ export default {
           .then(() => {
             this.$store.dispatch('app/fetchEngineOptions')
             this.syncFormConfig()
-            this.$msg.success(this.$t('preferences.save-success-message'))
+            this.$msg.success(this.t('preferences.save-success-message'))
           })
           .catch((e) => {
-            this.$msg.success(this.$t('preferences.save-fail-message'))
+            this.$msg.success(this.t('preferences.save-fail-message'))
           })
 
         changedConfig.basic = {}
@@ -813,9 +818,9 @@ export default {
       } else {
         dialog.showMessageBox({
           type: 'warning',
-          title: this.$t('preferences.not-saved'),
-          message: this.$t('preferences.not-saved-confirm'),
-          buttons: [this.$t('app.yes'), this.$t('app.no')],
+          title: this.t('preferences.not-saved'),
+          message: this.t('preferences.not-saved-confirm'),
+          buttons: [this.t('app.yes'), this.t('app.no')],
           cancelId: 1
         }).then(({ response }) => {
           if (response === 0) {

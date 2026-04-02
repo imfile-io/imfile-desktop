@@ -44,6 +44,7 @@
 <script>
 import { dialog } from '@electron/remote'
 import { mapState } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
 import { commands } from '@/components/CommandManager/instance'
 import { ADD_TASK_TYPE } from '@shared/constants'
@@ -64,6 +65,10 @@ import {
 
 export default {
   name: 'mo-content-task',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   components: {
     [TaskSubnav.name]: TaskSubnav,
     [TaskActions.name]: TaskActions,
@@ -95,22 +100,22 @@ export default {
       return [
         {
           key: 'Seeding',
-          title: this.$t('task.seeding'),
+          title: this.t('task.seeding'),
           route: '/task/seeding'
         },
         {
           key: 'active',
-          title: this.$t('task.active'),
+          title: this.t('task.active'),
           route: '/task/active'
         },
         {
           key: 'waiting',
-          title: this.$t('task.waiting'),
+          title: this.t('task.waiting'),
           route: '/task/waiting'
         },
         {
           key: 'stopped',
-          title: this.$t('task.stopped'),
+          title: this.t('task.stopped'),
           route: '/task/stopped'
         }
       ]
@@ -176,7 +181,7 @@ export default {
           throw new Error('task.remove-task-file-fail')
         }
       } catch (err) {
-        this.$msg.error(this.$t(err.message))
+        this.$msg.error(this.t(err.message))
       }
     },
     removeTask (task, taskName, isRemoveWithFiles = false) {
@@ -202,12 +207,12 @@ export default {
     async removeTaskItem (task, taskName) {
       try {
         await this.$store.dispatch('task/removeTask', task)
-        this.$msg.success(this.$t('task.delete-task-success', {
+        this.$msg.success(this.t('task.delete-task-success', {
           taskName
         }))
       } catch ({ code }) {
         if (code === 1) {
-          this.$msg.error(this.$t('task.delete-task-fail', {
+          this.$msg.error(this.t('task.delete-task-fail', {
             taskName
           }))
         }
@@ -216,12 +221,12 @@ export default {
     async removeTaskRecordItem (task, taskName) {
       try {
         await this.$store.dispatch('task/removeTaskRecord', task)
-        this.$msg.success(this.$t('task.remove-record-success', {
+        this.$msg.success(this.t('task.remove-record-success', {
           taskName
         }))
       } catch ({ code }) {
         if (code === 1) {
-          this.$msg.error(this.$t('task.remove-record-fail', {
+          this.$msg.error(this.t('task.remove-record-fail', {
             taskName
           }))
         }
@@ -256,21 +261,21 @@ export default {
     removeTaskItems (gids) {
       this.$store.dispatch('task/batchRemoveTask', gids)
         .then(() => {
-          this.$msg.success(this.$t('task.batch-delete-task-success'))
+          this.$msg.success(this.t('task.batch-delete-task-success'))
         })
         .catch(({ code }) => {
           if (code === 1) {
-            this.$msg.error(this.$t('task.batch-delete-task-fail'))
+            this.$msg.error(this.t('task.batch-delete-task-fail'))
           }
         })
     },
     handlePauseTask (payload) {
       const { task, taskName } = payload
-      // this.$msg.info(this.$t('task.download-pause-message', { taskName }))
+      // this.$msg.info(this.t('task.download-pause-message', { taskName }))
       this.$store.dispatch('task/pauseTask', task)
         .catch(({ code }) => {
           if (code === 1) {
-            this.$msg.error(this.$t('task.pause-task-fail', { taskName }))
+            this.$msg.error(this.t('task.pause-task-fail', { taskName }))
           }
         })
     },
@@ -279,7 +284,7 @@ export default {
       this.$store.dispatch('task/resumeTask', task)
         .catch(({ code }) => {
           if (code === 1) {
-            this.$msg.error(this.$t('task.resume-task-fail', {
+            this.$msg.error(this.t('task.resume-task-fail', {
               taskName
             }))
           }
@@ -289,7 +294,7 @@ export default {
       const { task } = payload
       this.$store.dispatch('task/stopSeeding', task)
       this.$msg.info({
-        message: this.$t('task.bt-stopping-seeding-tip'),
+        message: this.t('task.bt-stopping-seeding-tip'),
         duration: 8000
       })
     },
@@ -320,7 +325,7 @@ export default {
     handleRevealInFolder (payload) {
       const { path } = payload
       showItemInFolder(path, {
-        errorMsg: this.$t('task.file-not-exist')
+        errorMsg: this.t('task.file-not-exist')
       })
     },
     handleDeleteTask (payload) {
@@ -334,11 +339,11 @@ export default {
 
       dialog.showMessageBox({
         type: 'warning',
-        title: this.$t('task.delete-task'),
-        message: this.$t('task.delete-task-confirm', { taskName }),
-        buttons: [this.$t('app.yes'), this.$t('app.no')],
+        title: this.t('task.delete-task'),
+        message: this.t('task.delete-task-confirm', { taskName }),
+        buttons: [this.t('app.yes'), this.t('app.no')],
         cancelId: 1,
-        checkboxLabel: this.$t('task.delete-task-label'),
+        checkboxLabel: this.t('task.delete-task-label'),
         checkboxChecked: deleteWithFiles
       }).then(({ response, checkboxChecked }) => {
         if (response === 0) {
@@ -357,11 +362,11 @@ export default {
 
       dialog.showMessageBox({
         type: 'warning',
-        title: this.$t('task.remove-record'),
-        message: this.$t('task.remove-record-confirm', { taskName }),
-        buttons: [this.$t('app.yes'), this.$t('app.no')],
+        title: this.t('task.remove-record'),
+        message: this.t('task.remove-record-confirm', { taskName }),
+        buttons: [this.t('app.yes'), this.t('app.no')],
         cancelId: 1,
-        checkboxLabel: this.$t('task.remove-record-label'),
+        checkboxLabel: this.t('task.remove-record-label'),
         checkboxChecked: !!deleteWithFiles
       }).then(({ response, checkboxChecked }) => {
         if (response === 0) {
@@ -393,11 +398,11 @@ export default {
       const count = `${selectedTaskKeyListCount}`
       dialog.showMessageBox({
         type: 'warning',
-        title: this.$t('task.delete-selected-task'),
-        message: this.$t('task.batch-delete-task-confirm', { count }),
-        buttons: [this.$t('app.yes'), this.$t('app.no')],
+        title: this.t('task.delete-selected-task'),
+        message: this.t('task.batch-delete-task-confirm', { count }),
+        buttons: [this.t('app.yes'), this.t('app.no')],
         cancelId: 1,
-        checkboxLabel: this.$t('task.delete-task-label'),
+        checkboxLabel: this.t('task.delete-task-label'),
         checkboxChecked: deleteWithFiles
       }).then(({ response, checkboxChecked }) => {
         if (response === 0) {
@@ -410,7 +415,7 @@ export default {
       const uri = getTaskUri(task)
       navigator.clipboard.writeText(uri)
         .then(() => {
-          this.$msg.success(this.$t('task.copy-link-success'))
+          this.$msg.success(this.t('task.copy-link-success'))
         })
     },
     handleShowTaskInfo (payload) {

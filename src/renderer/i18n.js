@@ -13,7 +13,7 @@ function buildMessages () {
 export function createAppI18n (prefLocale) {
   const lng = getLanguage(prefLocale) || 'en-US'
   return createI18n({
-    legacy: true,
+    legacy: false,
     locale: lng,
     fallbackLocale: 'en-US',
     messages: buildMessages(),

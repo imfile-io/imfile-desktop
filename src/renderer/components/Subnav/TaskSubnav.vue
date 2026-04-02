@@ -44,11 +44,16 @@
 
 <script>
 import { mapState } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import '@/components/Icons/task-start'
 import '@/components/Icons/task-pause'
 import '@/components/Icons/task-stop'
 export default {
   name: 'mo-task-subnav',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   props: {
     current: {
       type: String,
@@ -60,7 +65,7 @@ export default {
       count: state => state.count
     }),
     title () {
-      return this.$t('subnav.task-list')
+      return this.t('subnav.task-list')
     }
   },
   methods: {

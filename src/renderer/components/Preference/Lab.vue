@@ -19,6 +19,7 @@
 <script>
 import is from 'electron-is'
 import { mapState } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
 import { APP_THEME } from '@shared/constants'
 import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
@@ -27,6 +28,10 @@ import '@/components/Icons/info-square'
 
 export default {
   name: 'mo-preference-lab',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   components: {
     [SubnavSwitcher.name]: SubnavSwitcher,
     [Browser.name]: Browser
@@ -59,18 +64,18 @@ export default {
       return result
     },
     title () {
-      return this.$t('preferences.lab')
+      return this.t('preferences.lab')
     },
     subnavs () {
       return [
         {
           key: 'basic',
-          title: this.$t('preferences.basic'),
+          title: this.t('preferences.basic'),
           route: '/preference/basic'
         },
         {
           key: 'advanced',
-          title: this.$t('preferences.advanced'),
+          title: this.t('preferences.advanced'),
           route: '/preference/advanced'
         }
       ]

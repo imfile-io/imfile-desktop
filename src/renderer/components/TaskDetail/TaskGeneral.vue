@@ -84,6 +84,7 @@
 <script>
 import is from 'electron-is'
 import { mapState } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import {
   bytesToSize,
   calcFormLabelWidth,
@@ -102,6 +103,10 @@ import '@/components/Icons/link'
 
 export default {
   name: 'mo-task-general',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   components: {
     [ShowInFolder.name]: ShowInFolder,
     [TaskStatus.name]: TaskStatus
@@ -136,13 +141,13 @@ export default {
     },
     taskFullName () {
       return getTaskName(this.task, {
-        defaultName: this.$t('task.get-task-name'),
+        defaultName: this.t('task.get-task-name'),
         maxLen: -1
       })
     },
     taskName () {
       return getTaskName(this.task, {
-        defaultName: this.$t('task.get-task-name'),
+        defaultName: this.t('task.get-task-name'),
         maxLen: 32
       })
     },
@@ -172,7 +177,7 @@ export default {
       const uri = getTaskUri(task)
       navigator.clipboard.writeText(uri)
         .then(() => {
-          this.$msg.success(this.$t('task.copy-link-success'))
+          this.$msg.success(this.t('task.copy-link-success'))
         })
     }
   }

@@ -63,6 +63,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
 import { commands } from '@/components/CommandManager/instance'
 import { ADD_TASK_TYPE } from '@shared/constants'
@@ -78,6 +79,10 @@ import '@/components/Icons/task-add'
 
 export default {
   name: 'mo-task-actions',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   components: {
   },
   props: ['task'],
@@ -94,10 +99,10 @@ export default {
   },
   methods: {
     refreshSpin () {
-      this.t && clearTimeout(this.t)
+      this.refreshTimerId && clearTimeout(this.refreshTimerId)
 
       this.refreshing = true
-      this.t = setTimeout(() => {
+      this.refreshTimerId = setTimeout(() => {
         this.refreshing = false
       }, 500)
     },
@@ -112,33 +117,33 @@ export default {
     onResumeAllClick () {
       this.$store.dispatch('task/resumeAllTask')
         .then(() => {
-          // this.$msg.success(this.$t('task.resume-all-task-success'))
+          // this.$msg.success(this.t('task.resume-all-task-success'))
         })
         .catch(({ code }) => {
           if (code === 1) {
-            this.$msg.error(this.$t('task.resume-all-task-fail'))
+            this.$msg.error(this.t('task.resume-all-task-fail'))
           }
         })
     },
     onPauseAllClick () {
       this.$store.dispatch('task/pauseAllTask')
         .then(() => {
-          // this.$msg.success(this.$t('task.pause-all-task-success'))
+          // this.$msg.success(this.t('task.pause-all-task-success'))
         })
         .catch(({ code }) => {
           if (code === 1) {
-            this.$msg.error(this.$t('task.pause-all-task-fail'))
+            this.$msg.error(this.t('task.pause-all-task-fail'))
           }
         })
     },
     onPurgeRecordClick () {
       this.$store.dispatch('task/purgeTaskRecord')
         .then(() => {
-          this.$msg.success(this.$t('task.purge-record-success'))
+          this.$msg.success(this.t('task.purge-record-success'))
         })
         .catch(({ code }) => {
           if (code === 1) {
-            this.$msg.error(this.$t('task.purge-record-fail'))
+            this.$msg.error(this.t('task.purge-record-fail'))
           }
         })
     },

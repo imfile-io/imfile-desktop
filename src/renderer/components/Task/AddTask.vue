@@ -202,6 +202,7 @@
 <script>
 import is from 'electron-is'
 import { mapState } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import { isEmpty } from 'lodash'
 import HistoryDirectory from '@/components/Preference/HistoryDirectory'
 import SelectDirectory from '@/components/Native/SelectDirectory'
@@ -218,6 +219,10 @@ import '@/components/Icons/inbox'
 
 export default {
   name: 'mo-add-task',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   components: {
     Close,
     [HistoryDirectory.name]: HistoryDirectory,
@@ -338,7 +343,7 @@ export default {
       if (uris.includes('thunder://')) {
         this.$msg({
           type: 'warning',
-          message: this.$t('task.thunder-link-tips'),
+          message: this.t('task.thunder-link-tips'),
           duration: 6000
         })
       }
@@ -394,7 +399,7 @@ export default {
             })
           }
         } catch (err) {
-          this.$msg.error(this.$t(err.message))
+          this.$msg.error(this.t(err.message))
         }
       })
     }

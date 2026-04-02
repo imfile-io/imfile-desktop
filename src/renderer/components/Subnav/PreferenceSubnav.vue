@@ -27,9 +27,14 @@
 <script>
 import '@/components/Icons/preference-basic'
 import '@/components/Icons/preference-advanced'
+import { useI18n } from 'vue-i18n'
 
 export default {
   name: 'mo-preference-subnav',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   props: {
     current: {
       type: String,
@@ -38,7 +43,7 @@ export default {
   },
   computed: {
     title () {
-      return this.$t('subnav.preferences')
+      return this.t('subnav.preferences')
     }
   },
   methods: {

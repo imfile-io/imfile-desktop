@@ -41,6 +41,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import { bytesToSize, checkTaskIsSeeder, getTaskName } from '@shared/utils'
 import { TASK_STATUS } from '@shared/constants'
 import { openItem, getTaskFullPath } from '@/utils/native'
@@ -50,6 +51,10 @@ import TaskProgressInfo from './TaskProgressInfo'
 
 export default {
   name: 'mo-task-item',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   components: {
     [TaskItemActions.name]: TaskItemActions,
     [TaskProgress.name]: TaskProgress,
@@ -66,13 +71,13 @@ export default {
     }),
     taskFullName () {
       return getTaskName(this.task, {
-        defaultName: this.$t('task.get-task-name'),
+        defaultName: this.t('task.get-task-name'),
         maxLen: -1
       })
     },
     taskName () {
       return getTaskName(this.task, {
-        defaultName: this.$t('task.get-task-name')
+        defaultName: this.t('task.get-task-name')
       })
     },
     isSeeder () {
@@ -102,11 +107,11 @@ export default {
     },
     async openTask () {
       const { taskName } = this
-      this.$msg.info(this.$t('task.opening-task-message', { taskName }))
+      this.$msg.info(this.t('task.opening-task-message', { taskName }))
       const fullPath = getTaskFullPath(this.task)
       const result = await openItem(fullPath)
       if (result) {
-        this.$msg.error(this.$t('task.file-not-exist'))
+        this.$msg.error(this.t('task.file-not-exist'))
       }
     },
     toggleTask () {

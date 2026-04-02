@@ -71,6 +71,7 @@
 <script>
 import is from 'electron-is'
 import { debounce, merge } from 'lodash'
+import { useI18n } from 'vue-i18n'
 import {
   calcFormLabelWidth,
   checkTaskIsBT,
@@ -98,6 +99,10 @@ const cached = {
 
 export default {
   name: 'mo-task-detail',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   components: {
     Compass,
     Grid,
@@ -285,7 +290,7 @@ export default {
     saveFaskFilesSelection () {
       const { gid, filesSelection } = this
       if (filesSelection === NONE_SELECTED_FILES) {
-        this.$msg.warning(this.$t('task.select-at-least-one'))
+        this.$msg.warning(this.t('task.select-at-least-one'))
         return
       }
 

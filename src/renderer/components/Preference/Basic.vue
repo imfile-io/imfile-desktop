@@ -307,6 +307,7 @@
 import is from 'electron-is'
 import { dialog } from '@electron/remote'
 import { mapState } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import { cloneDeep, extend, isEmpty } from 'lodash'
 import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
 import HistoryDirectory from '@/components/Preference/HistoryDirectory'
@@ -401,6 +402,10 @@ const initForm = (config) => {
 
 export default {
   name: 'mo-preference-basic',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   components: {
     [SubnavSwitcher.name]: SubnavSwitcher,
     [HistoryDirectory.name]: HistoryDirectory,
@@ -427,7 +432,7 @@ export default {
     isMas: () => is.mas(),
     isLinux () { return is.linux() },
     title () {
-      return this.$t('preferences.basic')
+      return this.t('preferences.basic')
     },
     maxConcurrentDownloads () {
       return ENGINE_MAX_CONCURRENT_DOWNLOADS
@@ -471,11 +476,11 @@ export default {
     runModes () {
       let result = [
         {
-          label: this.$t('preferences.run-mode-standard'),
+          label: this.t('preferences.run-mode-standard'),
           value: APP_RUN_MODE.STANDARD
         },
         {
-          label: this.$t('preferences.run-mode-tray'),
+          label: this.t('preferences.run-mode-tray'),
           value: APP_RUN_MODE.TRAY
         }
       ]
@@ -484,7 +489,7 @@ export default {
         result = [
           ...result,
           {
-            label: this.$t('preferences.run-mode-hide-tray'),
+            label: this.t('preferences.run-mode-hide-tray'),
             value: APP_RUN_MODE.HIDE_TRAY
           }
         ]
@@ -508,12 +513,12 @@ export default {
       return [
         {
           key: 'basic',
-          title: this.$t('preferences.basic'),
+          title: this.t('preferences.basic'),
           route: '/preference/basic'
         },
         {
           key: 'advanced',
-          title: this.$t('preferences.advanced'),
+          title: this.t('preferences.advanced'),
           route: '/preference/advanced'
         }
       ]
@@ -615,10 +620,10 @@ export default {
           .then(() => {
             this.$store.dispatch('app/fetchEngineOptions')
             this.syncFormConfig()
-            this.$msg.success(this.$t('preferences.save-success-message'))
+            this.$msg.success(this.t('preferences.save-success-message'))
           })
           .catch(() => {
-            this.$msg.success(this.$t('preferences.save-fail-message'))
+            this.$msg.success(this.t('preferences.save-fail-message'))
           })
 
         changedConfig.basic = {}
@@ -650,9 +655,9 @@ export default {
       } else {
         dialog.showMessageBox({
           type: 'warning',
-          title: this.$t('preferences.not-saved'),
-          message: this.$t('preferences.not-saved-confirm'),
-          buttons: [this.$t('app.yes'), this.$t('app.no')],
+          title: this.t('preferences.not-saved'),
+          message: this.t('preferences.not-saved-confirm'),
+          buttons: [this.t('app.yes'), this.t('app.no')],
           cancelId: 1
         }).then(({ response }) => {
           if (response === 0) {

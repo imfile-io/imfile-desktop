@@ -16,9 +16,14 @@
 
 <script>
 import { APP_THEME } from '@shared/constants'
+import { useI18n } from 'vue-i18n'
 
 export default {
   name: 'mo-theme-switcher',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   props: {
     value: {
       type: String,
@@ -36,17 +41,17 @@ export default {
         {
           className: 'theme-item-auto',
           value: APP_THEME.AUTO,
-          text: this.$t('preferences.theme-auto')
+          text: this.t('preferences.theme-auto')
         },
         {
           className: 'theme-item-light',
           value: APP_THEME.LIGHT,
-          text: this.$t('preferences.theme-light')
+          text: this.t('preferences.theme-light')
         },
         {
           className: 'theme-item-dark',
           value: APP_THEME.DARK,
-          text: this.$t('preferences.theme-dark')
+          text: this.t('preferences.theme-dark')
         }
       ]
     }

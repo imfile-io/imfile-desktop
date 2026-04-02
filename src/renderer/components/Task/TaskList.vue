@@ -33,6 +33,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import { cloneDeep, pull } from 'lodash'
 import { getTaskName } from '@shared/utils'
 import DragSelect from '@/components/DragSelect/Index'
@@ -40,6 +41,10 @@ import TaskItem from './TaskItem'
 
 export default {
   name: 'mo-task-list',
+  setup () {
+    const { t } = useI18n()
+    return { t }
+  },
   components: {
     [DragSelect.name]: DragSelect,
     [TaskItem.name]: TaskItem
@@ -66,7 +71,7 @@ export default {
       if (!q) {
         return this.taskList
       }
-      const defaultName = this.$t('task.get-task-name')
+      const defaultName = this.t('task.get-task-name')
       return this.taskList.filter((task) => {
         const name = getTaskName(task, {
           defaultName,
