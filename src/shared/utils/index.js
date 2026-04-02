@@ -59,16 +59,16 @@ export const extractSpeedUnit = (speed = '') => {
 
 export const bitfieldToPercent = (text) => {
   const len = text.length - 1
-  let p
-  let one = 0
+  let hexValue
+  let setBitCount = 0
   for (let i = 0; i < len; i++) {
-    p = parseInt(text[i], 16)
+    hexValue = parseInt(text[i], 16)
     for (let j = 0; j < 4; j++) {
-      one += (p & 1)
-      p >>= 1
+      setBitCount += (hexValue & 1)
+      hexValue >>= 1
     }
   }
-  return Math.floor(one / (4 * len) * 100).toString()
+  return Math.floor(setBitCount / (4 * len) * 100).toString()
 }
 
 export const bitfieldToGraphic = (text) => {
@@ -88,8 +88,13 @@ export const peerIdParser = (str) => {
   let parsed = {}
   let decodedStr
   try {
-    // decodeURI or decodeURIComponent cannot parse '%2DUT360W%2D%92%B6%EBh%1F%A1%DBfo%F6%D5I'
-    decodedStr = unescape(str)
+    // Try decodeURIComponent first; fall back to unescape for malformed encodings like
+    // '%2DUT360W%2D%92%B6%EBh%1F%A1%DBfo%F6%D5I' that decodeURIComponent cannot parse.
+    try {
+      decodedStr = decodeURIComponent(str)
+    } catch (decodeErr) {
+      decodedStr = unescape(str)
+    }
     const buffer = Buffer.from(decodedStr, 'binary')
     parsed = bitTorrentPeerId(buffer)
   } catch (e) {
@@ -536,8 +541,8 @@ export const filterDocumentFiles = (files = []) => {
 }
 
 export const isAudioOrVideo = (uri = '') => {
-  const suffixs = [...AUDIO_SUFFIXES, ...VIDEO_SUFFIXES]
-  const result = suffixs.some((suffix) => {
+  const suffixes = [...AUDIO_SUFFIXES, ...VIDEO_SUFFIXES]
+  const result = suffixes.some((suffix) => {
     return uri.includes(suffix)
   })
   return result
@@ -743,7 +748,7 @@ export const cloneArray = (arr = [], reversed = false) => {
 
 export const pushItemToFixedLengthArray = (arr = [], maxLength, item) => {
   const result = arr.length >= maxLength
-    ? [...arr.slice(1, maxLength - 1), item]
+    ? [...arr.slice(1, maxLength), item]
     : [...arr, item]
   return result
 }
@@ -765,8 +770,19 @@ export const getInverseTheme = (theme) => {
   return (theme === APP_THEME.LIGHT) ? APP_THEME.DARK : APP_THEME.LIGHT
 }
 
-export const changedConfig = { basic: {}, advanced: {} }
-export const backupConfig = { theme: undefined, locale: undefined }
+// Internal shared configuration objects. Not exported directly to avoid
+// exposing mutable module-level state.
+const _changedConfig = { basic: {}, advanced: {} }
+const _backupConfig = { theme: undefined, locale: undefined }
+
+// Factory functions that return new configuration objects with default values.
+export const createChangedConfig = () => ({ basic: {}, advanced: {} })
+export const createBackupConfig = () => ({ theme: undefined, locale: undefined })
+
+// Accessors for the shared configuration instances, preserving existing
+// singleton-like behavior without exporting the mutable objects themselves.
+export const getChangedConfig = () => _changedConfig
+export const getBackupConfig = () => _backupConfig
 
 export {
   normalizeSearchResult,
