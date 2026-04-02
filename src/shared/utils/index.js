@@ -536,8 +536,8 @@ export const filterDocumentFiles = (files = []) => {
 }
 
 export const isAudioOrVideo = (uri = '') => {
-  const suffixs = [...AUDIO_SUFFIXES, ...VIDEO_SUFFIXES]
-  const result = suffixs.some((suffix) => {
+  const suffixes = [...AUDIO_SUFFIXES, ...VIDEO_SUFFIXES]
+  const result = suffixes.some((suffix) => {
     return uri.includes(suffix)
   })
   return result
