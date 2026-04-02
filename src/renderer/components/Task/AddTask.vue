@@ -164,7 +164,7 @@
         </el-form-item>
       </div>
     </el-form>
-    <template v-slot:title>
+    <template #header>
 <button
 
       type="button"
