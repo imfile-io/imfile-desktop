@@ -38,7 +38,7 @@
     "node": ">=24.0.0"
   },
   "dependencies": {
-    "node-fetch": "^2.7.0",
+    "node-fetch": "^3.0.0",
     "ws": "^8.20.0"
   },
   "devDependencies": {

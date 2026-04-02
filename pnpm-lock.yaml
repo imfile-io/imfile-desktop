@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       node-fetch:
-        specifier: ^2.7.0
-        version: 2.7.0(encoding@0.1.13)
+        specifier: ^3.0.0
+        version: 3.3.2
       ws:
         specifier: ^8.20.0
         version: 8.20.0
