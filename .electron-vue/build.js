@@ -110,12 +110,23 @@ function web (deleteSync) {
   deleteSync(['dist/web/*', '!.gitkeep'])
   webConfig.mode = 'production'
   Webpack(webConfig, (err, stats) => {
-    if (err || stats.hasErrors()) console.log(err)
-
-    console.log(stats.toString({
-      chunks: false,
-      colors: true
-    }))
+    if (err || (stats && stats.hasErrors())) {
+      if (err) {
+        console.error(err)
+      }
+      if (stats && stats.hasErrors()) {
+        console.error(stats.toString({
+          chunks: false,
+          colors: true,
+          errors: true
+        }))
+      }
+    } else {
+      console.log(stats.toString({
+        chunks: false,
+        colors: true
+      }))
+    }
 
     process.exit()
   })
