@@ -317,7 +317,7 @@ import { availableLanguages, getLanguage } from '@shared/locales'
 import { getLocaleManager } from '@/components/Locale'
 import {
   calcFormLabelWidth,
-  changedConfig,
+  getChangedConfig,
   checkIsNeedRestart,
   convertLineToComma,
   diffConfig,
@@ -416,7 +416,7 @@ export default {
     const { locale } = this.$store.state.preference.config
     const formOriginal = initForm(this.$store.state.preference.config)
     let form = {}
-    form = initForm(extend(form, formOriginal, changedConfig.basic))
+    form = initForm(extend(form, formOriginal, getChangedConfig().basic))
 
     return {
       form,
@@ -590,7 +590,7 @@ export default {
 
         const data = {
           ...diffConfig(this.formOriginal, this.form),
-          ...changedConfig.advanced
+          ...getChangedConfig().advanced
         }
 
         const {
@@ -626,8 +626,8 @@ export default {
             this.$msg.success(this.t('preferences.save-fail-message'))
           })
 
-        changedConfig.basic = {}
-        changedConfig.advanced = {}
+        getChangedConfig().basic = {}
+        getChangedConfig().advanced = {}
 
         if (this.isRenderer) {
           if ('autoHideWindow' in data) {
@@ -646,11 +646,11 @@ export default {
     }
   },
   beforeRouteLeave (to, from, next) {
-    changedConfig.basic = diffConfig(this.formOriginal, this.form)
+    getChangedConfig().basic = diffConfig(this.formOriginal, this.form)
     if (to.path === '/preference/advanced') {
       next()
     } else {
-      if (isEmpty(changedConfig.basic) && isEmpty(changedConfig.advanced)) {
+      if (isEmpty(getChangedConfig().basic) && isEmpty(getChangedConfig().advanced)) {
         next()
       } else {
         dialog.showMessageBox({
@@ -661,8 +661,8 @@ export default {
           cancelId: 1
         }).then(({ response }) => {
           if (response === 0) {
-            changedConfig.basic = {}
-            changedConfig.advanced = {}
+            getChangedConfig().basic = {}
+            getChangedConfig().advanced = {}
             next()
           }
         })
