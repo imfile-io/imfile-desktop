@@ -75,12 +75,12 @@ function init (config) {
   app.use(store)
   app.use(router)
 
-  global.app = app.mount('#app')
+  const mountedApp = app.mount('#app')
 
-  global.app.commands = commands
+  app.config.globalProperties.$commands = commands
   require('./commands')
 
-  global.app.trayWorker = initTrayWorker()
+  app.config.globalProperties.$trayWorker = initTrayWorker()
 
   setTimeout(() => {
     loading.close()
