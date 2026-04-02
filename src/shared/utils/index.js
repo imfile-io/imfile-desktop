@@ -743,7 +743,7 @@ export const cloneArray = (arr = [], reversed = false) => {
 
 export const pushItemToFixedLengthArray = (arr = [], maxLength, item) => {
   const result = arr.length >= maxLength
-    ? [...arr.slice(1, maxLength - 1), item]
+    ? [...arr.slice(1, maxLength), item]
     : [...arr, item]
   return result
 }
