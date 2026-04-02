@@ -30,7 +30,7 @@
             :status="taskStatus"
           />
         </div>
-        <div class="flex flex-row justify-between mt-2">
+        <div class="flex flex-row justify-between mt-1">
           <mo-task-progress-info :task="task" />
           <mo-task-item-actions mode="LIST" :task="task" />
         </div>
@@ -119,8 +119,8 @@ export default {
 <style lang="scss">
 .task-item {
   position: relative;
-  min-height: 80px;
-  padding: 16px 12px;
+  min-height: 64px;
+  padding: 12px 12px;
   background-color: $--background-color-gray;
   border: 2px solid $--background-color-gray;
   border-radius: 0px;
@@ -139,7 +139,7 @@ export default {
 }
 .task-name {
   color: $--color-black;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   word-break: break-all;
   min-height: 26px;
   & > span {
@@ -155,7 +155,7 @@ export default {
 .task-progress-num {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   min-height: 26px;
   & > span {
     font-size: 14px;

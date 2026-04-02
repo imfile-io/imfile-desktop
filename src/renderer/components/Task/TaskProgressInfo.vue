@@ -1,13 +1,7 @@
 <template>
-  <el-row class="w-1/2 task-progress-info">
-    <el-col
-      class="task-progress-info-left"
-      :xs="12"
-      :sm="7"
-      :md="6"
-      :lg="6"
-    >
-    <div class="task-speed-info" v-if="isActive">
+  <div class="task-progress-info">
+    <div class="task-progress-info-left">
+      <div class="task-speed-info" v-if="isActive">
         <div class="task-speed-text">
           <i><mo-icon name="arrow-up" width="10" height="14" /></i>
           <span>{{ bytesToSize(task.uploadSpeed) }}/s</span>
@@ -40,12 +34,8 @@
           <span>{{ task.connections }}</span>
         </div>
       </div>
-    </el-col>
-    <el-col
-      class="task-progress-info-right"
-    >
-    </el-col>
-  </el-row>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -92,22 +82,33 @@ export default {
 </script>
 
 <style lang="scss">
+.task-progress-info {
+  flex: 1;
+  min-width: 0;
+}
+
 .task-speed-info {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.625rem;
   font-size: 0.75rem;
   color: #9B9B9B;
   width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
 
   & > .task-speed-text {
     margin-left: 0;
-    margin-bottom: 0.375rem;
+    margin-bottom: 0;
     font-size: 0.75rem;
     line-height: 0.875rem;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    width: 100%;
+    width: auto;
+    flex-shrink: 0;
 
     &:last-of-type {
       margin-bottom: 0;
@@ -125,5 +126,6 @@ export default {
 .task-progress-info-left {
   min-height: 0.875rem;
   text-align: left;
+  width: 100%;
 }
 </style>
