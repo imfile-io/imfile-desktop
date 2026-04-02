@@ -113,7 +113,7 @@
     "webpack-cli": "^7.0.0",
     "webpack-dev-server": "^5.0.0",
     "webpack-hot-middleware": "^2.26.1",
-    "webpack-merge": "^5.10.0",
+    "webpack-merge": "^6.0.0",
     "worker-loader": "^3.0.8"
   },
   "pnpm": {
