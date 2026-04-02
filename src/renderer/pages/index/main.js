@@ -15,7 +15,7 @@ import Msg from '@/components/Msg'
 import { commands } from '@/components/CommandManager/instance'
 import TrayWorker from '@/workers/tray.worker'
 
-import '@/components/Theme/tailwind-output.css'
+import '@/components/Theme/tailwind.css'
 import '@/components/Theme/Index.scss'
 
 const updateTray = is.renderer()

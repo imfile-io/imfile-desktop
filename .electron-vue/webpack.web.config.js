@@ -14,6 +14,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const devMode = process.env.NODE_ENV !== 'production'
 
+const tailwindEntryCss = path.resolve(__dirname, '../src/renderer/components/Theme/tailwind.css')
+
 /**
  * List of node_modules to include in webpack bundle
  *
@@ -90,6 +92,16 @@ let webConfig = {
       },
       {
         test: /\.css$/,
+        include: tailwindEntryCss,
+        use: [
+          devMode ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
+          'css-loader',
+          'postcss-loader'
+        ]
+      },
+      {
+        test: /\.css$/,
+        exclude: tailwindEntryCss,
         use: [
           devMode ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
           'css-loader'
