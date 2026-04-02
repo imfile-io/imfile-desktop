@@ -4,7 +4,6 @@ process.env.NODE_ENV = 'production'
 
 const { say } = require('cfonts')
 const chalk = require('chalk')
-const del = require('del')
 const Webpack = require('webpack')
 const Multispinner = require('@motrix/multispinner')
 
@@ -17,24 +16,30 @@ const errorLog = chalk.bgRed.white(' ERROR ') + ' '
 const okayLog = chalk.bgBlue.white(' OKAY ') + ' '
 const isCI = process.env.CI || false
 
-if (process.env.BUILD_TARGET === 'clean') {
-  clean()
-} else if (process.env.BUILD_TARGET === 'web') {
-  web()
-} else {
-  build()
-}
+;(async () => {
+  const { deleteSync } = await import('del')
+  if (process.env.BUILD_TARGET === 'clean') {
+    clean(deleteSync)
+  } else if (process.env.BUILD_TARGET === 'web') {
+    web(deleteSync)
+  } else {
+    build(deleteSync)
+  }
+})().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})
 
-function clean () {
-  del.sync(['release/*', '!.gitkeep'])
+function clean (deleteSync) {
+  deleteSync(['release/*', '!.gitkeep'])
   console.log(`\n${doneLog}\n`)
   process.exit()
 }
 
-function build () {
+function build (deleteSync) {
   greeting()
 
-  del.sync(['dist/electron/*', '!.gitkeep'])
+  deleteSync(['dist/electron/*', '!.gitkeep'])
 
   const tasks = ['main', 'renderer']
   const m = new Multispinner(tasks, {
@@ -101,7 +106,7 @@ function pack (config) {
   })
 }
 
-function web () {
+function web (deleteSync) {
   deleteSync(['dist/web/*', '!.gitkeep'])
   webConfig.mode = 'production'
   Webpack(webConfig, (err, stats) => {
