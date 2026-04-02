@@ -139,8 +139,8 @@ importers:
         specifier: ^10.0.0
         version: 10.8.0(@stylistic/eslint-plugin@4.4.1(eslint@9.39.4(jiti@1.21.7))(typescript@6.0.2))(eslint@9.39.4(jiti@1.21.7))(vue-eslint-parser@10.4.0(eslint@9.39.4(jiti@1.21.7)))
       eslint-webpack-plugin:
-        specifier: ^4.2.0
-        version: 4.2.0(eslint@9.39.4(jiti@1.21.7))(webpack@5.105.4)
+        specifier: ^5.0.0
+        version: 5.0.3(eslint@9.39.4(jiti@1.21.7))(webpack@5.105.4)
       file-loader:
         specifier: ^6.2.0
         version: 6.2.0(webpack@5.105.4)
@@ -1382,9 +1382,6 @@ packages:
 
   '@types/eslint-scope@3.7.7':
     resolution: {integrity: sha512-MzMFlSLBqNF2gcHWO0G1vP/YQyfvrxZ0bF+u7mzUdZ1/xK4A4sru+nraZz5i3iEIk1l1uyicaDVTB4QbbEkAYg==}
-
-  '@types/eslint@8.56.12':
-    resolution: {integrity: sha512-03ruubjWyOHlmljCVoxSuNDdmfZDzsrrz0P2LeJsOXr+ZwFQ+0yQIwNCwt/GYhV7Z31fgtXJTAEs+FYlEL851g==}
 
   '@types/eslint@9.6.1':
     resolution: {integrity: sha512-FXx2pKgId/WyYo2jXw63kk7/+TY7u7AziEJxJAnSFzHlqTAS3Ync6SvgYAN/k4/PQpnnVuzoMuVnByKK2qp0ag==}
@@ -2810,9 +2807,9 @@ packages:
     resolution: {integrity: sha512-tD40eHxA35h0PEIZNeIjkHoDR4YjjJp34biM0mDvplBe//mB+IHCqHDGV7pxF+7MklTvighcCPPZC7ynWyjdTA==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  eslint-webpack-plugin@4.2.0:
-    resolution: {integrity: sha512-rsfpFQ01AWQbqtjgPRr2usVRxhWDuG0YDYcG8DJOteD3EFnpeuYuOwk0PQiN7PRBTqS6ElNdtPZPggj8If9WnA==}
-    engines: {node: '>= 14.15.0'}
+  eslint-webpack-plugin@5.0.3:
+    resolution: {integrity: sha512-P2Id4RMSMQMwMEuw3W9x3n2qDbKPeD+tehWMY3ENFsoSPKNZ9i3WTZEsFE7NeQIpNebhNEGw8qorvpLVq1rK1g==}
+    engines: {node: '>= 18.12.0'}
     peerDependencies:
       eslint: ^8.0.0 || ^9.0.0
       webpack: ^5.0.0
@@ -6912,11 +6909,6 @@ snapshots:
       '@types/eslint': 9.6.1
       '@types/estree': 1.0.8
 
-  '@types/eslint@8.56.12':
-    dependencies:
-      '@types/estree': 1.0.8
-      '@types/json-schema': 7.0.15
-
   '@types/eslint@9.6.1':
     dependencies:
       '@types/estree': 1.0.8
@@ -8541,10 +8533,11 @@ snapshots:
 
   eslint-visitor-keys@5.0.1: {}
 
-  eslint-webpack-plugin@4.2.0(eslint@9.39.4(jiti@1.21.7))(webpack@5.105.4):
+  eslint-webpack-plugin@5.0.3(eslint@9.39.4(jiti@1.21.7))(webpack@5.105.4):
     dependencies:
-      '@types/eslint': 8.56.12
+      '@types/eslint': 9.6.1
       eslint: 9.39.4(jiti@1.21.7)
+      flatted: 3.4.2
       jest-worker: 29.7.0
       micromatch: 4.0.8
       normalize-path: 3.0.0
