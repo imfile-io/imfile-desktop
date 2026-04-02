@@ -53,8 +53,8 @@ export default {
   },
   data () {
     return {
-      x: false,
-      y: false,
+      x: undefined,
+      y: undefined,
       childrenWidth: 0,
       childrenHeight: 0,
       outerScale: 1

@@ -9,6 +9,9 @@
         <li @click="showAddTask()" class="flex items-center justify-center non-draggable">
           <mo-icon name="menu-add" width="30" height="30" />
         </li>
+        <li @click="nav('/search')" class="flex items-center justify-center non-draggable">
+          <mo-icon name="menu-search" width="30" height="30" />
+        </li>
       </ul>
       <ul class="menu bottom-menu">
         <li @click="nav('/preference')" class="flex items-center justify-center non-draggable">
@@ -29,6 +32,7 @@ import { ADD_TASK_TYPE } from '@shared/constants'
 import LogoMini from '@/components/Logo/LogoMini'
 import '@/components/Icons/menu-task'
 import '@/components/Icons/menu-add'
+import '@/components/Icons/menu-search'
 import '@/components/Icons/menu-preference'
 import '@/components/Icons/menu-about'
 

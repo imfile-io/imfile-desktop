@@ -132,6 +132,29 @@ export default class Api {
     return ipcRenderer.invoke('goed2kd:remove-download', { hash })
   }
 
+  async startGoed2kSearch (params = {}) {
+    let res = await ipcRenderer.invoke('goed2kd:search-start', params)
+    if (res && res.ok) return res
+    const msg = (res && res.message) || ''
+    if (msg.includes('SEARCH_ALREADY_RUNNING')) {
+      await ipcRenderer.invoke('goed2kd:search-stop')
+      res = await ipcRenderer.invoke('goed2kd:search-start', params)
+    }
+    return res
+  }
+
+  async getGoed2kCurrentSearch () {
+    return ipcRenderer.invoke('goed2kd:search-current')
+  }
+
+  async stopGoed2kSearch () {
+    return ipcRenderer.invoke('goed2kd:search-stop')
+  }
+
+  async downloadGoed2kSearchResult (hash, options = {}) {
+    return ipcRenderer.invoke('goed2kd:search-download', { hash, options })
+  }
+
   async pauseTaskByEngine (task = {}) {
     const id = task.id || task.gid
     if (task.engine === 'goed2kd') {

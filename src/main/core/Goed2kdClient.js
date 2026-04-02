@@ -70,4 +70,40 @@ export default class Goed2kdClient {
   removeTransfer (hash) {
     return this.request(`/transfers/${hash}`, { method: 'DELETE' })
   }
+
+  startSearch (body = {}) {
+    return this.request('/searches', {
+      method: 'POST',
+      body: {
+        query: body.query || '',
+        scope: body.scope || 'all',
+        min_size: body.min_size ?? 0,
+        max_size: body.max_size ?? 0,
+        min_sources: body.min_sources ?? 0,
+        min_complete_sources: body.min_complete_sources ?? 0,
+        file_type: body.file_type || '',
+        extension: body.extension || ''
+      }
+    })
+  }
+
+  getCurrentSearch () {
+    return this.request('/searches/current')
+  }
+
+  stopSearch () {
+    return this.request('/searches/current/stop', { method: 'POST' })
+  }
+
+  downloadSearchResult (hash, body = {}) {
+    const h = encodeURIComponent(String(hash || '').trim())
+    const payload = {}
+    if (body.target_dir) payload.target_dir = body.target_dir
+    if (body.target_name) payload.target_name = body.target_name
+    if (body.paused !== undefined) payload.paused = body.paused
+    return this.request(`/searches/current/results/${h}/download`, {
+      method: 'POST',
+      body: payload
+    })
+  }
 }

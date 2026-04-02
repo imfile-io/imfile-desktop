@@ -23,6 +23,11 @@ export default createRouter({
           props: true
         },
         {
+          path: '/search',
+          name: 'search',
+          component: () => import('@/components/Search/Index.vue')
+        },
+        {
           path: '/preference',
           name: 'preference',
           component: () => import('@/components/Preference/Index.vue'),

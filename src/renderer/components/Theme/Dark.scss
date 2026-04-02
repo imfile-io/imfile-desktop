@@ -1,4 +1,7 @@
 .theme-dark {
+  /* Element Plus 遮罩（v-loading、dialog 等）：默认 --el-mask-color 偏浅，列表 loading 会发白 */
+  --el-mask-color: rgba(0, 0, 0, 0.72);
+
   .title-bar .window-actions > li {
     color: $--dk-titlebar-actions-color;
     &:hover {
@@ -150,19 +153,93 @@
     background-color: #4a4a4a;
   }
 
- 
-
-  .el-input.is-disabled .el-input__inner {
-    background-color: #373737;
-    border-color: #5f5f5f;
-    color: #aaa;
+  /*
+   * Element Plus 2.x：输入区域背景在 .el-input__wrapper，原生 input 为透明；
+   * 仅给 .el-input__inner 上色会在 wrapper 内边距处露出浅色（左右白条）。
+   */
+  .el-input:not(.is-disabled) .el-input__wrapper {
+    background-color: $--dk--background-color-gray !important;
+    box-shadow: 0 0 0 1px #2e2e2e inset !important;
   }
 
-  // .el-input-group__append,
+  .el-input:not(.is-disabled) .el-input__wrapper:hover {
+    box-shadow: 0 0 0 1px #454545 inset !important;
+  }
+
+  .el-input:not(.is-disabled) .el-input__wrapper.is-focus {
+    box-shadow: 0 0 0 1px $--color-primary inset !important;
+  }
+
+  .el-input:not(.is-disabled) .el-input__inner {
+    color: #eee !important;
+    -webkit-text-fill-color: #eee !important;
+
+    &::placeholder {
+      color: #777 !important;
+    }
+  }
+
+  .el-input.is-disabled .el-input__wrapper {
+    background-color: #2f2f2f !important;
+    box-shadow: 0 0 0 1px #4a4a4a inset !important;
+  }
+
+  .el-input.is-disabled .el-input__inner {
+    color: #aaa !important;
+    -webkit-text-fill-color: #aaa !important;
+  }
+
+  /* append/prepend 使用 fill-color-light，深色下需与输入区一致（原先 append 未覆盖） */
+  .el-input-group__append,
   .el-input-group__prepend {
-    background-color: #333;
-    border-color: #5f5f5f;
-    color: #e7e7e7;
+    background-color: $--dk--background-color-gray !important;
+    color: #e7e7e7 !important;
+  }
+
+  .el-input-group__append {
+    box-shadow:
+      0 1px 0 0 #3a3a3a inset,
+      0 -1px 0 0 #3a3a3a inset,
+      -1px 0 0 0 #3a3a3a inset !important;
+  }
+
+  .el-input-group__prepend {
+    box-shadow:
+      1px 0 0 0 #3a3a3a inset,
+      0 1px 0 0 #3a3a3a inset,
+      0 -1px 0 0 #3a3a3a inset !important;
+  }
+
+  .el-select:not(.is-disabled) .el-select__wrapper {
+    background-color: $--dk--background-color-gray !important;
+    box-shadow: 0 0 0 1px #2e2e2e inset !important;
+  }
+
+  .el-select:not(.is-disabled) .el-select__wrapper:hover {
+    box-shadow: 0 0 0 1px #454545 inset !important;
+  }
+
+  .el-select:not(.is-disabled) .el-select__wrapper.is-focused {
+    box-shadow: 0 0 0 1px $--color-primary inset !important;
+  }
+
+  .el-select.is-disabled .el-select__wrapper {
+    background-color: #2f2f2f !important;
+    box-shadow: 0 0 0 1px #4a4a4a inset !important;
+  }
+
+  .el-textarea__inner {
+    background-color: $--dk--background-color-gray !important;
+    color: #eee !important;
+    box-shadow: 0 0 0 1px #2e2e2e inset !important;
+
+    &::placeholder {
+      color: #777 !important;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 1px $--color-primary inset !important;
+    }
   }
 
   .el-input-number__increase,
@@ -189,20 +266,25 @@
   }
 
   .el-form-item__content {
-    .el-textarea__inner, .el-input__inner {
-      background-color: $--dk--background-color-gray !important;
+    /* 与全局 EP2 input 规则一致：内层 input 透明，背景在 .el-input__wrapper */
+    .el-input__inner {
+      background-color: transparent !important;
       color: #eee;
-      &:focus {
-        outline: none;
-        border-color: $--color-primary;
-      }
+
       &::placeholder {
         color: #777;
       }
     }
-    .el-input-group__append {
+
+    .el-textarea__inner {
       background-color: $--dk--background-color-gray !important;
+      color: #eee;
+
+      &::placeholder {
+        color: #777;
+      }
     }
+
     .el-button.select-directory.el-button--default.el-button--mini {
       background-color: $--dk--background-color-gray !important;
     }
@@ -318,6 +400,46 @@
     }
   }
 
+  /*
+   * input-group 内按钮：EP 对 append/prepend 里 button 使用 background: transparent、color: inherit，
+   * 主按钮会继承浅色/异常对比；强制恢复主色与可读文字。
+   */
+  .el-input-group__append .el-button.el-button--primary,
+  .el-input-group__prepend .el-button.el-button--primary {
+    background-color: $--color-primary !important;
+    border-color: $--color-primary !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+
+    &:hover,
+    &:focus {
+      background-color: $--color-primary !important;
+      border-color: $--color-primary !important;
+      color: #fff !important;
+    }
+  }
+
+  /*
+   * text 类型按钮：hover 使用 fill-color-light，深色下会变成白底看不见字
+   */
+  .el-button.is-text:not(.is-disabled) {
+    &:hover,
+    &:focus,
+    &:focus-visible {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+      color: #e8e8e8 !important;
+    }
+  }
+
+  .el-button.is-text.el-button--primary:not(.is-disabled) {
+    &:hover,
+    &:focus,
+    &:focus-visible {
+      background-color: rgba(0, 117, 255, 0.18) !important;
+      color: $--color-primary-light-4 !important;
+    }
+  }
+
   .el-button--danger.is-plain {
     color: #ff6157;
     background-color: $--color-text-primary;
@@ -385,43 +507,57 @@
     border-color: $--dk-table-border-color;
   }
 
+  /*
+   * EP2 表格单元格为 td.el-table__cell，条纹行使用 var(--el-fill-color-lighter)，深色下呈浅底灰字；
+   * 需覆盖 .el-table__cell 并提高优先级。
+   */
   .el-table {
     background-color: $--dk-table-background;
     color: $--dk-table-text-color;
+
     tr {
       background-color: $--dk-table-background;
     }
-    th {
-      background-color: $--dk-table-th-background;
-      color: $--dk-table-text-color;
+
+    th.el-table__cell {
+      background-color: $--dk-table-th-background !important;
+      color: $--dk-table-text-color !important;
+      border-bottom-color: $--dk-table-border-color;
     }
+
+    td.el-table__cell {
+      background-color: $--dk-table-background !important;
+      color: $--dk-table-text-color !important;
+      border-bottom-color: $--dk-table-border-color;
+    }
+
     th.is-leaf,
     td {
-      background-color: $--dk-table-background;
-      color: $--dk-table-text-color;
       border-bottom-color: $--dk-table-border-color;
     }
   }
-  .el-table thead th.is-leaf {
-    background-color: $--dk-table-th-background;
+
+  .el-table thead th.is-leaf.el-table__cell {
+    background-color: $--dk-table-th-background !important;
   }
 
-  .el-table--enable-row-hover .el-table__body tr:hover > td,
+  .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+    background-color: $--dk-table-striped-background !important;
+    color: $--dk-table-text-color !important;
+  }
+
+  .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell,
   .el-table--enable-row-hover
     .el-table__body
     tr.el-table__row--striped:hover
-    > td {
-    background-color: $--dk-table-hover-background;
+    > td.el-table__cell {
+    background-color: $--dk-table-hover-background !important;
   }
 
   .el-table--group::after,
   .el-table--border::after,
   .el-table::before {
     background-color: $--dk-table-border-color;
-  }
-
-  .el-table--striped .el-table__body tr.el-table__row--striped td {
-    background-color: $--dk-table-striped-background;
   }
 
   /* Tabs */
@@ -438,6 +574,34 @@
 
   .form-preference .el-form-item__content {
     color: $--dk-preference-form-text-color;
+
+    .el-input__wrapper {
+      background-color: $--dk--background-color-gray !important;
+      box-shadow: 0 0 0 1px #2e2e2e inset !important;
+    }
+
+    .el-input__inner {
+      background-color: transparent !important;
+      color: #eee !important;
+      -webkit-text-fill-color: #eee !important;
+    }
+
+    .el-textarea__inner {
+      background-color: $--dk--background-color-gray !important;
+      color: #eee !important;
+    }
+
+    .el-input-group__append,
+    .el-input-group__prepend {
+      background-color: $--dk--background-color-gray !important;
+    }
+  }
+
+  /* 搜索页 input-group：避免与按钮接缝处透出浅色 */
+  .search-page .search-toolbar .el-input-group {
+    background-color: $--dk--background-color-gray;
+    border-radius: var(--el-border-radius-base);
+    align-items: stretch;
   }
 
   .form-preference .el-switch__label {

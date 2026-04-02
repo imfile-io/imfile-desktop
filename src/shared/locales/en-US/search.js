@@ -1,0 +1,21 @@
+export default {
+  'title': 'Search',
+  'placeholder': 'Search ED2K resources on the network',
+  'initial-hint': 'Enter keywords and click Search to view results',
+  'search': 'Search',
+  'name': 'Name',
+  'size': 'Size',
+  'source': 'Source',
+  'download': 'Download',
+  'empty': 'No results',
+  'query-required': 'Please enter a search keyword',
+  'engine-not-ready': 'Download engine (goed2kd) is not ready. Check that it is running.',
+  'search-failed': 'Search failed',
+  'searching': 'Searching…',
+  'stop-search': 'Stop',
+  'reset': 'Reset',
+  'reset-done': 'Search has been reset',
+  'download-failed': 'Failed to add download',
+  'download-started': 'Download task added',
+  'results-truncated': 'Only the first {max} results are kept for performance. Try a narrower keyword and search again.'
+}

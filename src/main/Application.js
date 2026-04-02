@@ -1178,5 +1178,46 @@ export default class Application extends EventEmitter {
         return { ok: false, message: err.message }
       }
     })
+
+    ipcMain.handle('goed2kd:search-start', async (event, payload = {}) => {
+      try {
+        const data = await this.goed2kdClient.startSearch(payload || {})
+        return { ok: true, data }
+      } catch (err) {
+        logger.warn('[imFile] goed2kd search start failed:', err.message)
+        return { ok: false, message: err.message }
+      }
+    })
+
+    ipcMain.handle('goed2kd:search-current', async () => {
+      try {
+        const data = await this.goed2kdClient.getCurrentSearch()
+        return { ok: true, data }
+      } catch (err) {
+        logger.warn('[imFile] goed2kd search current failed:', err.message)
+        return { ok: false, message: err.message }
+      }
+    })
+
+    ipcMain.handle('goed2kd:search-stop', async () => {
+      try {
+        const data = await this.goed2kdClient.stopSearch()
+        return { ok: true, data }
+      } catch (err) {
+        logger.warn('[imFile] goed2kd search stop failed:', err.message)
+        return { ok: false, message: err.message }
+      }
+    })
+
+    ipcMain.handle('goed2kd:search-download', async (event, payload = {}) => {
+      try {
+        const hash = payload.hash || ''
+        const data = await this.goed2kdClient.downloadSearchResult(hash, payload.options || {})
+        return { ok: true, data }
+      } catch (err) {
+        logger.warn('[imFile] goed2kd search download failed:', err.message)
+        return { ok: false, message: err.message }
+      }
+    })
   }
 }

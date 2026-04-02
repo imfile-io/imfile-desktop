@@ -1,0 +1,21 @@
+export default {
+  'title': '搜索',
+  'placeholder': '搜索网络 ED2K 资源',
+  'initial-hint': '输入关键词后点击搜索查看结果',
+  'search': '搜索',
+  'name': '名称',
+  'size': '大小',
+  'source': '来源',
+  'download': '下载',
+  'empty': '无结果',
+  'query-required': '请输入搜索关键词',
+  'engine-not-ready': '下载引擎（goed2kd）未就绪，请确认其已运行。',
+  'search-failed': '搜索失败',
+  'searching': '正在搜索…',
+  'stop-search': '停止搜索',
+  'reset': '重置',
+  'reset-done': '已重置搜索',
+  'download-failed': '添加下载失败',
+  'download-started': '已添加下载任务',
+  'results-truncated': '为减轻界面负担，仅保留前 {max} 条结果；可缩小关键词范围后重新搜索。'
+}

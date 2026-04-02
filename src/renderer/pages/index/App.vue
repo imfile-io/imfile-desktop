@@ -1,5 +1,5 @@
 <template>
-  <el-config-provider :locale="elementPlusLocale" :direction="direction" size="small">
+  <el-config-provider :locale="elementPlusLocale" size="small">
     <div id="app">
       <mo-title-bar
         v-if="isRenderer"

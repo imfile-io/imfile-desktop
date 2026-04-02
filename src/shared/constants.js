@@ -48,6 +48,8 @@ export const GOED2KD_DEFAULT_RPC_HOST = '127.0.0.1'
 export const GOED2KD_DEFAULT_RPC_PORT = 18080
 export const GOED2KD_HEALTH_RETRY_INTERVAL_MS = 300
 export const GOED2KD_HEALTH_MAX_RETRIES = 40
+/** goed2k 搜索结果在界面中保留的最大条数，避免过多 DOM 拖垮渲染 */
+export const GOED2K_SEARCH_MAX_RESULTS = 1000
 
 export const UNKNOWN_PEERID = '%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00'
 export const UNKNOWN_PEERID_NAME = 'unknown'

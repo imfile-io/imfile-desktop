@@ -363,8 +363,14 @@ const actions = {
     if ([ERROR, COMPLETE, REMOVED].indexOf(status) === -1) {
       return
     }
-    return api.removeTaskRecord({ gid })
-      .finally(() => dispatch('fetchList'))
+    const request = task.engine === 'goed2kd'
+      ? api.removeTaskByEngine(task)
+      : api.removeTaskRecord({ gid })
+    return request
+      .finally(() => {
+        dispatch('fetchList')
+        dispatch('saveSession')
+      })
   },
   saveSession () {
     api.saveSession()
