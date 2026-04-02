@@ -103,7 +103,7 @@
     "unplugin-auto-import": "^19.0.0",
     "unplugin-vue-components": "^28.0.0",
     "vue": "^3.5.13",
-    "vue-i18n": "^9.14.2",
+    "vue-i18n": "^11.0.0",
     "vue-loader": "^17.4.2",
     "vue-router": "^4.5.0",
     "vue-style-loader": "^4.1.3",
