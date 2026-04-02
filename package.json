@@ -105,7 +105,7 @@
     "unplugin-vue-components": "^32.0.0",
     "vue": "^3.5.13",
     "vue-eslint-parser": "^10.0.0",
-    "vue-i18n": "^11.0.0",
+    "vue-i18n": "^11.3.0",
     "vue-loader": "^17.4.2",
     "vue-router": "^4.5.0",
     "vue-style-loader": "^4.1.3",
