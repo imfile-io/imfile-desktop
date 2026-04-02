@@ -51,43 +51,53 @@ export default {
   }
   .el-form-item__content {
     color: $--color-text-regular;
+
+    .el-button.select-directory.el-button--default.el-button--mini {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .el-input-number__decrease.is-disabled {
+      display: none !important;
+    }
+
+    .el-input-number__increase {
+      display: none !important;
+    }
+
+    .el-input-number__decrease {
+      display: none !important;
+    }
   }
+
   .form-item-sub {
     margin-bottom: 8px;
     &:last-of-type {
       margin-bottom: 0;
     }
-    .el-input__inner{
-      background-color: $--background-color-gray !important;
-      border: none !important;
-    }
   }
-  .el-form-item__content{
-    .el-input__inner, .el-input-group__append, .el-textarea__inner{
+}
+
+/* 仅浅色写死浅灰底；深色由 Theme/Dark.scss + EP2 wrapper 处理，勿全局覆盖 .el-input__inner */
+html.theme-light .form-preference {
+  .form-item-sub .el-input__inner {
+    background-color: $--background-color-gray !important;
+    border: none !important;
+  }
+  .el-form-item__content {
+    .el-input__inner,
+    .el-input-group__append,
+    .el-textarea__inner {
       background-color: $--background-color-gray !important;
       border: none !important;
       color: $--color-text-regular;
     }
-    /* .el-input-group__append{
+    .el-button.select-directory.el-button--default.el-button--mini {
       background-color: $--background-color-gray !important;
-      border: none !important;
-    } */
-    .el-button.select-directory.el-button--default.el-button--mini{
-      background-color: $--background-color-gray !important;
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-    .el-input-number__decrease.is-disabled{
-      display: none !important;
-    }
-    .el-input-number__increase{
-      display: none !important;
-    }
-    .el-input-number__decrease{
-      display: none !important;
     }
   }
 }
+
 .form-actions {
   position: sticky;
   bottom: 0;
