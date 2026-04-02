@@ -1,4 +1,7 @@
 .theme-dark {
+  /* Element Plus 遮罩（v-loading、dialog 等）：默认 --el-mask-color 偏浅，列表 loading 会发白 */
+  --el-mask-color: rgba(0, 0, 0, 0.72);
+
   .title-bar .window-actions > li {
     color: $--dk-titlebar-actions-color;
     &:hover {
@@ -413,6 +416,27 @@
       background-color: $--color-primary !important;
       border-color: $--color-primary !important;
       color: #fff !important;
+    }
+  }
+
+  /*
+   * text 类型按钮：hover 使用 fill-color-light，深色下会变成白底看不见字
+   */
+  .el-button.is-text:not(.is-disabled) {
+    &:hover,
+    &:focus,
+    &:focus-visible {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+      color: #e8e8e8 !important;
+    }
+  }
+
+  .el-button.is-text.el-button--primary:not(.is-disabled) {
+    &:hover,
+    &:focus,
+    &:focus-visible {
+      background-color: rgba(0, 117, 255, 0.18) !important;
+      color: $--color-primary-light-4 !important;
     }
   }
 

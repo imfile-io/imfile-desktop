@@ -6,31 +6,88 @@
           <h4 class="search-page-title">{{ $t('search.title') }}</h4>
         </div>
         <div class="search-toolbar">
-
-          <el-input v-model="keyword" class="search-input" size="large" :placeholder="$t('search.placeholder')"
-            clearable @keyup.enter="runSearch">
-            <template #append>
-              <el-button type="primary" size="medium" @click="runSearch">
-                {{ $t('search.search') }}
-              </el-button>
-            </template>
-          </el-input>
+          <div class="search-toolbar-row">
+            <el-input
+              v-model="keyword"
+              class="search-input"
+              size="large"
+              :placeholder="$t('search.placeholder')"
+              clearable
+              :disabled="searchLoading"
+              @keyup.enter="runSearch"
+            >
+              <template #append>
+                <el-button
+                  type="primary"
+                  size="default"
+                  :loading="searchButtonLoading"
+                  @click="onSearchButtonClick"
+                >
+                  {{
+                    searchLoading && !searchButtonLoading
+                      ? $t('search.stop-search')
+                      : $t('search.search')
+                  }}
+                </el-button>
+              </template>
+            </el-input>
+            <el-button
+              class="search-reset-btn"
+              plain
+              size="default"
+              :disabled="!canResetSearch"
+              @click="onResetSearch"
+            >
+              {{ $t('search.reset') }}
+            </el-button>
+          </div>
         </div>
       </el-header>
       <el-main class="panel-content search-panel-main">
+        <el-alert
+          v-if="hasSearched && resultsTruncated"
+          type="warning"
+          :closable="false"
+          show-icon
+          class="search-truncate-alert"
+        >
+          {{ $t('search.results-truncated', { max: maxSearchResults }) }}
+        </el-alert>
         <div v-if="!hasSearched" class="search-empty-state">
-          <el-empty class="search-el-empty" :image-size="80" :description="$t('search.initial-hint')" />
+          <el-empty
+            class="search-el-empty"
+            :image-size="80"
+            :description="$t('search.initial-hint')"
+          />
+        </div>
+        <div
+          v-else-if="searchLoading && !hasResultRows"
+          class="search-searching-only"
+        >
+          {{ $t('search.searching') }}
         </div>
         <div v-else class="search-results">
           <div class="mo-table-wrapper search-table-wrap">
-            <el-table :data="displayedRows" stripe class="search-table" tooltip-effect="dark"
-              :empty-text="$t('search.empty')">
+            <el-table
+              :data="displayedRows"
+              stripe
+              row-key="hash"
+              class="search-table"
+              tooltip-effect="dark"
+              :empty-text="searchError ? searchError : $t('search.empty')"
+            >
               <el-table-column prop="name" :label="$t('search.name')" min-width="200" show-overflow-tooltip />
-              <el-table-column prop="size" :label="$t('search.size')" width="120" />
+              <el-table-column prop="sizeLabel" :label="$t('search.size')" width="120" />
               <el-table-column prop="source" :label="$t('search.source')" width="140" show-overflow-tooltip />
               <el-table-column width="120" align="right">
-                <template #default>
-                  <el-button type="primary" size="small" @click="onDownload">
+                <template #default="{ row }">
+                  <el-button
+                    type="primary"
+                    size="small"
+                    :loading="Boolean(downloadingByHash[row.hash])"
+                    :disabled="!row.hash"
+                    @click="onDownload(row)"
+                  >
                     {{ $t('search.download') }}
                   </el-button>
                 </template>
@@ -44,86 +101,245 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
 import { ElMessage } from 'element-plus'
+import api from '@/api'
+import { GOED2K_SEARCH_MAX_RESULTS } from '@shared/constants'
+import {
+  bytesToSize,
+  mapSearchResultsFromDto,
+  mergeSearchResultRows,
+  isGoed2kSearchActive
+} from '@shared/utils'
 
-const MOCK_ROWS = [
-  {
-    id: '1',
-    name: 'Example.Documentary.1080p.x264',
-    size: '4.2 GB',
-    source: 'Demo index',
-    ed2k: 'ed2k://|file|example.mkv|1234567890|ABCDEF|/'
-  },
-  {
-    id: '2',
-    name: 'Sample.Music.FLAC.Collection',
-    size: '890 MB',
-    source: 'Demo index',
-    ed2k: 'ed2k://|file|music.flac|9876543210|FEDCBA|/'
-  },
-  {
-    id: '3',
-    name: 'Archive.Software.Bundle',
-    size: '156 MB',
-    source: 'Legacy mock',
-    ed2k: 'ed2k://|file|bundle.zip|1111111111|AAAAAA|/'
-  },
-  {
-    id: '4',
-    name: 'ED2K.Protocol.Overview.pdf',
-    size: '2.1 MB',
-    source: 'Docs',
-    ed2k: 'ed2k://|file|overview.pdf|2222222222|BBBBBB|/'
-  },
-  {
-    id: '5',
-    name: 'Network.Resource.Placeholder',
-    size: '700 MB',
-    source: 'Demo index',
-    ed2k: 'ed2k://|file|placeholder.iso|3333333333|CCCCCC|/'
-  }
-]
+const POLL_MS = 1000
+const MAX_POLLS = 120
 
 export default {
   name: 'mo-content-search',
-  data() {
+  data () {
     return {
-      keyword: '',
-      filterText: '',
-      hasSearched: false,
-      allRows: MOCK_ROWS.map((r) => ({ ...r }))
+      searchButtonLoading: false,
+      pollTimer: null,
+      downloadingByHash: {}
     }
   },
   computed: {
-    displayedRows() {
-      if (!this.hasSearched) {
-        return []
+    ...mapState('search', [
+      'hasSearched',
+      'searchRows',
+      'searchError',
+      'searchLoading',
+      'resultsTruncated'
+    ]),
+    keyword: {
+      get () {
+        return this.$store.state.search.keyword
+      },
+      set (v) {
+        this.$store.commit('search/UPDATE_SEARCH_KEYWORD', v)
       }
-      const q = (this.filterText || '').trim().toLowerCase()
-      if (!q) {
-        return this.allRows
-      }
-      return this.allRows.filter((row) => {
-        return (
-          row.name.toLowerCase().includes(q) ||
-          row.source.toLowerCase().includes(q)
-        )
-      })
+    },
+    displayedRows () {
+      return this.searchRows
+    },
+    hasResultRows () {
+      return Array.isArray(this.searchRows) && this.searchRows.length > 0
+    },
+    maxSearchResults () {
+      return GOED2K_SEARCH_MAX_RESULTS
+    },
+    canResetSearch () {
+      return this.searchLoading || this.hasSearched || Boolean((this.keyword || '').trim())
     }
   },
+  mounted () {
+    this.resumeSearchIfNeeded()
+  },
+  unmounted () {
+    this.stopPolling()
+  },
   methods: {
-    runSearch() {
-      this.hasSearched = true
-      this.filterText = this.keyword
+    ...mapMutations('search', {
+      setSearchRows: 'UPDATE_SEARCH_ROWS',
+      setSearchError: 'UPDATE_SEARCH_ERROR',
+      setSearchLoading: 'UPDATE_SEARCH_LOADING',
+      setHasSearched: 'UPDATE_SEARCH_HAS_SEARCHED',
+      setResultsTruncated: 'UPDATE_SEARCH_RESULTS_TRUNCATED'
+    }),
+    async resumeSearchIfNeeded () {
+      if (!this.searchLoading) return
+      const res = await api.getGoed2kCurrentSearch()
+      if (!res.ok) {
+        this.setSearchLoading(false)
+        this.setSearchError(res.message || '')
+        return
+      }
+      const dto = res.data
+      this.applyDto(dto)
+      if (dto && dto.error) {
+        ElMessage.error(String(dto.error))
+        this.setSearchLoading(false)
+        return
+      }
+      if (isGoed2kSearchActive(dto)) {
+        this.startPolling()
+      } else {
+        this.setSearchLoading(false)
+      }
     },
-    onDownload() {
-      ElMessage.info(this.$t('search.mock-download-tip'))
+    applyDto (dto) {
+      if (!dto) return
+      const incoming = mapSearchResultsFromDto(dto).map((r) => ({
+        ...r,
+        sizeLabel: bytesToSize(r.sizeBytes)
+      }))
+      const { rows, truncated } = mergeSearchResultRows(
+        this.searchRows,
+        incoming,
+        GOED2K_SEARCH_MAX_RESULTS
+      )
+      this.setSearchRows(rows)
+      if (truncated) {
+        this.setResultsTruncated(true)
+      }
+      if (dto.error) {
+        this.setSearchError(String(dto.error))
+      } else {
+        this.setSearchError('')
+      }
+    },
+    stopPolling () {
+      if (this.pollTimer) {
+        clearInterval(this.pollTimer)
+        this.pollTimer = null
+      }
+    },
+    startPolling () {
+      this.stopPolling()
+      let polls = 0
+      this.pollTimer = setInterval(async () => {
+        polls += 1
+        const res = await api.getGoed2kCurrentSearch()
+        if (!res.ok) {
+          this.setSearchError(res.message || '')
+          this.setSearchLoading(false)
+          this.stopPolling()
+          return
+        }
+        const dto = res.data
+        this.applyDto(dto)
+        if (dto && dto.error) {
+          ElMessage.error(String(dto.error))
+          this.setSearchLoading(false)
+          this.stopPolling()
+          return
+        }
+        if (!isGoed2kSearchActive(dto) || polls >= MAX_POLLS) {
+          this.setSearchLoading(false)
+          this.stopPolling()
+        }
+      }, POLL_MS)
+    },
+    onSearchButtonClick () {
+      if (this.searchLoading && !this.searchButtonLoading) {
+        this.cancelSearch()
+      } else {
+        this.runSearch()
+      }
+    },
+    async onResetSearch () {
+      this.searchButtonLoading = false
+      this.stopPolling()
+      if (this.searchLoading) {
+        await api.stopGoed2kSearch().catch(() => {})
+      }
+      this.$store.commit('search/RESET_SEARCH_STATE')
+      this.downloadingByHash = {}
+      ElMessage.success(this.$t('search.reset-done'))
+    },
+    async runSearch () {
+      const q = (this.keyword || '').trim()
+      if (!q) {
+        ElMessage.warning(this.$t('search.query-required'))
+        return
+      }
+      if (this.searchLoading) {
+        return
+      }
+      const status = await api.getGoed2kdStatus()
+      if (!status || !status.healthy) {
+        ElMessage.error(this.$t('search.engine-not-ready'))
+        return
+      }
+      this.setHasSearched(true)
+      this.setSearchLoading(true)
+      this.searchButtonLoading = true
+      this.setSearchError('')
+      this.setResultsTruncated(false)
+      this.setSearchRows([])
+      this.stopPolling()
+      let res
+      try {
+        res = await api.startGoed2kSearch({ query: q, scope: 'all' })
+      } catch (e) {
+        this.setSearchLoading(false)
+        ElMessage.error(e && e.message ? String(e.message) : this.$t('search.search-failed'))
+        return
+      } finally {
+        this.searchButtonLoading = false
+      }
+      if (!res.ok) {
+        this.setSearchLoading(false)
+        ElMessage.error(res.message || this.$t('search.search-failed'))
+        return
+      }
+      this.applyDto(res.data)
+      if (!isGoed2kSearchActive(res.data)) {
+        this.setSearchLoading(false)
+        return
+      }
+      this.startPolling()
+    },
+    async cancelSearch () {
+      this.stopPolling()
+      this.setSearchLoading(false)
+      await api.stopGoed2kSearch().catch(() => {})
+    },
+    async onDownload (row) {
+      if (!row || !row.hash) return
+      this.downloadingByHash = { ...this.downloadingByHash, [row.hash]: true }
+      try {
+        const res = await api.downloadGoed2kSearchResult(row.hash)
+        if (!res.ok) {
+          ElMessage.error(res.message || this.$t('search.download-failed'))
+          return
+        }
+        ElMessage.success(this.$t('search.download-started'))
+        await this.$store.dispatch('task/fetchAllList')
+      } finally {
+        const next = { ...this.downloadingByHash }
+        delete next[row.hash]
+        this.downloadingByHash = next
+      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.search-truncate-alert {
+  margin: 0 16px 12px;
+  box-sizing: border-box;
+}
+
+@media only screen and (min-width: 568px) {
+  .search-truncate-alert {
+    margin-left: 36px;
+    margin-right: 36px;
+  }
+}
+
 .search-panel-header {
   padding-bottom: 16px;
 }
@@ -147,14 +363,51 @@ export default {
   margin: 20px auto 0;
   max-width: 720px;
   width: 100%;
+}
+
+.search-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
   .search-input {
-    padding-right: .2em;
+    padding-right: 0;
+    flex: 1;
   }
 }
 
+.search-reset-btn {
+  flex: 0 0 auto;
+}
+
+.search-searching-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  padding: 16px 16px 64px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: $--color-text-secondary;
+}
+
+/* 与 flex 布局配合，保证主区域可纵向滚动（勿用 overflow:hidden，否则会挡住长列表） */
+.search-page.main.el-container {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+.search-page > .el-container.content.panel {
+  flex: 1;
+  min-height: 0;
+}
+
 .search-panel-main {
-  overflow: hidden;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .search-empty-state {
@@ -178,7 +431,8 @@ export default {
     padding-right: 36px;
   }
 
-  .search-empty-state {
+  .search-empty-state,
+  .search-searching-only {
     padding-left: 36px;
     padding-right: 36px;
   }
@@ -236,5 +490,30 @@ html.theme-light .search-page {
 
 .theme-dark .search-page .search-el-empty .el-empty__description {
   color: $--dk-panel-title-color;
+}
+
+.theme-dark .search-page .search-searching-only {
+  color: $--dk-panel-title-color;
+}
+
+.theme-dark .search-page .search-reset-btn:not(.is-disabled) {
+  border-color: rgba(255, 255, 255, 0.24);
+  color: #e8e8e8;
+  background-color: transparent;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    border-color: rgba(255, 255, 255, 0.36);
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.theme-dark .search-page .search-reset-btn.is-disabled,
+.theme-dark .search-page .search-reset-btn:disabled {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  background-color: transparent !important;
 }
 </style>

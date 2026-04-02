@@ -36,8 +36,13 @@ export const openItem = async (fullPath) => {
 }
 
 export const getTaskFullPath = (task) => {
+  if (!task || typeof task !== 'object') {
+    return ''
+  }
+
   const { dir, files, bittorrent } = task
-  let result = resolve(dir)
+  const filesSafe = Array.isArray(files) ? files : []
+  let result = dir ? resolve(dir) : ''
 
   // Magnet link task
   if (isMagnetTask(task)) {
@@ -49,14 +54,14 @@ export const getTaskFullPath = (task) => {
     return result
   }
 
-  const [file] = files
-  const path = file.path ? resolve(file.path) : ''
+  const [file] = filesSafe
+  const path = file && file.path ? resolve(file.path) : ''
   let fileName = ''
 
   if (path) {
     result = path
   } else {
-    if (files && files.length === 1) {
+    if (filesSafe.length === 1 && file) {
       fileName = getFileNameFromFile(file)
       if (fileName) {
         result = resolve(result, fileName)

@@ -201,6 +201,12 @@ iframe {
   background-color: $--app-background;
 }
 
+/* 主内容区占满剩余宽度，并允许子级 el-main 在纵向 flex 链中正确出现滚动条 */
+#container > .el-container.main {
+  flex: 1;
+  min-height: 0;
+}
+
 .draggable {
   -webkit-app-region: drag;
   user-select: none;

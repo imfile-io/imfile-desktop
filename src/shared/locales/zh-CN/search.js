@@ -8,5 +8,14 @@ export default {
   'source': '来源',
   'download': '下载',
   'empty': '无结果',
-  'mock-download-tip': '下载功能将在接入接口后开放。'
+  'query-required': '请输入搜索关键词',
+  'engine-not-ready': '下载引擎（goed2kd）未就绪，请确认其已运行。',
+  'search-failed': '搜索失败',
+  'searching': '正在搜索…',
+  'stop-search': '停止搜索',
+  'reset': '重置',
+  'reset-done': '已重置搜索',
+  'download-failed': '添加下载失败',
+  'download-started': '已添加下载任务',
+  'results-truncated': '为减轻界面负担，仅保留前 {max} 条结果；可缩小关键词范围后重新搜索。'
 }

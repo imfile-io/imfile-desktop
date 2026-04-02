@@ -50,6 +50,7 @@ export const adaptGoed2kdTask = (task = {}) => {
   const progress = totalLength > 0 ? completedLength / totalLength : 0
   const name = task.file_name || task.file_path || id
   const status = normalizeGoed2kdStatus(task.status || task.state)
+  const filePath = task.file_path ? String(task.file_path) : ''
 
   return {
     ...task,
@@ -60,14 +61,15 @@ export const adaptGoed2kdTask = (task = {}) => {
     taskKey: buildTaskKey('goed2kd', id),
     status,
     name,
-    files: [],
+    /** 供 getTaskFullPath / 列表展示用；goed2kd 单文件路径在 file_path */
+    files: filePath ? [{ path: filePath }] : [],
     peers: [],
     completedLength,
     totalLength,
     downloadSpeed: toNumber(task.download_rate, 0),
     progress,
     raw: task,
-    dir: task.file_path || '',
+    dir: filePath || '',
     bittorrent: null
   }
 }
