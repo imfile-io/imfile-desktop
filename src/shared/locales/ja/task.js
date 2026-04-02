@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'タスクをバッチで削除できませんでした',
   'refresh-list': 'タスクリストを更新',
   'no-task': 'タスクはありません',
+  'search-placeholder': 'タスク名で検索',
+  'search-no-match': '一致するタスクがありません',
   'copy-link': 'リンクをコピー',
   'copy-link-success': 'リンクのコピーに成功',
   'remove-record': 'タスク履歴を削除',

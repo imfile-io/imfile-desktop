@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'No s\'ha pogut suprimir les tasques del lot',
   'refresh-list': 'Refrescar llista de tasques',
   'no-task': 'No hi ha tasques actuals',
+  'search-placeholder': 'Cerca per nom',
+  'search-no-match': 'Cap tasca coincident',
   'copy-link': 'Copiar enllaç',
   'copy-link-success': 'Enllaç copiat amb èxit',
   'remove-record': 'Eliminar tasca',

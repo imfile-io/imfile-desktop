@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Toplu işteki görevler silinemedi',
   'refresh-list': 'Görev listesini yenile',
   'no-task': 'Görev yok',
+  'search-placeholder': 'Görev ara',
+  'search-no-match': 'Eşleşen görev yok',
   'copy-link': 'Bağlantıyı kopyala',
   'copy-link-success': 'Bağlantı Kopyalama başarılı',
   'remove-record': 'Görev kaydını kaldır',

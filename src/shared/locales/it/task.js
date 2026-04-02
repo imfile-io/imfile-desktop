@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Impossibile eliminare in batch le attività',
   'refresh-list': 'Aggiorna la lista delle attività',
   'no-task': 'Non ci sono attività',
+  'search-placeholder': 'Cerca per nome',
+  'search-no-match': 'Nessuna attività corrispondente',
   'copy-link': 'Copia link',
   'copy-link-success': 'Link copiato con successo',
   'remove-record': 'Rimuovi cronologia delle attività',

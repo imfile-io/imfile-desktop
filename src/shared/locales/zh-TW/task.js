@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': '批次刪除任務失敗',
   'refresh-list': '重新整理任務清單',
   'no-task': '目前没有下載任務',
+  'search-placeholder': '搜尋任務名稱',
+  'search-no-match': '沒有符合的任務',
   'copy-link': '複製連結',
   'copy-link-success': '複製連結成功',
   'remove-record': '移除下載紀錄',

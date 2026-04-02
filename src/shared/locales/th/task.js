@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'ไม่สามารถลบงานในชุดงาน',
   'refresh-list': 'รีเฟรชรายการงาน',
   'no-task': 'ไม่มีงานปัจจุบัน',
+  'search-placeholder': 'ค้นหางานตามชื่อ',
+  'search-no-match': 'ไม่พบงานที่ตรงกัน',
   'copy-link': 'คัดลอกลิงค์',
   'copy-link-success': 'คัดลอกลิงค์สำเร็จ',
   'remove-record': 'ลบบันทึกงาน',

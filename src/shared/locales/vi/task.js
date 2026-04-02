@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Xóa các tác vụ hàng loạt thất bại',
   'refresh-list': 'Làm mới danh sách tác vụ',
   'no-task': 'Hiện tại không có tác vụ',
+  'search-placeholder': 'Tìm theo tên tác vụ',
+  'search-no-match': 'Không có tác vụ phù hợp',
   'copy-link': 'Sao chép đường dẫn',
   'copy-link-success': 'Sao chép đường dẫn thành công',
   'remove-record': 'Xóa bản ghi tác vụ',

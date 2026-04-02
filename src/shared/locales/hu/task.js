@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Feladat törlése sikertelen volt',
   'refresh-list': 'Feladat lista frissétése',
   'no-task': 'Nincs aktív feladat',
+  'search-placeholder': 'Keresés név szerint',
+  'search-no-match': 'Nincs egyező feladat',
   'copy-link': 'Link másolasa',
   'copy-link-success': 'Link másolasa sikeres volt',
   'remove-record': 'Feladat törlése',

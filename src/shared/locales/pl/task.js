@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Nie udało się usunąć wielu zadań',
   'refresh-list': 'Odśwież listę zadań',
   'no-task': 'Nie ma obecnie żadnych zadań',
+  'search-placeholder': 'Szukaj po nazwie',
+  'search-no-match': 'Brak pasujących zadań',
   'copy-link': 'Skopiuj link',
   'copy-link-success': 'Pomyślnie skopiowano link',
   'remove-record': 'Usuń rekord zadania',

@@ -22,15 +22,20 @@
         <mo-subnav-switcher :title="title" :subnavs="subnavs" class="hidden-sm-and-up" />
         <mo-task-actions />
       </el-header> -->
-      <el-header class="panel-header" height="50">
-        <el-row class="panel-row">
-          <el-col :span="7">
-          </el-col>
-        </el-row>
-        <state-task-actions />
+      <el-header class="panel-header task-panel-toolbar" height="auto">
+        <div class="task-toolbar">
+          <el-input
+            v-if="taskList.length > 0"
+            v-model="taskSearchQuery"
+            class="task-toolbar-search"
+            clearable
+            :placeholder="$t('task.search-placeholder')"
+          />
+          <state-task-actions class="task-toolbar-actions" />
+        </div>
       </el-header>
       <el-main class="panel-content">
-        <mo-task-list />
+        <mo-task-list :search-query="taskSearchQuery" />
       </el-main>
     </el-container>
   </el-container>
@@ -70,6 +75,11 @@ export default {
     status: {
       type: String,
       default: 'active'
+    }
+  },
+  data () {
+    return {
+      taskSearchQuery: ''
     }
   },
   computed: {
@@ -122,6 +132,7 @@ export default {
       })
     },
     onStatusChange () {
+      this.taskSearchQuery = ''
       this.changeCurrentList()
     },
     changeCurrentList () {
@@ -437,3 +448,27 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.task-panel-toolbar {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.task-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 50px;
+  box-sizing: border-box;
+}
+.task-toolbar-search {
+  flex: 1;
+  max-width: 360px;
+  min-width: 120px;
+}
+.task-toolbar-actions {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+</style>

@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Не удалось удалить задачи в пакетном режиме',
   'refresh-list': 'Обновить список заданий',
   'no-task': 'Нет текущих заданий',
+  'search-placeholder': 'Поиск по имени',
+  'search-no-match': 'Нет подходящих задач',
   'copy-link': 'Копировать ссылку',
   'copy-link-success': 'Успешно скопированна ссылка',
   'remove-record': 'Удалить запись про задание',

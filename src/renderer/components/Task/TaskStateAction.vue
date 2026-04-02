@@ -96,10 +96,10 @@ export default {
 
 <style lang="scss">
 .task-state-actions {
-    position: absolute;
+    position: relative;
     display: inline-flex;
-    top: 10px;
-    right: 0;
+    top: auto;
+    right: auto;
     height: 50px;
     padding: 0;
     overflow: hidden;

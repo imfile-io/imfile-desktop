@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Failed to delete tasks in batch',
   'refresh-list': 'Refresh Task List',
   'no-task': 'There are no current tasks',
+  'search-placeholder': 'Search tasks by name',
+  'search-no-match': 'No matching tasks',
   'copy-link': 'Copy Link',
   'copy-link-success': 'Successfully copied link',
   'remove-record': 'Remove Task Record',

@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Falha ao excluir tarefas no lote',
   'refresh-list': 'Atualizar a Lista de Tarefas',
   'no-task': 'Não há downloads no momento',
+  'search-placeholder': 'Buscar por nome',
+  'search-no-match': 'Nenhuma tarefa correspondente',
   'copy-link': 'Copiar Link',
   'copy-link-success': 'Link copiado com sucesso',
   'remove-record': 'Apagar Registro de Tarefas',

@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Impossible de supprimer les tâches du lot',
   'refresh-list': 'Rafraichir la liste des tâches',
   'no-task': 'Aucun téléchargement en cours',
+  'search-placeholder': 'Rechercher par nom',
+  'search-no-match': 'Aucune tâche correspondante',
   'copy-link': 'Copier le lien',
   'copy-link-success': 'Lien copié',
   'remove-record': 'Effacer l\'enregistrement des tâches',

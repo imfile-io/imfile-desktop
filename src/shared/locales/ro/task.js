@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Nu s-au putut șterge sarcinile in lot',
   'refresh-list': 'Reîncarcă lista de sarcini',
   'no-task': 'Nu există sarcini curente',
+  'search-placeholder': 'Caută după nume',
+  'search-no-match': 'Nicio sarcină potrivită',
   'copy-link': 'Copiază Link',
   'copy-link-success': 'Link copiat cu succes',
   'remove-record': 'Șterge istoric sarcină',

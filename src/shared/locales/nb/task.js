@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Kunne ikke slette oppgaver i batch',
   'refresh-list': 'Oppdater oppgaveliste',
   'no-task': 'Det er ingen aktuelle oppgaver',
+  'search-placeholder': 'Søk etter navn',
+  'search-no-match': 'Ingen treff',
   'copy-link': 'Kopier link',
   'copy-link-success': 'Koblingen ble kopiert',
   'remove-record': 'Fjern oppgaveliste',

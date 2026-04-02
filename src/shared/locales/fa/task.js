@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'حذف دسته جمعی وظایف شکست خورد',
   'refresh-list': 'تازه کردن لیست وظایف',
   'no-task': 'فعلا وظیفه‌ای وجود ندارد',
+  'search-placeholder': 'جستجو بر اساس نام',
+  'search-no-match': 'وظیفه‌ای یافت نشد',
   'copy-link': 'رونوشت از پیوند',
   'copy-link-success': 'رونوشت از پیوند با موفقیت انجام شد',
   'remove-record': 'پاک کردن سابقهٔ وظیفه',

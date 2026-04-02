@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Неуспешно изтриване на задачи в партиден режим',
   'refresh-list': 'обновяване на списъка със задачи',
   'no-task': 'няма текущи задачи',
+  'search-placeholder': 'Търсене по име',
+  'search-no-match': 'Няма съвпадения',
   'copy-link': 'копиране на връзка',
   'copy-link-success': 'успешно копирана връзка',
   'remove-record': 'изтриване на запис за задача',

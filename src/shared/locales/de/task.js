@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Fehler beim Löschen von Aufgaben im Stapel',
   'refresh-list': 'Aufgabenliste aktualisieren',
   'no-task': 'Keine Downloads aktiv',
+  'search-placeholder': 'Nach Namen suchen',
+  'search-no-match': 'Keine passenden Aufgaben',
   'copy-link': 'Link kopieren',
   'copy-link-success': 'Link erfolgreich kopiert',
   'remove-record': 'Aufgaben Aufzeichnung löschen',

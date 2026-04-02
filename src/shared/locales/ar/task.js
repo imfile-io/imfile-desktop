@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'فشل في حذف التحميلات دفعة واحدة',
   'refresh-list': 'تحديث قائمة التحميلات',
   'no-task': 'لا توجد تحميلات حالية',
+  'search-placeholder': 'بحث بالاسم',
+  'search-no-match': 'لا توجد مهام مطابقة',
   'copy-link': 'نسخ الرابط',
   'copy-link-success': 'تم نسخ الرابط بنجاح',
   'remove-record': 'حذف سجل التحميل',

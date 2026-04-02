@@ -90,6 +90,8 @@ export default {
   'batch-delete-task-fail': 'Gagal menghapus tugas (batch)',
   'refresh-list': 'Muat Ulang Daftar',
   'no-task': 'Tidak ada tugas',
+  'search-placeholder': 'Cari berdasarkan nama',
+  'search-no-match': 'Tidak ada tugas yang cocok',
   'copy-link': 'Salin Link',
   'copy-link-success': 'Berhasil menyalin link',
   'remove-record': 'Hapus Data Tugas',
