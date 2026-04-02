@@ -210,7 +210,6 @@ export const ellipsis = (str = '', maxLen = 64) => {
 }
 
 export const getFileSelection = (files = []) => {
-  console.log('getFileSelection===>', files)
   const selectedFiles = files.filter((file) => file.selected)
   if (files.length === 0 || selectedFiles.length === 0) {
     return NONE_SELECTED_FILES
@@ -220,11 +219,13 @@ export const getFileSelection = (files = []) => {
     return SELECTED_ALL_FILES
   }
 
-  const indexArr = []
-  files.forEach((_, index) => {
-    indexArr.push(index)
-  })
-  const result = indexArr.join(',')
+  const selectedIndexes = files.reduce((acc, file, index) => {
+    if (file && file.selected) {
+      acc.push(index)
+    }
+    return acc
+  }, [])
+  const result = selectedIndexes.join(',')
   return result
 }
 
