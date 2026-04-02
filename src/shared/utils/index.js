@@ -88,8 +88,13 @@ export const peerIdParser = (str) => {
   let parsed = {}
   let decodedStr
   try {
-    // decodeURI or decodeURIComponent cannot parse '%2DUT360W%2D%92%B6%EBh%1F%A1%DBfo%F6%D5I'
-    decodedStr = unescape(str)
+    // Try decodeURIComponent first; fall back to unescape for malformed encodings like
+    // '%2DUT360W%2D%92%B6%EBh%1F%A1%DBfo%F6%D5I' that decodeURIComponent cannot parse.
+    try {
+      decodedStr = decodeURIComponent(str)
+    } catch (decodeErr) {
+      decodedStr = unescape(str)
+    }
     const buffer = Buffer.from(decodedStr, 'binary')
     parsed = bitTorrentPeerId(buffer)
   } catch (e) {
