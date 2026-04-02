@@ -178,8 +178,8 @@ importers:
         specifier: 1.98.0
         version: 1.98.0
       sass-loader:
-        specifier: ^14.0.0
-        version: 14.2.1(sass@1.98.0)(webpack@5.105.4)
+        specifier: ^16.0.0
+        version: 16.0.7(sass@1.98.0)(webpack@5.105.4)
       style-loader:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.105.4)
@@ -4651,11 +4651,11 @@ packages:
   sanitize-filename@1.6.4:
     resolution: {integrity: sha512-9ZyI08PsvdQl2r/bBIGubpVdR3RR9sY6RDiWFPreA21C/EFlQhmgo20UZlNjZMMZNubusLhAQozkA0Od5J21Eg==}
 
-  sass-loader@14.2.1:
-    resolution: {integrity: sha512-G0VcnMYU18a4N7VoNDegg2OuMjYtxnqzQWARVWCIVSZwJeiL9kg8QMsuIZOplsJgTzZLF6jGxI3AClj8I9nRdQ==}
+  sass-loader@16.0.7:
+    resolution: {integrity: sha512-w6q+fRHourZ+e+xA1kcsF27iGM6jdB8teexYCfdUw0sYgcDNeZESnDNT9sUmmPm3ooziwUJXGwZJSTF3kOdBfA==}
     engines: {node: '>= 18.12.0'}
     peerDependencies:
-      '@rspack/core': 0.x || 1.x
+      '@rspack/core': 0.x || ^1.0.0 || ^2.0.0-0
       node-sass: ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
       sass: ^1.3.0
       sass-embedded: '*'
@@ -10443,7 +10443,7 @@ snapshots:
     dependencies:
       truncate-utf8-bytes: 1.0.2
 
-  sass-loader@14.2.1(sass@1.98.0)(webpack@5.105.4):
+  sass-loader@16.0.7(sass@1.98.0)(webpack@5.105.4):
     dependencies:
       neo-async: 2.6.2
     optionalDependencies:
