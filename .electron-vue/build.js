@@ -86,14 +86,12 @@ function pack (config) {
       } else if (stats.hasErrors()) {
         let err = ''
 
-        stats.toString({
+        err = stats.toString({
           chunks: false,
           colors: true
         })
         .split(/\r?\n/)
-        .forEach(line => {
-          err += `    ${line}\n`
-        })
+        .reduce((acc, line) => acc + `    ${line}\n`, '')
 
         reject(err)
       } else {
