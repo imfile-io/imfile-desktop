@@ -59,16 +59,16 @@ export const extractSpeedUnit = (speed = '') => {
 
 export const bitfieldToPercent = (text) => {
   const len = text.length - 1
-  let p
-  let one = 0
+  let hexValue
+  let setBitCount = 0
   for (let i = 0; i < len; i++) {
-    p = parseInt(text[i], 16)
+    hexValue = parseInt(text[i], 16)
     for (let j = 0; j < 4; j++) {
-      one += (p & 1)
-      p >>= 1
+      setBitCount += (hexValue & 1)
+      hexValue >>= 1
     }
   }
-  return Math.floor(one / (4 * len) * 100).toString()
+  return Math.floor(setBitCount / (4 * len) * 100).toString()
 }
 
 export const bitfieldToGraphic = (text) => {
