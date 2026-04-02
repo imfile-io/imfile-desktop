@@ -56,22 +56,20 @@ function build (deleteSync) {
     process.exit()
   })
 
-  pack(mainConfig).then(result => {
+  const mainPromise = pack(mainConfig).then(result => {
     results += result + '\n\n'
     m.success('main')
-  }).catch(err => {
-    m.error('main')
-    console.log(`\n  ${errorLog}failed to build main process`)
-    console.error(`\n${err}\n`)
-    process.exit(1)
   })
 
-  pack(rendererConfig).then(result => {
+  const rendererPromise = pack(rendererConfig).then(result => {
     results += result + '\n\n'
     m.success('renderer')
-  }).catch(err => {
-    m.error('renderer')
-    console.log(`\n  ${errorLog}failed to build renderer process`)
+  })
+
+  Promise.all([mainPromise, rendererPromise]).catch(err => {
+    // If an error occurs in either build, mark both as completed appropriately
+    // and exit with a non-zero status code.
+    console.log(`\n  ${errorLog}failed to build electron processes`)
     console.error(`\n${err}\n`)
     process.exit(1)
   })
@@ -86,14 +84,12 @@ function pack (config) {
       } else if (stats.hasErrors()) {
         let err = ''
 
-        stats.toString({
+        err = stats.toString({
           chunks: false,
           colors: true
         })
         .split(/\r?\n/)
-        .forEach(line => {
-          err += `    ${line}\n`
-        })
+        .reduce((acc, line) => acc + `    ${line}\n`, '')
 
         reject(err)
       } else {
@@ -110,12 +106,23 @@ function web (deleteSync) {
   deleteSync(['dist/web/*', '!.gitkeep'])
   webConfig.mode = 'production'
   Webpack(webConfig, (err, stats) => {
-    if (err || stats.hasErrors()) console.log(err)
-
-    console.log(stats.toString({
-      chunks: false,
-      colors: true
-    }))
+    if (err || (stats && stats.hasErrors())) {
+      if (err) {
+        console.error(err)
+      }
+      if (stats && stats.hasErrors()) {
+        console.error(stats.toString({
+          chunks: false,
+          colors: true,
+          errors: true
+        }))
+      }
+    } else {
+      console.log(stats.toString({
+        chunks: false,
+        colors: true
+      }))
+    }
 
     process.exit()
   })
