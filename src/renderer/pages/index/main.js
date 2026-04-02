@@ -93,5 +93,6 @@ store.dispatch('preference/fetchPreference')
     init(config)
   })
   .catch((err) => {
-    alert(err)
+    console.error('[imFile] Failed to load preference:', err)
+    ElMessage.error(err && err.message ? err.message : 'Failed to load preference.')
   })
