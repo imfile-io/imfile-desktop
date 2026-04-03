@@ -114,7 +114,7 @@ const showAddBtTaskWithFile = (payload = {}) => {
 }
 
 const navigateTaskList = (payload = {}) => {
-  const { status = 'active' } = payload
+  const { status = 'all' } = payload
 
   router.push({ path: `/task/${status}` }).catch(err => {
     console.log(err)

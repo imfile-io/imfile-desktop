@@ -3,6 +3,7 @@ export default {
   'active': 'Загрузки',
   'waiting': 'Ожидание',
   'stopped': 'Остановлено',
+  'all-tasks': 'Все задания',
   'new-task': 'Новое задание',
   'new-bt-task': 'Новое BT задание',
   'open-file': 'Открыть Torrent файл...',

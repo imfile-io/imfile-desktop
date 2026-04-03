@@ -3,6 +3,7 @@ export default {
   'active': 'جاري التحميل',
   'waiting': 'جاري الانتظار',
   'stopped': 'المتوقفة',
+  'all-tasks': 'كل المهام',
   'new-task': 'اضافة تحميل جديد',
   'new-bt-task': 'اضافة تحميل تورنت جديد',
   'open-file': 'فتح ملف تورنت...',

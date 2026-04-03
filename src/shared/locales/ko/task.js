@@ -3,6 +3,7 @@ export default {
   'active': '다운로드 중',
   'waiting': '대기 중',
   'stopped': '중단됨',
+  'all-tasks': '전체 작업',
   'new-task': '새 작업',
   'new-bt-task': '새 BT 작업',
   'open-file': '토렌트 파일 열기...',

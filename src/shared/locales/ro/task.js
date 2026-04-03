@@ -3,6 +3,7 @@ export default {
   'active': 'Se descarcă',
   'waiting': 'În aşteptare',
   'stopped': 'Oprite',
+  'all-tasks': 'Toate sarcinile',
   'new-task': 'Sarcină Nouă',
   'new-bt-task': 'Sarcină Nouă BT',
   'open-file': 'Deschide fişier Torrent...',

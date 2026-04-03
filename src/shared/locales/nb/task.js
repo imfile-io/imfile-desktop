@@ -3,6 +3,7 @@ export default {
   'active': 'Laster ned',
   'waiting': 'Venter',
   'stopped': 'Stoppet',
+  'all-tasks': 'Alle oppgaver',
   'new-task': 'Ny oppgave',
   'new-bt-task': 'Ny BT-oppgave',
   'open-file': 'Åpne torrentfil...',

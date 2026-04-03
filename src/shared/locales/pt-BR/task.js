@@ -3,6 +3,7 @@ export default {
   'active': 'Baixando',
   'waiting': 'Aguardando',
   'stopped': 'Parou',
+  'all-tasks': 'Todas as tarefas',
   'new-task': 'Nova Tarefa',
   'new-bt-task': 'Nova Tarefa BT',
   'open-file': 'Abra o arquivo Torrent...',

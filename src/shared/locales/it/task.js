@@ -3,6 +3,7 @@ export default {
   'active': 'In corso',
   'waiting': 'In Pausa',
   'stopped': 'Terminate',
+  'all-tasks': 'Tutte le attività',
   'new-task': 'Nuova attività',
   'new-bt-task': 'Nuova attività BT',
   'open-file': 'Apri un file Torrent...',

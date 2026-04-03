@@ -3,6 +3,7 @@ export default {
   'active': 'Letöltés',
   'waiting': 'Varakozás',
   'stopped': 'Lealitva',
+  'all-tasks': 'Összes feladat',
   'new-task': 'Feladat hozzáadasa',
   'new-bt-task': 'Új BT Feladat hozzáadasa',
   'open-file': 'Torrent fájl megnyitása...',

@@ -3,6 +3,7 @@ export default {
   'active': 'Γίνεται λήψη',
   'waiting': 'Σε αναμονή',
   'stopped': 'Σταματημένα',
+  'all-tasks': 'Όλες οι εργασίες',
   'new-task': 'Νέα εργασία',
   'new-bt-task': 'Νέα εργασία BT',
   'open-file': 'Άνοιγμα αρχείου Torrent ...',

@@ -37,7 +37,7 @@ const state = {
   onCompleteAction: POST_DOWNLOAD_ACTION.NONE,
   /** 下载完成后操作确认弹窗已打开，避免重复触发 */
   postDownloadAwaitingConfirm: false,
-  currentList: 'active',
+  currentList: 'all',
   taskDetailVisible: false,
   currentTaskGid: EMPTY_STRING,
   enabledFetchPeers: false,
@@ -195,19 +195,24 @@ const actions = {
       })
     })
   },
-  fetchList ({ commit, state }) {
-    return api.fetchTaskList({ type: state.currentList })
+  fetchList ({ commit, state, dispatch }) {
+    const listType = state.currentList
+    return api.fetchTaskList({ type: listType })
       .then(async (aria2Data) => {
         let taskList = (aria2Data || []).map(adaptAria2Task)
-        if (['active', 'waiting', 'stopped'].includes(state.currentList)) {
+        if (['active', 'waiting', 'stopped', 'all'].includes(listType)) {
           try {
             const goed2kdStatus = await api.getGoed2kdStatus()
             if (!goed2kdStatus || !goed2kdStatus.healthy) {
               commit('UPDATE_TASK_LIST', taskList)
-              commit('UPDATE_COUNT', {
-                ...state.count,
-                [state.currentList === 'active' ? 'downloading' : state.currentList]: taskList.length
-              })
+              if (listType !== 'all') {
+                commit('UPDATE_COUNT', {
+                  ...state.count,
+                  [listType === 'active' ? 'downloading' : listType]: taskList.length
+                })
+              } else {
+                dispatch('fetchAllList')
+              }
               const taskKeys = taskList.map((task) => task.taskKey)
               const list = intersection(state.selectedTaskKeyList, taskKeys)
               commit('UPDATE_SELECTED_TASK_KEY_LIST', list)
@@ -217,7 +222,12 @@ const actions = {
             const goed2kdData = resolveGoed2kdList(goed2kdResp)
             const goed2kdList = (goed2kdData || [])
               .map(adaptGoed2kdTask)
-              .filter(task => matchGoed2kdListByCurrentTab(task.status, state.currentList))
+              .filter((task) => {
+                if (listType === 'all') {
+                  return true
+                }
+                return matchGoed2kdListByCurrentTab(task.status, listType)
+              })
             taskList = taskList.concat(goed2kdList)
           } catch (err) {
             console.warn('[imFile] fetch goed2kd task list fail:', err)
@@ -225,10 +235,14 @@ const actions = {
         }
 
         commit('UPDATE_TASK_LIST', taskList)
-        commit('UPDATE_COUNT', {
-          ...state.count,
-          [state.currentList === 'active' ? 'downloading' : state.currentList]: taskList.length
-        })
+        if (listType !== 'all') {
+          commit('UPDATE_COUNT', {
+            ...state.count,
+            [listType === 'active' ? 'downloading' : listType]: taskList.length
+          })
+        } else {
+          dispatch('fetchAllList')
+        }
         const { selectedTaskKeyList } = state
         const taskKeys = taskList.map((task) => task.taskKey)
         const list = intersection(selectedTaskKeyList, taskKeys)

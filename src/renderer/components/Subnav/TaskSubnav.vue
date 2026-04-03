@@ -4,6 +4,15 @@
       <h3>{{ title }}</h3>
       <ul>
         <li
+          @click="() => nav('all')"
+          :class="[current === 'all' ? 'active' : '']"
+        >
+          <i class="subnav-icon">
+            <mo-icon name="menu-task" width="20" height="20" />
+          </i>
+          <span>{{ `${$t('task.all-tasks')}${totalTaskCount ? '(' + totalTaskCount + ')' : ''}` }}</span>
+        </li>
+        <li
           @click="() => nav('active')"
           :class="[current === 'active' ? 'active' : '']"
         >
@@ -48,6 +57,7 @@
 <script>
 import { mapState } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import '@/components/Icons/menu-task'
 import '@/components/Icons/task-start'
 import '@/components/Icons/task-pause'
 import '@/components/Icons/task-stop'
@@ -64,19 +74,23 @@ export default {
   props: {
     current: {
       type: String,
-      default: 'active'
+      default: 'all'
     }
   },
   computed: {
     ...mapState('task', {
       count: state => state.count
     }),
+    totalTaskCount () {
+      const c = this.count
+      return (c.downloading || 0) + (c.seeding || 0) + (c.waiting || 0) + (c.stoped || 0)
+    },
     title () {
       return this.t('subnav.task-list')
     }
   },
   methods: {
-    nav (status = 'active') {
+    nav (status = 'all') {
       this.$router.push({
         path: `/task/${status}`
       }).catch(err => {

@@ -88,7 +88,7 @@ export default {
   props: {
     status: {
       type: String,
-      default: 'active'
+      default: 'all'
     }
   },
   data () {
@@ -108,7 +108,12 @@ export default {
     subnavs () {
       return [
         {
-          key: 'Seeding',
+          key: 'all',
+          title: this.t('task.all-tasks'),
+          route: '/task/all'
+        },
+        {
+          key: 'seeding',
           title: this.t('task.seeding'),
           route: '/task/seeding'
         },
@@ -131,7 +136,7 @@ export default {
     },
     title () {
       const subnav = this.subnavs.find((item) => item.key === this.status)
-      return subnav.title
+      return subnav ? subnav.title : this.t('task.all-tasks')
     },
     /** 与 TaskList filteredTaskList 一致，用于 Ctrl/Cmd+A 全选 */
     filteredTaskKeysForSelectAll () {
@@ -155,7 +160,7 @@ export default {
     status: 'onStatusChange'
   },
   methods: {
-    nav (status = 'active') {
+    nav (status = 'all') {
       this.$router.push({
         path: `/task/${status}`
       }).catch(err => {

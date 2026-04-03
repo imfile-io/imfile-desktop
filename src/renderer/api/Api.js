@@ -376,9 +376,23 @@ export default class Api {
     })
   }
 
+  /**
+   * 合并活动、等待、已停止列表，供「全部任务」视图使用（与 fetchAllTaskList 数据结构一致）。
+   */
+  fetchMergedAllTaskList (params = {}) {
+    return this.fetchAllTaskList(params).then((data) => {
+      const active = Array.isArray(data?.[0]?.[0]) ? data[0][0] : []
+      const waiting = Array.isArray(data?.[1]?.[0]) ? data[1][0] : []
+      const stopped = Array.isArray(data?.[2]?.[0]) ? data[2][0] : []
+      return active.concat(waiting).concat(stopped)
+    })
+  }
+
   fetchTaskList (params = {}) {
     const { type } = params
     switch (type) {
+      case 'all':
+        return this.fetchMergedAllTaskList(params)
       case 'seeding':
         return this.fetchSeedingTaskList(params)
       case 'active':

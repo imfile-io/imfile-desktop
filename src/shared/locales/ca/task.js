@@ -3,6 +3,7 @@ export default {
   'active': 'Descarregant',
   'waiting': 'Esperant',
   'stopped': 'Detinguda',
+  'all-tasks': 'Totes les tasques',
   'new-task': 'Nova Tasca',
   'new-bt-task': 'Nova Tasca BT',
   'open-file': 'Obrir arxiu Torrent...',

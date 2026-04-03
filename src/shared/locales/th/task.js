@@ -3,6 +3,7 @@ export default {
   'active': 'การดาวน์โหลด',
   'waiting': 'กำลังรอ',
   'stopped': 'หยุดแล้ว',
+  'all-tasks': 'งานทั้งหมด',
   'new-task': 'งานใหม่',
   'new-bt-task': 'งาน BT ใหม่',
   'open-file': 'เปิดไฟล์ทอร์เรนต์...',

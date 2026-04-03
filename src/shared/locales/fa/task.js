@@ -3,6 +3,7 @@ export default {
   'active': 'در حال بارگیری',
   'waiting': 'در انتظار',
   'stopped': 'متوقف شد',
+  'all-tasks': 'همهٔ وظایف',
   'new-task': 'وظیفهٔ جدید',
   'new-bt-task': 'وظیفهٔ بیت‌تورنت جدید',
   'open-file': 'بازکردن پروندهٔ تورنت...',

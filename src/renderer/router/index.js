@@ -13,7 +13,7 @@ export default createRouter({
           alias: '/',
           component: () => import('@/components/Task/Index.vue'),
           props: {
-            status: 'active'
+            status: 'all'
           }
         },
         {

@@ -3,6 +3,7 @@ export default {
   'active': 'Mengunduh',
   'waiting': 'Mengunggu',
   'stopped': 'Terhenti',
+  'all-tasks': 'Semua tugas',
   'new-task': 'Tugas Baru',
   'new-bt-task': 'Tugas BT baru',
   'open-file': 'Buka Berkas Torrent...',

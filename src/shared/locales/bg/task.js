@@ -3,6 +3,7 @@ export default {
   'active':'Активен',
   'waiting':'чакане',
   'stopped':'спряно',
+  'all-tasks': 'Всички задачи',
   'new-task': 'нова задача',
   'new-bt-task': 'Нова BT задача',
   'open-file': 'отваряне на торент файл...',
