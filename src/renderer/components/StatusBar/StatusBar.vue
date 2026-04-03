@@ -133,7 +133,7 @@ export default {
           udp != null && udp !== '' && !Number.isNaN(Number(udp))
             ? String(udp)
             : ''
-        const k = g.kadKnownNodes
+        const k = g.kadLiveNodes
         this.ed2kKadNodes = k != null && k !== '' ? k : null
       } catch (e) {
         this.ed2kStarted = false

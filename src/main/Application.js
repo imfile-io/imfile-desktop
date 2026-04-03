@@ -1250,7 +1250,7 @@ export default class Application extends EventEmitter {
         rpcPort: null,
         ed2kTcpPort: null,
         ed2kUdpPort: null,
-        kadKnownNodes: null,
+        kadLiveNodes: null,
         ...(this.goed2kdStatus || {})
       }
       try {
@@ -1270,9 +1270,9 @@ export default class Application extends EventEmitter {
           this.goed2kdEngine.healthy
         ) {
           const dht = await this.goed2kdClient.getNetworkDht()
-          const n = dht && dht.known_nodes
+          const n = dht && dht.live_nodes
           if (n != null && !Number.isNaN(Number(n))) {
-            merged.kadKnownNodes = Number(n)
+            merged.kadLiveNodes = Number(n)
           }
         }
       } catch (err) {
