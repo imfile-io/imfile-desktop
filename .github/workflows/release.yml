@@ -222,12 +222,53 @@ jobs:
           VERSION="${GITHUB_REF_NAME#v}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
+      # 与推送的 tag 一致（如 v1.2.3），否则资产会挂在 imFile-x.y.z 上而用户只看 v 标签的 Release
+      # electron-updater 默认也匹配带 v 前缀的 release tag
+      - name: Merge Windows latest.yml (单文件供 electron-updater，避免两 job 同名 latest.yml 上传失败)
+        run: |
+          set -euo pipefail
+          OUT=release-artifacts/windows-combined
+          mkdir -p "$OUT"
+          # upload-artifact 会保留 release/ 前缀，解压后多为 .../release/latest.yml
+          X_PATH=$(find release-artifacts/windows-x64 -name latest.yml -type f 2>/dev/null | head -n1 || true)
+          A_PATH=$(find release-artifacts/windows-arm64 -name latest.yml -type f 2>/dev/null | head -n1 || true)
+          export X_PATH A_PATH OUT_PATH="${OUT}/latest.yml"
+          ruby <<'RUBY'
+          require "yaml"
+          x_path, a_path, out_path = ENV.fetch("X_PATH", ""), ENV.fetch("A_PATH", ""), ENV.fetch("OUT_PATH")
+          paths = [x_path, a_path].reject(&:empty?).select { |p| File.file?(p) }
+          abort "No Windows latest.yml found under release-artifacts/windows-*" if paths.empty?
+          loaded = paths.map { |p| YAML.load_file(p) }
+          merged =
+            if loaded.size == 1
+              loaded[0]
+            else
+              wx, wa = loaded
+              files = (wx["files"] || []) + (wa["files"] || [])
+              by_url = {}
+              files.each { |f| by_url[f["url"]] = f if f.is_a?(Hash) && f["url"] }
+              primary = by_url.values.find { |f| f["url"].to_s.include?("x64") } || by_url.values.first
+              m = wx.merge(
+                "files" => by_url.values,
+                "releaseDate" => [wx["releaseDate"], wa["releaseDate"]].compact.max
+              )
+              if primary
+                m["path"] = primary["url"]
+                m["sha512"] = primary["sha512"]
+              end
+              m
+            end
+          File.write(out_path, YAML.dump(merged))
+          RUBY
+          [[ -n "${X_PATH:-}" ]] && rm -f "$X_PATH"
+          [[ -n "${A_PATH:-}" ]] && rm -f "$A_PATH"
+
       # electron-updater 从 Release 资源拉取 latest*.yml；差分更新需同目录下的 *.blockmap
       - name: Create GitHub release from generated artifacts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          release_tag="imFile-${{ env.VERSION }}"
+          release_tag="${GITHUB_REF_NAME}"
 
           if ! gh release view "$release_tag" >/dev/null 2>&1; then
             gh release create "$release_tag" \
@@ -250,5 +291,10 @@ jobs:
             seen_assets["$asset_name"]="$asset"
             assets+=("$asset")
           done < <(find release-artifacts -type f -print0 | sort -z)
+
+          if [[ ${#assets[@]} -eq 0 ]]; then
+            echo "::error::No files under release-artifacts to upload; check build artifact paths."
+            exit 1
+          fi
 
           gh release upload "$release_tag" --clobber "${assets[@]}"
