@@ -1,5 +1,6 @@
+import { ipcRenderer } from 'electron'
 import api from '@/api'
-import { EMPTY_STRING, TASK_STATUS } from '@shared/constants'
+import { EMPTY_STRING, POST_DOWNLOAD_ACTION, TASK_STATUS } from '@shared/constants'
 import { checkTaskIsBT, intersection } from '@shared/utils'
 import { adaptAria2Task, adaptGoed2kdTask } from '../taskAdapter'
 
@@ -32,6 +33,10 @@ const matchGoed2kdListByCurrentTab = (status, currentList) => {
 }
 
 const state = {
+  /** 本次运行有效：全部下载完成后的动作 */
+  onCompleteAction: POST_DOWNLOAD_ACTION.NONE,
+  /** 下载完成后操作确认弹窗已打开，避免重复触发 */
+  postDownloadAwaitingConfirm: false,
   currentList: 'active',
   taskDetailVisible: false,
   currentTaskGid: EMPTY_STRING,
@@ -54,6 +59,12 @@ const getters = {
 }
 
 const mutations = {
+  SET_ON_COMPLETE_ACTION (state, action) {
+    state.onCompleteAction = action || POST_DOWNLOAD_ACTION.NONE
+  },
+  SET_POST_DOWNLOAD_AWAITING_CONFIRM (state, value) {
+    state.postDownloadAwaitingConfirm = !!value
+  },
   UPDATE_SEEDING_LIST (state, seedingList) {
     state.seedingList = seedingList
   },
@@ -90,6 +101,79 @@ const mutations = {
 }
 
 const actions = {
+  setOnCompleteAction ({ commit }, action) {
+    commit('SET_ON_COMPLETE_ACTION', action)
+  },
+  /**
+   * 在单次任务完成回调后调用：刷新全局统计后若已无任何下载中任务则执行一次性动作并复位为 none。
+   */
+  async runPostDownloadActionIfIdle ({ state, commit, dispatch }) {
+    const desired = state.onCompleteAction
+    if (!desired || desired === POST_DOWNLOAD_ACTION.NONE) {
+      return
+    }
+
+    try {
+      await dispatch('fetchAllList')
+    } catch (e) {
+      console.warn('[imFile] runPostDownloadActionIfIdle fetchAllList:', e?.message ?? e)
+      return
+    }
+
+    let goed2kdIncomplete = 0
+    try {
+      const st = await api.getGoed2kdStatus()
+      if (st && st.healthy) {
+        const resp = await api.fetchGoed2kdTaskList()
+        const raw = resolveGoed2kdList(resp)
+        const list = (raw || []).map((t) => {
+          const adapted = adaptGoed2kdTask(t)
+          return adapted
+        })
+        goed2kdIncomplete = list.filter((t) => {
+          if (t.status === TASK_STATUS.COMPLETE || t.status === TASK_STATUS.ERROR || t.status === TASK_STATUS.REMOVED) {
+            return false
+          }
+          if (t.totalLength > 0 && t.completedLength < t.totalLength) {
+            return true
+          }
+          return t.status === TASK_STATUS.ACTIVE || t.status === TASK_STATUS.WAITING || t.status === TASK_STATUS.PAUSED
+        }).length
+      }
+    } catch (e) {
+      console.warn('[imFile] runPostDownloadActionIfIdle goed2kd check:', e?.message ?? e)
+    }
+
+    const aria2Incomplete = state.count.downloading
+    if (aria2Incomplete > 0 || goed2kdIncomplete > 0) {
+      return
+    }
+
+    if (state.postDownloadAwaitingConfirm) {
+      return
+    }
+
+    commit('SET_POST_DOWNLOAD_AWAITING_CONFIRM', true)
+    return { ready: true, action: desired }
+  },
+  /**
+   * 用户取消倒计时确认：不执行系统动作，并重置为「无」。
+   */
+  cancelPostDownloadConfirm ({ commit }) {
+    commit('SET_POST_DOWNLOAD_AWAITING_CONFIRM', false)
+    commit('SET_ON_COMPLETE_ACTION', POST_DOWNLOAD_ACTION.NONE)
+  },
+  /**
+   * 倒计时结束或用户确认后执行（会先复位 store 再调主进程）。
+   */
+  async executePostDownloadAction ({ commit }, action) {
+    commit('SET_POST_DOWNLOAD_AWAITING_CONFIRM', false)
+    commit('SET_ON_COMPLETE_ACTION', POST_DOWNLOAD_ACTION.NONE)
+    if (!action || action === POST_DOWNLOAD_ACTION.NONE) {
+      return { ok: true }
+    }
+    return ipcRenderer.invoke('application:post-download-action', action)
+  },
   changeCurrentList ({ commit, dispatch }, currentList) {
     commit('CHANGE_CURRENT_LIST', currentList)
     commit('UPDATE_SELECTED_TASK_KEY_LIST', [])

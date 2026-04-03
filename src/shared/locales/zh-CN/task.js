@@ -123,5 +123,14 @@ export default {
   'task-add':'添加任务',
   'task-all-start' : '全部开始',
   'task-all-stop' : '全部暂停',
-  'task-not-data' : '暂无任务'
+  'task-not-data' : '暂无任务',
+  'post-download-action-menu': '下载完成后',
+  'post-download-action-none': '无',
+  'post-download-action-shutdown': '关机',
+  'post-download-action-sleep': '睡眠',
+  'post-download-action-quit': '退出软件',
+  'post-download-action-fail': '下载完成后操作执行失败：{detail}',
+  'post-download-confirm-title': '下载完成后操作',
+  'post-download-confirm-countdown': '{seconds} 秒后将执行「{actionName}」。可点击「取消」中止。',
+  'post-download-confirm-cancel': '取消'
 }
