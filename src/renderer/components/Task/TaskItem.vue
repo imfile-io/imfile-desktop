@@ -1,54 +1,44 @@
 <template>
-  <div :key="task.taskKey" class="task-item" v-on:dblclick="onDbClick">
-    <el-row type="flex">
-      <el-col :span="2">
-        <div class="flex items-center justify-center h-full"><el-checkbox :model-value="selectedTaskKeyList.includes(task.taskKey)"></el-checkbox></div>
-      </el-col>
-      <el-col :span="22">
-        <el-row>
-          <el-col :span="16">
-            <div class="task-name" :title="taskFullName">
-              <span>{{ taskFullName }}</span>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div
-              v-if="task.completedLength > 0 || task.totalLength > 0"
-              class="task-progress-num"
-            >
-              <span>{{ bytesToSize(task.completedLength, 2) }}</span>
-              <span v-if="task.totalLength > 0">
-                / {{ bytesToSize(task.totalLength, 2) }}</span
-              >
-            </div>
-          </el-col>
-        </el-row>
-        <div class="task-progress">
-          <mo-task-progress
-            :completed="Number(task.completedLength)"
-            :total="Number(task.totalLength)"
-            :status="taskStatus"
-          />
-        </div>
-        <div class="flex flex-row justify-between mt-1">
-          <mo-task-progress-info :task="task" />
-          <mo-task-item-actions mode="LIST" :task="task" />
-        </div>
-      </el-col>
-    </el-row>
+  <div
+    :key="task.taskKey"
+    class="task-item task-item--table"
+    v-on:dblclick="onDbClick"
+    :style="taskRowProgressStyle"
+  >
+    <div class="task-item-cell task-item-cell--check" @click.stop>
+      <el-checkbox :model-value="selectedTaskKeyList.includes(task.taskKey)" />
+    </div>
+    <div class="task-item-cell task-item-cell--name">
+      <div class="task-name" :title="taskFullName">
+        <span>{{ taskFullName }}</span>
+      </div>
+    </div>
+    <div class="task-item-cell task-item-cell--connections" :title="String(connectionCount)">
+      {{ connectionCount }}
+    </div>
+    <div class="task-item-cell task-item-cell--size">
+      <template v-if="task.completedLength > 0 || task.totalLength > 0">
+        <span>{{ bytesToSize(task.completedLength, 2) }}</span>
+        <span v-if="task.totalLength > 0"> / {{ bytesToSize(task.totalLength, 2) }}</span>
+      </template>
+      <template v-else>—</template>
+    </div>
+    <div class="task-item-cell task-item-cell--speed" :title="speedText">
+      {{ speedText }}
+    </div>
+    <div class="task-item-cell task-item-cell--actions" @click.stop>
+      <mo-task-item-actions mode="LIST" :task="task" />
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import { useI18n } from 'vue-i18n'
-import { bytesToSize, checkTaskIsSeeder, getTaskName } from '@shared/utils'
+import { bytesToSize, calcProgress, checkTaskIsSeeder, getTaskName } from '@shared/utils'
 import { TASK_STATUS } from '@shared/constants'
 import { openItem, getTaskFullPath } from '@/utils/native'
 import TaskItemActions from './TaskItemActions'
-import TaskProgress from './TaskProgress'
-import TaskProgressInfo from './TaskProgressInfo'
-
 export default {
   name: 'mo-task-item',
   setup () {
@@ -56,9 +46,7 @@ export default {
     return { t }
   },
   components: {
-    [TaskItemActions.name]: TaskItemActions,
-    [TaskProgress.name]: TaskProgress,
-    [TaskProgressInfo.name]: TaskProgressInfo
+    [TaskItemActions.name]: TaskItemActions
   },
   props: {
     task: {
@@ -83,13 +71,23 @@ export default {
     isSeeder () {
       return checkTaskIsSeeder(this.task)
     },
-    taskStatus () {
+    rowProgressPercent () {
       const { task, isSeeder } = this
-      if (isSeeder) {
-        return TASK_STATUS.SEEDING
-      } else {
-        return task.status
+      const { COMPLETE } = TASK_STATUS
+      if (task.status === COMPLETE || isSeeder) {
+        return 100
       }
+      return calcProgress(task.totalLength, task.completedLength)
+    },
+    taskRowProgressStyle () {
+      const p = Math.min(100, Math.max(0, this.rowProgressPercent))
+      return { '--task-row-progress': `${p}%` }
+    },
+    connectionCount () {
+      return Number(this.task.connections) || 0
+    },
+    speedText () {
+      return `${this.bytesToSize(Number(this.task.downloadSpeed) || 0, 2)}/s`
     }
   },
   methods: {
