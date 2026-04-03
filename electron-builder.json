@@ -89,7 +89,6 @@
       "category": "public.app-category.utilities"
     },
     "win": {
-      "sign": null,
       "icon": "build/icon.ico",
       "artifactName": "${productName}-${version}-${arch}.${ext}",
       "target": [

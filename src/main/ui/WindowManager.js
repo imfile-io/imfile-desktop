@@ -100,7 +100,8 @@ export default class WindowManager extends EventEmitter {
         enableRemoteModule: true,
         contextIsolation: false,
         nodeIntegration: true,
-        nodeIntegrationInWorker: true
+        nodeIntegrationInWorker: true,
+        sandbox: false
       }
     })
 
@@ -127,7 +128,7 @@ export default class WindowManager extends EventEmitter {
       })
     }
 
-    if (is.dev() && pageOptions.openDevTools) {
+    if (pageOptions.openDevTools) {
       window.webContents.openDevTools()
     }
 
@@ -136,8 +137,24 @@ export default class WindowManager extends EventEmitter {
       return { action: 'deny' }
     })
 
-    if (pageOptions.url) {
-      window.loadURL(pageOptions.url)
+    window.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL, isMainFrame) => {
+      if (isMainFrame) {
+        logger.error('[imFile] did-fail-load', errorCode, errorDescription, validatedURL)
+      }
+    })
+
+    window.webContents.on('render-process-gone', (event, details) => {
+      logger.error('[imFile] render-process-gone', details)
+    })
+
+    if (pageOptions.htmlFile) {
+      window.loadFile(pageOptions.htmlFile).catch((err) => {
+        logger.error('[imFile] loadFile failed:', err)
+      })
+    } else if (pageOptions.url) {
+      window.loadURL(pageOptions.url).catch((err) => {
+        logger.error('[imFile] loadURL failed:', err)
+      })
     }
 
     window.once('ready-to-show', () => {

@@ -207,7 +207,8 @@ let rendererConfig = {
     libraryTarget: 'commonjs2',
     path: path.join(__dirname, '../dist/electron'),
     globalObject: 'this',
-    publicPath: ''
+    /** 生产 file:// 用相对路径；开发保持 / 以免 dev server / HMR 异常 */
+    publicPath: devMode ? '/' : './'
   },
   resolve: {
     alias: {

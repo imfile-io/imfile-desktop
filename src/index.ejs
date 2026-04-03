@@ -51,8 +51,18 @@
     </div>
     <!-- Set `__static` path to static files in production -->
     <% if (!htmlWebpackPlugin.options.isBrowser && !htmlWebpackPlugin.options.isDev) { %>
+      <!-- 内联脚本里 __dirname 在 Electron 渲染进程常为 undefined，会导致 path.join 抛错；用当前页面 URL 推导目录 -->
       <script>
-        window.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
+        (function () {
+          try {
+            var path = require('path')
+            var fileURLToPath = require('url').fileURLToPath
+            var dir = path.dirname(fileURLToPath(new URL(window.location.href)))
+            window.__static = path.join(dir, 'static').replace(/\\/g, '\\\\')
+          } catch (e) {
+            window.__static = ''
+          }
+        })()
       </script>
     <% } %>
 
