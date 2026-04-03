@@ -770,17 +770,16 @@ export const getInverseTheme = (theme) => {
   return (theme === APP_THEME.LIGHT) ? APP_THEME.DARK : APP_THEME.LIGHT
 }
 
-// Internal shared configuration objects. Not exported directly to avoid
-// exposing mutable module-level state.
+// 偏好 Basic/Advanced 共享未保存变更；与 getChangedConfig() 为同一对象
 const _changedConfig = { basic: {}, advanced: {} }
 const _backupConfig = { theme: undefined, locale: undefined }
+
+export const changedConfig = _changedConfig
 
 // Factory functions that return new configuration objects with default values.
 export const createChangedConfig = () => ({ basic: {}, advanced: {} })
 export const createBackupConfig = () => ({ theme: undefined, locale: undefined })
 
-// Accessors for the shared configuration instances, preserving existing
-// singleton-like behavior without exporting the mutable objects themselves.
 export const getChangedConfig = () => _changedConfig
 export const getBackupConfig = () => _backupConfig
 

@@ -490,6 +490,8 @@ import '@/components/Icons/refresh'
 import { getLanguage } from '@shared/locales'
 import { getLocaleManager } from '@/components/Locale'
 
+const changedConfig = getChangedConfig()
+
 const initForm = (config) => {
   const {
     autoCheckUpdate,
@@ -546,7 +548,7 @@ export default {
     const { locale } = this.$store.state.preference.config
     const formOriginal = initForm(this.$store.state.preference.config)
     let form = {}
-    form = initForm(extend(form, formOriginal, getChangedConfig().advanced))
+    form = initForm(extend(form, formOriginal, changedConfig.advanced))
 
     return {
       form,
@@ -753,7 +755,7 @@ export default {
 
         const data = {
           ...diffConfig(this.formOriginal, this.form),
-          ...getChangedConfig().basic
+          ...changedConfig.basic
         }
 
         const {
@@ -789,8 +791,8 @@ export default {
             this.$msg.success(this.t('preferences.save-fail-message'))
           })
 
-        getChangedConfig().basic = {}
-        getChangedConfig().advanced = {}
+        changedConfig.basic = {}
+        changedConfig.advanced = {}
 
         if (this.isRenderer) {
           if ('autoHideWindow' in data) {
@@ -809,11 +811,11 @@ export default {
     }
   },
   beforeRouteLeave (to, from, next) {
-    getChangedConfig().advanced = diffConfig(this.formOriginal, this.form)
+    changedConfig.advanced = diffConfig(this.formOriginal, this.form)
     if (to.path === '/preference/basic') {
       next()
     } else {
-      if (isEmpty(getChangedConfig().basic) && isEmpty(getChangedConfig().advanced)) {
+      if (isEmpty(changedConfig.basic) && isEmpty(changedConfig.advanced)) {
         next()
       } else {
         dialog.showMessageBox({
@@ -824,8 +826,8 @@ export default {
           cancelId: 1
         }).then(({ response }) => {
           if (response === 0) {
-            getChangedConfig().basic = {}
-            getChangedConfig().advanced = {}
+            changedConfig.basic = {}
+            changedConfig.advanced = {}
             next()
           }
         })
