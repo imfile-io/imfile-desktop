@@ -227,9 +227,28 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mapfile -t assets < <(find release-artifacts -type f)
-          gh release create "imFile-${{ env.VERSION }}" \
-            --title "${{ env.VERSION }}" \
-            --target ${{ github.sha }} \
-            --generate-notes \
-            "${assets[@]}"
+          release_tag="imFile-${{ env.VERSION }}"
+
+          if ! gh release view "$release_tag" >/dev/null 2>&1; then
+            gh release create "$release_tag" \
+              --title "${{ env.VERSION }}" \
+              --target ${{ github.sha }} \
+              --generate-notes
+          fi
+
+          declare -A seen_assets=()
+          assets=()
+
+          while IFS= read -r -d '' asset; do
+            asset_name="$(basename "$asset")"
+
+            if [[ -n "${seen_assets[$asset_name]:-}" ]]; then
+              echo "::error::Duplicate release asset name '$asset_name' from '$asset' and '${seen_assets[$asset_name]}'"
+              exit 1
+            fi
+
+            seen_assets["$asset_name"]="$asset"
+            assets+=("$asset")
+          done < <(find release-artifacts -type f -print0 | sort -z)
+
+          gh release upload "$release_tag" --clobber "${assets[@]}"
