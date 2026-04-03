@@ -787,5 +787,6 @@ export {
   normalizeSearchResult,
   mapSearchResultsFromDto,
   mergeSearchResultRows,
+  getSearchResultEd2kUri,
   isGoed2kSearchActive
 } from './goed2kSearch'

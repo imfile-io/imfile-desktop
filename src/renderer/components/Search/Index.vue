@@ -79,17 +79,27 @@
               <el-table-column prop="name" :label="$t('search.name')" min-width="200" show-overflow-tooltip />
               <el-table-column prop="sizeLabel" :label="$t('search.size')" width="120" />
               <el-table-column prop="source" :label="$t('search.source')" width="140" show-overflow-tooltip />
-              <el-table-column width="120" align="right">
+              <el-table-column min-width="220" align="right" class-name="search-actions-column">
                 <template #default="{ row }">
-                  <el-button
-                    type="primary"
-                    size="small"
-                    :loading="Boolean(downloadingByHash[row.hash])"
-                    :disabled="!row.hash"
-                    @click="onDownload(row)"
-                  >
-                    {{ $t('search.download') }}
-                  </el-button>
+                  <div class="search-actions-cell">
+                    <el-button
+                      plain
+                      size="small"
+                      :disabled="!getEd2kUri(row)"
+                      @click="onCopyLink(row)"
+                    >
+                      {{ $t('search.copy-link') }}
+                    </el-button>
+                    <el-button
+                      type="primary"
+                      size="small"
+                      :loading="Boolean(downloadingByHash[row.hash])"
+                      :disabled="!row.hash"
+                      @click="onDownload(row)"
+                    >
+                      {{ $t('search.download') }}
+                    </el-button>
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
@@ -110,6 +120,7 @@ import {
   bytesToSize,
   mapSearchResultsFromDto,
   mergeSearchResultRows,
+  getSearchResultEd2kUri,
   isGoed2kSearchActive
 } from '@shared/utils'
 
@@ -311,6 +322,19 @@ export default {
       this.setSearchLoading(false)
       await api.stopGoed2kSearch().catch(() => {})
     },
+    getEd2kUri (row) {
+      return getSearchResultEd2kUri(row)
+    },
+    async onCopyLink (row) {
+      const uri = getSearchResultEd2kUri(row)
+      if (!uri) return
+      try {
+        await navigator.clipboard.writeText(uri)
+        ElMessage.success(this.t('search.copy-link-success'))
+      } catch {
+        ElMessage.error(this.t('search.copy-link-fail'))
+      }
+    },
     async onDownload (row) {
       if (!row || !row.hash) return
       this.downloadingByHash = { ...this.downloadingByHash, [row.hash]: true }
@@ -449,6 +473,14 @@ export default {
 
 .search-table {
   width: 100%;
+}
+
+.search-actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 </style>
 

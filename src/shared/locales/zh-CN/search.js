@@ -17,5 +17,8 @@ export default {
   'reset-done': '已重置搜索',
   'download-failed': '添加下载失败',
   'download-started': '已添加下载任务',
+  'copy-link': '复制链接',
+  'copy-link-success': '已复制链接',
+  'copy-link-fail': '复制失败，请重试',
   'results-truncated': '为减轻界面负担，仅保留前 {max} 条结果；可缩小关键词范围后重新搜索。'
 }
