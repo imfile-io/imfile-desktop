@@ -17,5 +17,8 @@ export default {
   'reset-done': 'Search has been reset',
   'download-failed': 'Failed to add download',
   'download-started': 'Download task added',
+  'copy-link': 'Copy link',
+  'copy-link-success': 'Link copied',
+  'copy-link-fail': 'Copy failed. Please try again.',
   'results-truncated': 'Only the first {max} results are kept for performance. Try a narrower keyword and search again.'
 }

@@ -1,3 +1,20 @@
+function pickEd2kLinkString (item) {
+  const candidates = [
+    item.ed2k_link,
+    item.ed2kLink,
+    item.ed2k,
+    item.link
+  ]
+  for (const c of candidates) {
+    if (typeof c !== 'string') continue
+    const s = c.trim()
+    if (s.toLowerCase().startsWith('ed2k://')) {
+      return s
+    }
+  }
+  return ''
+}
+
 /**
  * goed2kd SearchDTO.results 项字段兼容（以服务端实际 JSON 为准，可再扩展）。
  */
@@ -15,13 +32,39 @@ export function normalizeSearchResult (item) {
   } else if (typeof sources === 'string' && sources) {
     source = sources
   }
+  const ed2kLink = pickEd2kLinkString(item)
   return {
     hash,
     name: name || hash,
     sizeBytes,
     source,
+    ed2kLink,
     raw: item
   }
+}
+
+/**
+ * 供复制到剪贴板：优先完整 ed2k 链接，否则按标准格式拼装。
+ * @param {object} row normalizeSearchResult 结果行（可含 sizeLabel）
+ * @returns {string}
+ */
+export function getSearchResultEd2kUri (row) {
+  if (!row || typeof row !== 'object') return ''
+  const fromApi = typeof row.ed2kLink === 'string' ? row.ed2kLink.trim() : ''
+  if (fromApi && fromApi.toLowerCase().startsWith('ed2k://')) {
+    return fromApi
+  }
+  const hash = typeof row.hash === 'string' ? row.hash.trim().toLowerCase() : ''
+  if (!hash) return ''
+  const size = Number.isFinite(Number(row.sizeBytes))
+    ? Math.max(0, Math.floor(Number(row.sizeBytes)))
+    : 0
+  const displayName = (typeof row.name === 'string' && row.name.trim())
+    ? row.name.trim()
+    : hash
+  const encoded = encodeURIComponent(displayName)
+  const hashUpper = hash.toUpperCase()
+  return `ed2k://|file|${encoded}|${size}|${hashUpper}|/`
 }
 
 export function mapSearchResultsFromDto (dto) {
