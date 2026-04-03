@@ -92,6 +92,7 @@ export default {
   'protocols-magnet': 'Magnet [ magnet:// ]',
   'protocols-thunder': 'Thunder [ thunder:// ]',
   'protocols-torrent': 'Torrent File [ *.torrent ]',
+  'protocols-ed2k': 'eDonkey2000 link [ ed2k:// ]',
   'protocols-association-tips': 'On Windows, file association changes may require Explorer refresh or sign-out/sign-in to take effect.',
   'browser-extensions': 'Extensions',
   'baidu-exporter': 'BaiduExporter',

@@ -82,6 +82,7 @@ export default {
   'protocols-default-client': 'Als Standaardclient voor de volgende protocollen instellen',
   'protocols-magnet': 'Magnet [ magnet:// ]',
   'protocols-thunder': 'Donner [ thunder:// ]',
+  'protocols-ed2k': 'ED2K [ ed2k:// ]',
   'browser-extensions': 'Browserextensies',
   'baidu-exporter': 'Baidu Exporter',
   'browser-extensions-tips': 'Beschikbaar gesteld door de community',

@@ -80,6 +80,7 @@ export default {
   'protocols-default-client': 'Setați client implicit pentru următoarele protocoale',
   'protocols-magnet': 'Magnet [ magnet:// ]',
   'protocols-thunder': 'Thunder [ thunder:// ]',
+  'protocols-ed2k': 'ED2K [ ed2k:// ]',
   'browser-extensions': 'Extensii',
   'baidu-exporter': 'Exportator Baidu',
   'browser-extensions-tips': 'Furnizat de comunitate, ',

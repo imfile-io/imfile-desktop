@@ -80,6 +80,7 @@ export default {
   'protocols-default-client': 'Aşağıdaki protokoller için varsayılan istemci olarak ayarla',
   'protocols-magnet': 'Mıknatıs [ magnet:// ]',
   'protocols-thunder': 'gök gürültüsü [ thunder:// ]',
+  'protocols-ed2k': 'ED2K [ ed2k:// ]',
   'browser-extensions': 'Eklentiler',
   'baidu-exporter': 'BaiduExporter',
   'browser-extensions-tips': 'Topluluk tarafından sağlanan, ',

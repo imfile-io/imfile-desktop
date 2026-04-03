@@ -82,6 +82,7 @@ export default {
   'protocols-default-client': '設定為以下通訊協定的預設客戶端',
   'protocols-magnet': '磁力連結 [ magnet:// ]',
   'protocols-thunder': '迅雷連結 [ thunder:// ]',
+  'protocols-ed2k': '電驢連結 [ ed2k:// ]',
   'browser-extensions': '瀏覽器擴充功能',
   'baidu-exporter': '百度網盤助手',
   'browser-extensions-tips': '社群提供的瀏覽器擴充功能「不保證可用性」，',

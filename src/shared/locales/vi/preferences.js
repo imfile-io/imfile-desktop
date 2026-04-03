@@ -81,6 +81,7 @@ export default {
   'protocols-default-client': 'Đặt làm máy khách mặc định cho các giao thức sau',
   'protocols-magnet': 'Magnet [ magnet:// ]',
   'protocols-thunder': 'Thunder [ thunder:// ]',
+  'protocols-ed2k': 'ED2K [ ed2k:// ]',
   'browser-extensions': 'Tiện ích mở rộng',
   'baidu-exporter': 'BaiduExporter',
   'browser-extensions-tips': 'Được cung cấp bởi Cộng đồng, ',

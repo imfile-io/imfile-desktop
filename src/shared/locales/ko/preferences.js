@@ -82,6 +82,7 @@ export default {
   'protocols-default-client': '다음 프로토콜의 기본 클라이언트로 설정',
   'protocols-magnet': '마그넷 [ magnet:// ]',
   'protocols-thunder': '썬더 [ thunder:// ]',
+  'protocols-ed2k': 'ED2K 링크 [ ed2k:// ]',
   'browser-extensions': '확장 프로그램',
   'baidu-exporter': 'BaiduExporter',
   'browser-extensions-tips': '커뮤니티에서 제공하는, ',

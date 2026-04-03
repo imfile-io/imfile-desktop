@@ -82,6 +82,7 @@ export default {
   'protocols-default-client': 'تنظیم به عنوان کارخواه پیش‌گزیده برای شیوه‌نامه‌های زیر',
   'protocols-magnet': 'آهن‌ربا [ magnet:// ]',
   'protocols-thunder': 'تندر [ thunder:// ]',
+  'protocols-ed2k': 'ED2K [ ed2k:// ]',
   'browser-extensions': 'افزونه‌ها',
   'baidu-exporter': 'BaiduExporter',
   'browser-extensions-tips': 'تهیه شده توسط انجمن، ',

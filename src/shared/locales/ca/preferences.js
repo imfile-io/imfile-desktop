@@ -80,6 +80,7 @@ export default {
   'protocols-default-client': 'Establir com client per defecte dels següents protocols',
   'protocols-magnet': 'Magnet [ magnet:// ]',
   'protocols-thunder': 'Thunder [ thunder:// ]',
+  'protocols-ed2k': 'ED2K [ ed2k:// ]',
   'browser-extensions': 'Extensions',
   'baidu-exporter': 'BaiduExporter',
   'browser-extensions-tips': 'Proporcionats per la comunitat, ',

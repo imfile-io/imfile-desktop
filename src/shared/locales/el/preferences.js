@@ -80,6 +80,7 @@ export default {
   'protocols-default-client': 'Ρύθμιση ως προεπιλεγμένο πρόγραμμα για τα παρακάτω πρωτόκολλα',
   'protocols-magnet': 'Magnet [ magnet:// ]',
   'protocols-thunder': 'Thunder [ thunder:// ]',
+  'protocols-ed2k': 'ED2K [ ed2k:// ]',
   'browser-extensions': 'Επεκτάσεις',
   'baidu-exporter': 'BaiduExporter',
   'browser-extensions-tips': 'Παρέχεται από την κοινότητα, ',

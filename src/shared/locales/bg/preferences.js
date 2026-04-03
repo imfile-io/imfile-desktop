@@ -78,6 +78,7 @@ export default {
   'protocols-default-client':'Задаване като клиент по подразбиране за следните протоколи',
   'protocols-magnet': 'Magnet [ magnet:// ]',
   'protocols-thunder': 'Thunder [ thunder:// ]',
+  'protocols-ed2k': 'ED2K [ ed2k:// ]',
   'browser-extensions': 'Розширения',
   'baidu-exporter': 'BaiduExporter',
   'browser-extensions-tips': 'предоставени от общността,',

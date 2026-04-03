@@ -92,6 +92,7 @@ export default {
   'protocols-magnet': '磁力链接 [ magnet:// ]',
   'protocols-thunder': '迅雷链接 [ thunder:// ]',
   'protocols-torrent': '种子文件 [ *.torrent ]',
+  'protocols-ed2k': '电驴链接 [ ed2k:// ]',
   'protocols-association-tips': 'Windows 下修改文件关联后，可能需要刷新资源管理器或重新登录后生效。',
   'browser-extensions': '浏览器扩展',
   'baidu-exporter': '百度网盘助手',

@@ -82,6 +82,7 @@ export default {
   'protocols-default-client': 'تعيين كعميل افتراضي للبروتوكولات التالية',
   'protocols-magnet': 'المغناطيس [ magnet:// ]',
   'protocols-thunder': 'الرعد [ thunder:// ]',
+  'protocols-ed2k': 'ED2K [ ed2k:// ]',
   'browser-extensions': 'الإضافات',
   'baidu-exporter': 'مُصدر بايدو (Baidu)',
   'browser-extensions-tips': 'مقدمة من المجتمع، ',

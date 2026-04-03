@@ -19,7 +19,7 @@ export default class ProtocolManager extends EventEmitter {
     this.options = options
 
     // package.json:build.protocols[].schemes[]
-    // options.protocols: { 'magnet': true, 'thunder': false }
+    // options.protocols: { 'magnet': true, 'thunder': false, 'torrent': true, 'ed2k': false }
     this.protocols = {
       mo: true,
       imfile: true,
@@ -184,7 +184,8 @@ export default class ProtocolManager extends EventEmitter {
       url.toLowerCase().startsWith('http:') ||
       url.toLowerCase().startsWith('https:') ||
       url.toLowerCase().startsWith('magnet:') ||
-      url.toLowerCase().startsWith('thunder:')
+      url.toLowerCase().startsWith('thunder:') ||
+      url.toLowerCase().startsWith('ed2k:')
     ) {
       return this.handleResourceProtocol(url)
     }

@@ -121,7 +121,7 @@ export default class ConfigManager {
         'new-task-show-downloading': true,
         'no-confirm-before-delete-task': false,
         'open-at-login': false,
-        protocols: { magnet: true, thunder: false, torrent: true },
+        protocols: { magnet: true, thunder: false, torrent: true, ed2k: false },
         proxy: {
           enable: false,
           server: EMPTY_STRING,
@@ -182,6 +182,11 @@ export default class ConfigManager {
         NGOSANG_TRACKERS_BEST_IP_URL_CDN,
         NGOSANG_TRACKERS_BEST_URL_CDN
       ])
+    }
+
+    const protocols = this.getUserConfig('protocols')
+    if (protocols && typeof protocols === 'object' && typeof protocols.ed2k === 'undefined') {
+      this.setUserConfig('protocols', { ...protocols, ed2k: false })
     }
   }
 

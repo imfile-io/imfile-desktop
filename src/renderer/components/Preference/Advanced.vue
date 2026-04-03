@@ -394,6 +394,14 @@
             </el-switch>
           </el-col>
           <el-col class="form-item-sub" :span="24">
+            <el-switch
+              v-model="form.protocols.ed2k"
+              :active-text="$t('preferences.protocols-ed2k')"
+              @change="(val) => onProtocolsChange('ed2k', val)"
+              >
+            </el-switch>
+          </el-col>
+          <el-col class="form-item-sub" :span="24">
             <small>{{ $t('preferences.protocols-association-tips') }}</small>
           </el-col>
         </el-form-item>
@@ -564,7 +572,13 @@ const initForm = (config) => {
     listenPort,
     logLevel,
     proxy: cloneDeep(proxy),
-    protocols: { ...protocols },
+    protocols: {
+      magnet: true,
+      thunder: false,
+      torrent: true,
+      ed2k: false,
+      ...protocols
+    },
     rpcListenPort,
     rpcSecret,
     trackerSource,

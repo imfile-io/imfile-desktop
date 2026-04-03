@@ -82,6 +82,7 @@ export default {
   'protocols-default-client': 'Angi som standardklient for følgende protokoller',
   'protocols-magnet': 'Magnet [magnet: //]',
   'protocols-thunder': 'Torden [torden: //]',
+  'protocols-ed2k': 'ED2K [ ed2k:// ]',
   'browser-extensions': 'Utvidelser',
   'baidu-exporter': 'BaiduExporter',
   'browser-extensions-tips': 'Levert av samfunnet,',

@@ -82,6 +82,7 @@ export default {
   'protocols-default-client': 'ตั้งเป็นไคลเอนต์เริ่มต้นสำหรับโปรโตคอลต่อไปนี้',
   'protocols-magnet': 'แม่เหล็ก [ magnet:// ]',
   'protocols-thunder': 'Thunder [ thunder:// ]',
+  'protocols-ed2k': 'ED2K [ ed2k:// ]',
   'browser-extensions': 'ส่วนขยาย',
   'baidu-exporter': 'BaiduExporter',
   'browser-extensions-tips': 'มอบให้โดยชุมชน, ',

@@ -285,6 +285,7 @@ export const checkIsSupportedSchema = (url = '') => {
     str.startsWith('https:') ||
     str.startsWith('magnet:') ||
     str.startsWith('thunder:') ||
+    str.startsWith('ed2k:') ||
     str.startsWith('mo:') ||
     str.startsWith('imfile:')
   ) {

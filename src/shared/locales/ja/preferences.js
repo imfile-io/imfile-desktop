@@ -80,6 +80,7 @@ export default {
   'protocols-default-client': '以下のプロトコルのデフォルトクライアントとして設定',
   'protocols-magnet': '磁石 [ magnet:// ]',
   'protocols-thunder': 'サンダー [ thunder:// ]',
+  'protocols-ed2k': 'ED2k リンク [ ed2k:// ]',
   'browser-extensions': 'ブラウザ拡張機能',
   'baidu-exporter': 'バイドゥオンラインストレージ拡張機能',
   'browser-extensions-tips': '他のユーザによって作成されたものです。動作は保証できません。',
