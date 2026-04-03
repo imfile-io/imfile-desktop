@@ -73,7 +73,7 @@ export default class ConfigManager {
         'max-overall-upload-limit': 0,
         'no-proxy': EMPTY_STRING,
         'pause-metadata': false,
-        pause: true,
+        pause: false,
         'rpc-listen-port': ENGINE_RPC_PORT,
         'rpc-secret': EMPTY_STRING,
         'seed-ratio': 2,
