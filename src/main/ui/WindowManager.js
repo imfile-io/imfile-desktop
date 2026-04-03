@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { EventEmitter } from 'node:events'
 import { debounce } from 'lodash'
-import { app, shell, screen, BrowserWindow } from 'electron'
+import { app, shell, screen, BrowserWindow, nativeImage } from 'electron'
 import is from 'electron-is'
 
 import pageConfig from '../configs/page'
@@ -63,12 +63,21 @@ export default class WindowManager extends EventEmitter {
 
     // Windows 任务栏需使用 .ico（PNG 常仍显示为 Electron 图标）；Linux 继续用 PNG
     if (is.windows()) {
-      result.attrs.icon = join(__static, 'icon.ico')
+      result.attrs.icon = this.createWindowIcon('icon.ico')
     } else if (is.linux()) {
-      result.attrs.icon = join(__static, '512x512.png')
+      result.attrs.icon = this.createWindowIcon('512x512.png')
     }
 
     return result
+  }
+
+  createWindowIcon (name) {
+    const filePath = join(__static, name)
+    const icon = nativeImage.createFromPath(filePath)
+    if (icon.isEmpty()) {
+      logger.warn('[imFile] window icon is empty:', filePath)
+    }
+    return icon
   }
 
   getPageBounds (page) {
@@ -104,6 +113,10 @@ export default class WindowManager extends EventEmitter {
         sandbox: false
       }
     })
+
+    if (pageOptions.attrs && pageOptions.attrs.icon) {
+      window.setIcon(pageOptions.attrs.icon)
+    }
 
     const savedBounds = this.getPageBounds(page)
     if (savedBounds) {
