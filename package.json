@@ -32,6 +32,7 @@
     "pack": "pnpm run pack:main && pnpm run pack:renderer",
     "pack:main": "webpack --node-env production --progress --color --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "webpack --node-env production --progress --color --config .electron-vue/webpack.renderer.config.js",
+    "sync-goed2kd": "node scripts/sync-goed2kd.mjs",
     "postinstall": "electron-builder install-app-deps && pnpm run lint:fix"
   },
   "engines": {
