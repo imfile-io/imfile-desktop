@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=imFile
+Comment=A full-featured download manager
+Exec=imfile %U
+Terminal=false
+Type=Application
+Icon=io.github.imfile_io.imfile_desktop
+StartupNotify=true
+Categories=Network;FileTransfer;
+MimeType=application/x-bittorrent;x-scheme-handler/magnet;x-scheme-handler/imfile;x-scheme-handler/mo;x-scheme-handler/thunder;

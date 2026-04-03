@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.imfile_io.imfile_desktop</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>imFile</name>
+  <summary>A full-featured download manager</summary>
+  <description>
+    <p>
+      imFile is a cross-platform download manager supporting HTTP, BitTorrent, magnet links,
+      and common custom URL schemes.
+    </p>
+  </description>
+  <launchable type="desktop-id">io.github.imfile_io.imfile_desktop.desktop</launchable>
+  <url type="homepage">https://github.com/imfile-io/imfile-desktop</url>
+  <url type="bugtracker">https://github.com/imfile-io/imfile-desktop/issues</url>
+  <developer id="imfile-io">
+    <name>Imfile</name>
+  </developer>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/imfile-io/imfile-desktop/master/screenshots/userInterface_img.png</image>
+      <caption>Main window</caption>
+    </screenshot>
+  </screenshots>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="2.0.0"/>
+  </releases>
+</component>

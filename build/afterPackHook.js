@@ -68,15 +68,31 @@ const linuxTargets = [
   'AppImage',
   'deb',
   'rpm',
-  'snap'
+  'snap',
+  'dir'
 ]
+
+function isLinuxPackWithSandboxWrapper (context) {
+  const platform =
+    context.electronPlatformName || context.packager?.platform?.name
+  if (platform !== 'linux') {
+    return false
+  }
+  if (!context.targets || context.targets.length === 0) {
+    return true
+  }
+  const names = context.targets
+    .map(t => (typeof t === 'string' ? t : t?.name))
+    .filter(Boolean)
+  if (names.length === 0) {
+    return true
+  }
+  return names.some(n => linuxTargets.includes(n))
+}
 
 module.exports = async function (context) {
   console.warn('after build; disable sandbox')
-  const isLinux = context.targets.find(
-    target => linuxTargets.includes(target)
-  )
-  if (!isLinux) {
+  if (!isLinuxPackWithSandboxWrapper(context)) {
     return
   }
   const originalDir = process.cwd()

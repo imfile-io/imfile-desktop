@@ -35,6 +35,8 @@
     "pack:renderer": "webpack --node-env production --progress --color --config .electron-vue/webpack.renderer.config.js",
     "sync-goed2kd": "node scripts/sync-goed2kd.mjs",
     "sync-go-aria2": "node scripts/sync-go-aria2.mjs",
+    "build:linux:dir": "node .electron-vue/build.js && electron-builder --linux dir --publish never",
+    "flatpak": "node scripts/prepare-flatpak-stage.mjs && flatpak-builder --user --install --force-clean flatpak/.flatpak-build flatpak/io.github.imfile_io.imfile_desktop.yml",
     "postinstall": "electron-builder install-app-deps && pnpm run lint:fix"
   },
   "engines": {

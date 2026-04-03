@@ -27,5 +27,9 @@ dist/web/*
 
 # release
 release/*
+
+# flatpak 本地构建产物
+flatpak/stage/
+flatpak/.flatpak-build/
 data/
 .cursor/
