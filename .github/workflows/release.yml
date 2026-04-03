@@ -115,18 +115,60 @@ jobs:
           npm version $version --no-git-tag-version --allow-same-version
 
       - run: pnpm install --frozen-lockfile
-      - run: node .electron-vue/build.js && npx electron-builder --publish=never
+      - run: node .electron-vue/build.js && npx electron-builder --win --x64 --publish=never
 
-      - name: Upload Windows build artifacts
+      - name: Upload Windows x64 build artifacts
         uses: actions/upload-artifact@v7
         with:
           name: release-windows
           path: |
-            release/latest.yml
+            release/latest*.yml
             release/*.blockmap
-            release/*.exe
-            release/*.appx
-            release/*.zip
+            release/*x64*.exe
+            release/*x64*.appx
+            release/*x64*.zip
+          if-no-files-found: error
+          retention-days: 90
+
+  # 需 GitHub 托管的 windows-11-arm（公开仓库可用）；与 x64 分 job 避免安装包 / latest*.yml 同名冲突
+  release-windows-arm64:
+    runs-on: windows-11-arm
+    environment: release
+    permissions:
+      contents: read
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Set build version from tag
+        run: |
+          $version = $env:GITHUB_REF_NAME -replace '^v',''
+          npm version $version --no-git-tag-version --allow-same-version
+
+      - run: pnpm install --frozen-lockfile
+      - run: node .electron-vue/build.js && npx electron-builder --win --arm64 --publish=never
+
+      - name: Upload Windows ARM64 build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-windows-arm64
+          path: |
+            release/latest*.yml
+            release/*.blockmap
+            release/*arm64*.exe
+            release/*arm64*.appx
+            release/*arm64*.zip
           if-no-files-found: error
           retention-days: 90
 
@@ -136,6 +178,7 @@ jobs:
       - release-linux
       - release-macos
       - release-windows
+      - release-windows-arm64
     permissions:
       contents: write
     steps:
@@ -154,11 +197,17 @@ jobs:
           name: release-macos
           path: release-artifacts/macos
 
-      - name: Prepare Windows artifacts for release
+      - name: Prepare Windows x64 artifacts for release
         uses: actions/download-artifact@v8
         with:
           name: release-windows
-          path: release-artifacts/windows
+          path: release-artifacts/windows-x64
+
+      - name: Prepare Windows ARM64 artifacts for release
+        uses: actions/download-artifact@v8
+        with:
+          name: release-windows-arm64
+          path: release-artifacts/windows-arm64
 
       - name: Set version from tag
         run: |

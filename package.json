@@ -20,6 +20,7 @@
     "build": "node .electron-vue/build.js && electron-builder",
     "build:win7": "pnpm up electron@22 && node .electron-vue/build.js && electron-builder --win --config.directories.output=release/win32/7",
     "build:win10": "node .electron-vue/build.js && electron-builder --win --config.directories.output=release/win32/10",
+    "build:win:arm64": "node .electron-vue/build.js && electron-builder --win --arm64 --config.directories.output=release/win32/arm64",
     "build:applesilicon": "node .electron-vue/build.js && electron-builder --arm64 --mac",
     "build:github": "node .electron-vue/build.js",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",

@@ -43,7 +43,8 @@ export const engineArchMap = {
   win32: {
     ia32: 'ia32',
     x64: 'x64',
-    arm64: 'x64'
+    /** 与打包目录 extra/win32/arm64 一致；原生 Windows on ARM 安装包使用 */
+    arm64: 'arm64'
   },
   linux: {
     x64: 'x64',
