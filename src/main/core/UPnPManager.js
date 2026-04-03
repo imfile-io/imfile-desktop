@@ -1,6 +1,7 @@
 import os from 'node:os'
 
-import { upnpNat } from '@achingbrain/nat-port-mapper'
+import { gateway4sync } from 'default-gateway'
+import { pmpNat, upnpNat } from '@achingbrain/nat-port-mapper'
 
 import logger from './Logger'
 
@@ -8,6 +9,9 @@ import logger from './Logger'
  * UPnP 端口映射：@achingbrain/nat-port-mapper。
  * 原 @motrix/nat-api 在未指定 protocol 时对同一端口映射 TCP+UDP，此处保持一致。
  */
+
+const SSDP_TIMEOUT_MS = 35_000
+const SSDP_SEARCH_INTERVAL_MS = 1_500
 
 let client = null
 let gateway = null
@@ -24,6 +28,23 @@ function getLanIPv4 () {
     }
   }
   return '127.0.0.1'
+}
+
+function getLanIPv6GlobalUla () {
+  const nets = os.networkInterfaces()
+  for (const key of Object.keys(nets)) {
+    for (const net of nets[key] ?? []) {
+      if (net.family !== 'IPv6' || net.internal) {
+        continue
+      }
+      const a = net.address
+      if (a.startsWith('fe80')) {
+        continue
+      }
+      return a
+    }
+  }
+  return '::1'
 }
 
 export default class UPnPManager {
@@ -45,27 +66,75 @@ export default class UPnPManager {
     })
   }
 
+  getLocalHostForMap () {
+    if (!gateway) {
+      return getLanIPv4()
+    }
+    if (gateway.family === 'IPv6') {
+      return getLanIPv6GlobalUla()
+    }
+    return getLanIPv4()
+  }
+
   async ensureGateway () {
     await this.init()
     if (gateway) {
       return gateway
     }
     if (!discoverPromise) {
-      discoverPromise = (async () => {
-        const signal = AbortSignal.timeout(15_000)
-        for await (const gw of client.findGateways({ signal })) {
-          if (gw.family === 'IPv4') {
-            gateway = gw
-            return
-          }
-        }
-        throw new Error('[imFile] UPnP gateway not found')
-      })().finally(() => {
+      discoverPromise = this._discoverGateway().finally(() => {
         discoverPromise = null
       })
     }
     await discoverPromise
     return gateway
+  }
+
+  async _discoverGateway () {
+    const findOpts = {
+      signal: AbortSignal.timeout(SSDP_TIMEOUT_MS),
+      searchInterval: SSDP_SEARCH_INTERVAL_MS
+    }
+
+    let firstNonV4 = null
+    try {
+      for await (const gw of client.findGateways(findOpts)) {
+        if (gw.family === 'IPv4') {
+          gateway = gw
+          logger.info('[imFile] UPnPManager SSDP 发现 IPv4 网关')
+          return
+        }
+        if (!firstNonV4) {
+          firstNonV4 = gw
+        }
+      }
+    } catch (err) {
+      logger.warn('[imFile] UPnPManager SSDP 搜索结束:', err?.message ?? err)
+    }
+
+    if (firstNonV4) {
+      gateway = firstNonV4
+      logger.info('[imFile] UPnPManager SSDP 使用非 IPv4 网关')
+      return
+    }
+
+    logger.warn('[imFile] UPnPManager SSDP 未发现网关，尝试 NAT-PMP')
+    try {
+      const { gateway: gwIp } = gateway4sync()
+      gateway = pmpNat(gwIp, {
+        description: 'imFile',
+        ttl: 7_200_000,
+        autoRefresh: true,
+        refreshThreshold: 60_000
+      })
+      logger.info('[imFile] UPnPManager 使用 NAT-PMP，网关', gwIp)
+    } catch (err) {
+      const msg = err?.message ?? String(err)
+      logger.warn('[imFile] UPnPManager NAT-PMP 不可用:', msg)
+      throw new Error(
+        '[imFile] 未发现 UPnP 网关（请确认路由器已开启 UPnP，且本机防火墙未拦截 SSDP 组播 239.255.255.250:1900；部分网络仅支持 NAT-PMP）'
+      )
+    }
   }
 
   map (port) {
@@ -81,7 +150,7 @@ export default class UPnPManager {
     const p = Number(port)
     try {
       const gw = await this.ensureGateway()
-      const host = getLanIPv4()
+      const host = this.getLocalHostForMap()
       const opts = {
         ttl: 7_200_000,
         description: 'imFile'

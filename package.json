@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@achingbrain/nat-port-mapper": "^4.0.5",
+    "default-gateway": "^7.2.2",
     "node-fetch": "^2.7.0",
     "ws": "^8.20.0"
   },
