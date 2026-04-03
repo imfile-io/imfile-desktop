@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  punycode: 2.3.1
+
 importers:
 
   .:
@@ -17,6 +20,9 @@ importers:
       node-fetch:
         specifier: ^2.7.0
         version: 2.7.0(encoding@0.1.13)
+      punycode:
+        specifier: 2.3.1
+        version: 2.3.1
       ws:
         specifier: ^8.20.0
         version: 8.20.0

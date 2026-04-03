@@ -10,12 +10,23 @@ const { dependencies } = require('../package.json')
 const { appId } = require('../electron-builder.json')
 const devMode = process.env.NODE_ENV !== 'production'
 
+/** 避免 require('punycode') 落到 Node 内置模块而触发 DEP0040（uri-js / ajv 等） */
+let punycodeUserland
+try {
+  punycodeUserland = require.resolve('punycode/punycode.js', { paths: [path.join(__dirname, '..')] })
+} catch {
+  punycodeUserland = null
+}
+
 /** 纯 ESM、exports 无 require，不能作 external 由主进程 CJS require */
 const BUNDLE_IN_MAIN = new Set(['@achingbrain/nat-port-mapper'])
 
 let mainConfig = {
   entry: {
-    main: path.join(__dirname, '../src/main/index.js')
+    main: [
+      path.join(__dirname, '../src/main/punycode-patch.js'),
+      path.join(__dirname, '../src/main/index.js')
+    ]
   },
   externals: [
     ...Object.keys(dependencies || {}).filter((name) => !BUNDLE_IN_MAIN.has(name))
@@ -33,9 +44,10 @@ let mainConfig = {
       }
     ]
   },
+  /* 主进程需真实 __dirname，供 punycode-patch 等解析 node_modules；勿在 prod 中置 false */
   node: {
-    __dirname: devMode,
-    __filename: devMode
+    __dirname: true,
+    __filename: true
   },
   output: {
     filename: '[name].js',
@@ -53,7 +65,8 @@ let mainConfig = {
   resolve: {
     alias: {
       '@': path.join(__dirname, '../src/main'),
-      '@shared': path.join(__dirname, '../src/shared')
+      '@shared': path.join(__dirname, '../src/shared'),
+      ...(punycodeUserland ? { punycode: punycodeUserland } : {})
     },
     extensions: ['.js', '.json', '.node']
   },
@@ -66,6 +79,12 @@ let mainConfig = {
       })
     ],
   },
+  ignoreWarnings: [
+    {
+      module: /punycode-patch\.js$/,
+      message: /Critical dependency/
+    }
+  ]
 }
 
 /**

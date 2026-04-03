@@ -17,6 +17,14 @@ const TerserPlugin = require('terser-webpack-plugin')
 const { dependencies } = require('../package.json')
 const devMode = process.env.NODE_ENV !== 'production'
 
+/** 避免 require('punycode') 落到 Node 内置模块而触发 DEP0040（uri-js / ajv 等） */
+let punycodeUserland
+try {
+  punycodeUserland = require.resolve('punycode/punycode.js', { paths: [path.join(__dirname, '..')] })
+} catch {
+  punycodeUserland = null
+}
+
 const tailwindEntryCss = path.resolve(__dirname, '../src/renderer/components/Theme/tailwind.css')
 
 /**
@@ -205,7 +213,8 @@ let rendererConfig = {
     alias: {
       '@': path.join(__dirname, '../src/renderer'),
       '@shared': path.join(__dirname, '../src/shared'),
-      'vue$': 'vue/dist/vue.esm-bundler.js'
+      'vue$': 'vue/dist/vue.esm-bundler.js',
+      ...(punycodeUserland ? { punycode: punycodeUserland } : {})
     },
     extensions: ['.js', '.vue', '.json', '.css', '.node']
   },
