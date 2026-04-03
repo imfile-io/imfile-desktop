@@ -13,10 +13,55 @@ import {
   GOED2KD_HEALTH_MAX_RETRIES,
   GOED2KD_HEALTH_RETRY_INTERVAL_MS,
   GOED2KD_DEFAULT_RPC_HOST,
-  GOED2KD_DEFAULT_RPC_PORT
+  GOED2KD_DEFAULT_RPC_PORT,
+  GOED2KD_DEFAULT_LISTEN_TCP_PORT,
+  GOED2KD_DEFAULT_LISTEN_UDP_PORT
 } from '@shared/constants'
 
 const { platform, arch } = process
+
+/**
+ * 从已解析的 goed2kd config 对象读取 engine 监听端口（供 getRuntimeOptions 与 UPnP 共用）
+ */
+export function parseEnginePortsFromConfig (config) {
+  let listenPort = GOED2KD_DEFAULT_LISTEN_TCP_PORT
+  let udpPort = GOED2KD_DEFAULT_LISTEN_UDP_PORT
+  if (!config || typeof config !== 'object') {
+    return { listenPort, udpPort }
+  }
+  const tcp = config.engine?.listen_port ?? config.engine?.listenPort
+  const udp = config.engine?.udp_port ?? config.engine?.udpPort
+  if (tcp != null && !Number.isNaN(Number(tcp))) {
+    listenPort = Number(tcp)
+  }
+  if (udp != null && !Number.isNaN(Number(udp))) {
+    udpPort = Number(udp)
+  }
+  return { listenPort, udpPort }
+}
+
+/**
+ * 未启动引擎时从配置文件读取 eD2k TCP/UDP 端口（用于 UPnP 等）
+ */
+export function readGoed2kdEnginePortsFromConfigSync (configPath = getGoed2kdConfigPath()) {
+  try {
+    if (!existsSync(configPath)) {
+      return {
+        listenPort: GOED2KD_DEFAULT_LISTEN_TCP_PORT,
+        udpPort: GOED2KD_DEFAULT_LISTEN_UDP_PORT
+      }
+    }
+    const raw = readFileSync(configPath, 'utf8')
+    const config = JSON.parse(raw)
+    return parseEnginePortsFromConfig(config)
+  } catch (err) {
+    logger.warn('[imFile] read goed2kd engine ports from config failed:', err.message)
+    return {
+      listenPort: GOED2KD_DEFAULT_LISTEN_TCP_PORT,
+      udpPort: GOED2KD_DEFAULT_LISTEN_UDP_PORT
+    }
+  }
+}
 
 export default class Goed2kdEngine {
   static instance = null
@@ -100,6 +145,9 @@ export default class Goed2kdEngine {
     let host = GOED2KD_DEFAULT_RPC_HOST
     let port = GOED2KD_DEFAULT_RPC_PORT
     let token = ''
+    /** eD2k 协议 TCP / UDP 监听端口（与 HTTP RPC 端口 port 不同） */
+    let listenPort = GOED2KD_DEFAULT_LISTEN_TCP_PORT
+    let udpPort = GOED2KD_DEFAULT_LISTEN_UDP_PORT
 
     try {
       const raw = readFileSync(configPath, 'utf8')
@@ -114,6 +162,10 @@ export default class Goed2kdEngine {
         host = parts.slice(0, -1).join(':') || GOED2KD_DEFAULT_RPC_HOST
       }
       token = config?.rpc?.auth_token || ''
+
+      const ep = parseEnginePortsFromConfig(config)
+      listenPort = ep.listenPort
+      udpPort = ep.udpPort
     } catch (err) {
       logger.warn('[imFile] parse goed2kd config failed:', err.message)
     }
@@ -122,7 +174,9 @@ export default class Goed2kdEngine {
       host,
       port,
       token,
-      configPath
+      configPath,
+      listenPort,
+      udpPort
     }
   }
 
@@ -160,12 +214,18 @@ export default class Goed2kdEngine {
 
   checkHealth () {
     const path = '/api/v1/system/health'
+    const { host, port, token } = this.getRuntimeOptions()
+    const headers = {}
+    if (token) {
+      headers.Authorization = `Bearer ${token}`
+    }
     return new Promise((resolve) => {
       const req = httpRequest({
         method: 'GET',
-        host: GOED2KD_DEFAULT_RPC_HOST,
-        port: GOED2KD_DEFAULT_RPC_PORT,
-        path
+        host: host || GOED2KD_DEFAULT_RPC_HOST,
+        port: port || GOED2KD_DEFAULT_RPC_PORT,
+        path,
+        headers
       }, (res) => {
         resolve(res.statusCode >= 200 && res.statusCode < 300)
       })

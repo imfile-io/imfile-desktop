@@ -59,6 +59,10 @@ export default class Goed2kdClient {
     return this.request('/transfers')
   }
 
+  getNetworkDht () {
+    return this.request('/network/dht')
+  }
+
   pauseTransfer (hash) {
     return this.request(`/transfers/${hash}/pause`, { method: 'POST' })
   }

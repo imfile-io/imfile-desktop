@@ -35,5 +35,10 @@ export default {
   'status-upnp-off': '关',
   'status-upnp-mapped': '已映射',
   'status-upnp-not-mapped': '未映射',
-  'status-upnp-line': 'UPnP/NAT-PMP：{upnpOn} · BT {btPort}：{btOk} · DHT {dhtPort}：{dhtOk}'
+  'status-upnp-line': 'BT {btPort} {btOk} · DHT {dhtPort} {dhtOk} · UPnP {upnpOn}',
+  'status-ed2k-stopped': '已停止',
+  'status-ed2k-ok': '正常',
+  'status-ed2k-bad': '未就绪',
+  'status-ed2k-meta': 'eD2k TCP {tcpPort}：{tcpUpnpOk} · UDP {udpPort}：{udpUpnpOk}',
+  'status-ed2k-kad': 'KAD {kadNodes} 节点'
 }

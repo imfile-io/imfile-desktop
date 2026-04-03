@@ -46,6 +46,9 @@ export const ENGINE_MAX_CONCURRENT_DOWNLOADS = 10
 export const ENGINE_MAX_CONNECTION_PER_SERVER = 64
 export const GOED2KD_DEFAULT_RPC_HOST = '127.0.0.1'
 export const GOED2KD_DEFAULT_RPC_PORT = 18080
+/** goed2kd 配置未写时的 eD2k 监听端口（TCP / UDP，与 RPC 端口无关） */
+export const GOED2KD_DEFAULT_LISTEN_TCP_PORT = 4661
+export const GOED2KD_DEFAULT_LISTEN_UDP_PORT = 4662
 export const GOED2KD_HEALTH_RETRY_INTERVAL_MS = 300
 export const GOED2KD_HEALTH_MAX_RETRIES = 40
 /** goed2k 搜索结果在界面中保留的最大条数，避免过多 DOM 拖垮渲染 */

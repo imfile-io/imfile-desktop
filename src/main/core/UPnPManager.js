@@ -217,13 +217,19 @@ export default class UPnPManager {
   /**
    * @param {string|number} listenPort BT 监听端口
    * @param {string|number} dhtListenPort DHT 端口
+   * @param {string|number} [ed2kTcpPort] goed2k engine.listen_port
+   * @param {string|number} [ed2kUdpPort] goed2k engine.udp_port
    */
-  getPortMappingStatus (listenPort, dhtListenPort) {
+  getPortMappingStatus (listenPort, dhtListenPort, ed2kTcpPort, ed2kUdpPort) {
     const bt = Number(listenPort)
     const dht = Number(dhtListenPort)
+    const e2kT = Number(ed2kTcpPort)
+    const e2kU = Number(ed2kUdpPort)
     return {
       btMapped: !!mappingStatus[bt],
-      dhtMapped: !!mappingStatus[dht]
+      dhtMapped: !!mappingStatus[dht],
+      ed2kTcpMapped: Number.isFinite(e2kT) ? !!mappingStatus[e2kT] : false,
+      ed2kUdpMapped: Number.isFinite(e2kU) ? !!mappingStatus[e2kU] : false
     }
   }
 }

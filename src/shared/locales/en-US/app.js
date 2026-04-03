@@ -35,5 +35,10 @@ export default {
   'status-upnp-off': 'Off',
   'status-upnp-mapped': 'Mapped',
   'status-upnp-not-mapped': 'Not mapped',
-  'status-upnp-line': 'UPnP/NAT-PMP: {upnpOn} · BT {btPort}: {btOk} · DHT {dhtPort}: {dhtOk}'
+  'status-upnp-line': 'BT {btPort} {btOk} · DHT {dhtPort} {dhtOk} · UPnP {upnpOn}',
+  'status-ed2k-stopped': 'Stopped',
+  'status-ed2k-ok': 'OK',
+  'status-ed2k-bad': 'Not ready',
+  'status-ed2k-meta': 'eD2k TCP {tcpPort}: {tcpUpnpOk} · UDP {udpPort}: {udpUpnpOk}',
+  'status-ed2k-kad': 'KAD {kadNodes} nodes'
 }

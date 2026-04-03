@@ -201,8 +201,9 @@ iframe {
   background-color: $--app-background;
 }
 
-#app {
-  padding-bottom: 26px;
+/* 底部为状态栏预留空间：放在 .main.panel 上，与主内容区同色，避免出现 #app 底色的一条深色空带 */
+#container > .el-container.main.panel {
+  padding-bottom: 34px;
   box-sizing: border-box;
 }
 

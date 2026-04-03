@@ -24,7 +24,9 @@ import ConfigManager from './core/ConfigManager'
 import { setupLocaleManager } from './ui/Locale'
 import Engine from './core/Engine'
 import EngineClient from './core/EngineClient'
-import Goed2kdEngine from './core/Goed2kdEngine'
+import Goed2kdEngine, {
+  readGoed2kdEnginePortsFromConfigSync
+} from './core/Goed2kdEngine'
 import Goed2kdClient from './core/Goed2kdClient'
 import UPnPManager from './core/UPnPManager'
 import AutoLaunchManager from './core/AutoLaunchManager'
@@ -216,6 +218,11 @@ export default class Application extends EventEmitter {
           updatedAt: Date.now()
         })
         logger.info('[imFile] goed2kd health status:', healthy)
+        if (healthy && this.configManager.getUserConfig('enable-upnp')) {
+          this.startGoed2kdUpnpMapping().catch((e) => {
+            logger.warn('[imFile] goed2kd UPnP mapping:', e?.message ?? e)
+          })
+        }
       }).catch((err) => {
         this.updateGoed2kdStatus({
           started: false,
@@ -271,6 +278,15 @@ export default class Application extends EventEmitter {
       ...(this.goed2kdStatus || {}),
       ...patch
     }
+    this.broadcastGoed2kdStatus()
+  }
+
+  broadcastGoed2kdStatus () {
+    const win = this.windowManager.getWindow('index')
+    if (!win || win.isDestroyed()) {
+      return
+    }
+    this.windowManager.sendMessageTo(win, 'goed2kd-status-changed')
   }
 
   initEngineClient () {
@@ -451,34 +467,79 @@ export default class Application extends EventEmitter {
       return
     }
 
-    this.startUPnPMapping()
+    /** aria2 的 BT/DHT 端口映射：与原先一致，在 init 阶段即尝试映射 */
+    this.startAria2UpnpMapping().catch((e) => {
+      logger.warn('[imFile] start aria2 UPnP mapping fail:', e?.message ?? e)
+    })
   }
 
-  async startUPnPMapping () {
+  getGoed2kdPortsForUpnp () {
+    try {
+      if (this.goed2kdEngine) {
+        const o = this.goed2kdEngine.getRuntimeOptions()
+        return { listenPort: o.listenPort, udpPort: o.udpPort }
+      }
+    } catch (err) {
+      logger.warn('[imFile] getGoed2kdPortsForUpnp:', err.message)
+    }
+    return readGoed2kdEnginePortsFromConfigSync()
+  }
+
+  collectAria2UpnpPorts () {
     const btPort = this.configManager.getSystemConfig('listen-port')
     const dhtPort = this.configManager.getSystemConfig('dht-listen-port')
+    return [...new Set(
+      [btPort, dhtPort]
+        .filter((p) => p != null && p !== '' && !Number.isNaN(Number(p)))
+        .map((p) => Number(p))
+    )]
+  }
 
-    const promises = [
-      this.upnp.map(btPort),
-      this.upnp.map(dhtPort)
-    ]
+  collectGoed2kdUpnpPorts () {
+    const { listenPort: ed2kTcp, udpPort: ed2kUdp } = this.getGoed2kdPortsForUpnp()
+    return [...new Set(
+      [ed2kTcp, ed2kUdp]
+        .filter((p) => p != null && p !== '' && !Number.isNaN(Number(p)))
+        .map((p) => Number(p))
+    )]
+  }
+
+  /** 关闭 UPnP 或退出时，解除 aria2 + goed2k 相关端口映射 */
+  collectUpnpPorts () {
+    return [...new Set([
+      ...this.collectAria2UpnpPorts(),
+      ...this.collectGoed2kdUpnpPorts()
+    ])]
+  }
+
+  async startAria2UpnpMapping () {
+    const ports = this.collectAria2UpnpPorts()
+    const promises = ports.map((p) => this.upnp.map(p))
     try {
       await Promise.allSettled(promises)
     } catch (e) {
-      logger.warn('[imFile] start UPnP mapping fail', e.message)
+      logger.warn('[imFile] start aria2 UPnP mapping fail', e.message)
+    } finally {
+      this.broadcastUpnpStatus()
+    }
+  }
+
+  /** 仅在 goed2kd 进程已启动且健康检查通过后调用 */
+  async startGoed2kdUpnpMapping () {
+    const ports = this.collectGoed2kdUpnpPorts()
+    const promises = ports.map((p) => this.upnp.map(p))
+    try {
+      await Promise.allSettled(promises)
+    } catch (e) {
+      logger.warn('[imFile] start goed2kd UPnP mapping fail', e.message)
     } finally {
       this.broadcastUpnpStatus()
     }
   }
 
   async stopUPnPMapping () {
-    const btPort = this.configManager.getSystemConfig('listen-port')
-    const dhtPort = this.configManager.getSystemConfig('dht-listen-port')
-
-    const promises = [
-      this.upnp.unmap(btPort),
-      this.upnp.unmap(dhtPort)
-    ]
+    const ports = this.collectUpnpPorts()
+    const promises = ports.map((p) => this.upnp.unmap(p))
     try {
       await Promise.allSettled(promises)
     } catch (e) {
@@ -521,7 +582,10 @@ export default class Application extends EventEmitter {
     this.configListeners[key] = userConfig.onDidChange(key, async (newValue, oldValue) => {
       logger.info('[imFile] detected enable-upnp value change event:', newValue, oldValue)
       if (newValue) {
-        await this.startUPnPMapping()
+        await this.startAria2UpnpMapping()
+        if (this.goed2kdEngine && this.goed2kdEngine.healthy) {
+          await this.startGoed2kdUpnpMapping()
+        }
       } else {
         await this.stopUPnPMapping()
         await this.upnp.closeClient()
@@ -534,11 +598,43 @@ export default class Application extends EventEmitter {
     const enabled = !!this.configManager.getUserConfig('enable-upnp')
     const btPort = this.configManager.getSystemConfig('listen-port')
     const dhtPort = this.configManager.getSystemConfig('dht-listen-port')
+    const { listenPort: ed2kTcpPort, udpPort: ed2kUdpPort } =
+      this.getGoed2kdPortsForUpnp()
     if (!this.upnp) {
-      return { enabled, btPort, dhtPort, btMapped: false, dhtMapped: false }
+      return {
+        enabled,
+        btPort,
+        dhtPort,
+        btMapped: false,
+        dhtMapped: false,
+        ed2kTcpPort,
+        ed2kUdpPort,
+        ed2kTcpMapped: false,
+        ed2kUdpMapped: false
+      }
     }
-    const { btMapped, dhtMapped } = this.upnp.getPortMappingStatus(btPort, dhtPort)
-    return { enabled, btPort, dhtPort, btMapped, dhtMapped }
+    const {
+      btMapped,
+      dhtMapped,
+      ed2kTcpMapped,
+      ed2kUdpMapped
+    } = this.upnp.getPortMappingStatus(
+      btPort,
+      dhtPort,
+      ed2kTcpPort,
+      ed2kUdpPort
+    )
+    return {
+      enabled,
+      btPort,
+      dhtPort,
+      btMapped,
+      dhtMapped,
+      ed2kTcpPort,
+      ed2kUdpPort,
+      ed2kTcpMapped,
+      ed2kUdpMapped
+    }
   }
 
   broadcastUpnpStatus () {
@@ -1145,14 +1241,44 @@ export default class Application extends EventEmitter {
     })
 
     ipcMain.handle('get-goed2kd-status', async () => {
-      return {
+      const merged = {
         started: false,
         healthy: false,
         pid: null,
         lastError: '',
         updatedAt: 0,
+        rpcPort: null,
+        ed2kTcpPort: null,
+        ed2kUdpPort: null,
+        kadKnownNodes: null,
         ...(this.goed2kdStatus || {})
       }
+      try {
+        if (this.goed2kdEngine) {
+          const o = this.goed2kdEngine.getRuntimeOptions()
+          merged.rpcPort = o.port
+          merged.ed2kTcpPort = o.listenPort
+          merged.ed2kUdpPort = o.udpPort
+        }
+      } catch (err) {
+        // ignore
+      }
+      try {
+        if (
+          this.goed2kdClient &&
+          this.goed2kdEngine &&
+          this.goed2kdEngine.healthy
+        ) {
+          const dht = await this.goed2kdClient.getNetworkDht()
+          const n = dht && dht.known_nodes
+          if (n != null && !Number.isNaN(Number(n))) {
+            merged.kadKnownNodes = Number(n)
+          }
+        }
+      } catch (err) {
+        // ignore
+      }
+      return merged
     })
 
     ipcMain.handle('get-upnp-status', async () => {
