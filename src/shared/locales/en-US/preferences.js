@@ -91,6 +91,8 @@ export default {
   'protocols-default-client': 'Set as the default client for the following protocols',
   'protocols-magnet': 'Magnet [ magnet:// ]',
   'protocols-thunder': 'Thunder [ thunder:// ]',
+  'protocols-torrent': 'Torrent File [ *.torrent ]',
+  'protocols-association-tips': 'On Windows, file association changes may require Explorer refresh or sign-out/sign-in to take effect.',
   'browser-extensions': 'Extensions',
   'baidu-exporter': 'BaiduExporter',
   'browser-extensions-tips': 'Provided by the community, ',

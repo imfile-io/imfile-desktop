@@ -91,6 +91,8 @@ export default {
   'protocols-default-client': '设置为以下协议的默认客户端',
   'protocols-magnet': '磁力链接 [ magnet:// ]',
   'protocols-thunder': '迅雷链接 [ thunder:// ]',
+  'protocols-torrent': '种子文件 [ *.torrent ]',
+  'protocols-association-tips': 'Windows 下修改文件关联后，可能需要刷新资源管理器或重新登录后生效。',
   'browser-extensions': '浏览器扩展',
   'baidu-exporter': '百度网盘助手',
   'browser-extensions-tips': '社区提供的浏览器扩展「不保证可用性」，',

@@ -1,4 +1,6 @@
 import { EventEmitter } from 'node:events'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import { app } from 'electron'
 import is from 'electron-is'
 import { parse } from 'querystring'
@@ -6,6 +8,10 @@ import { parse } from 'querystring'
 import logger from './Logger'
 import protocolMap from '../configs/protocol'
 import { ADD_TASK_TYPE } from '@shared/constants'
+
+const execFileAsync = promisify(execFile)
+const WINDOWS_CLASSES_ROOT = 'HKCU\\Software\\Classes'
+const TORRENT_PROG_ID = 'imFile.torrent'
 
 export default class ProtocolManager extends EventEmitter {
   constructor (options = {}) {
@@ -25,16 +31,23 @@ export default class ProtocolManager extends EventEmitter {
 
   init () {
     const { protocols } = this
-    this.setup(protocols)
+    this.setup(protocols).catch((err) => {
+      logger.warn('[imFile] protocol setup failed:', err?.message ?? err)
+    })
   }
 
-  setup (protocols = {}) {
+  async setup (protocols = {}) {
     if (is.dev() || is.mas()) {
       return
     }
 
-    Object.keys(protocols).forEach((protocol) => {
+    for (const protocol of Object.keys(protocols)) {
       const enabled = protocols[protocol]
+      if (protocol === 'torrent') {
+        await this.setupTorrentFileAssociation(Boolean(enabled))
+        continue
+      }
+
       if (enabled) {
         if (!app.isDefaultProtocolClient(protocol)) {
           app.setAsDefaultProtocolClient(protocol)
@@ -42,7 +55,125 @@ export default class ProtocolManager extends EventEmitter {
       } else {
         app.removeAsDefaultProtocolClient(protocol)
       }
+    }
+  }
+
+  async runReg (args = []) {
+    const { stdout = '' } = await execFileAsync('reg', args, {
+      windowsHide: true
     })
+    return stdout
+  }
+
+  async queryRegDefaultValue (key) {
+    try {
+      const stdout = await this.runReg(['query', key, '/ve'])
+      return stdout.includes(TORRENT_PROG_ID)
+    } catch {
+      return false
+    }
+  }
+
+  async setupTorrentFileAssociation (enabled) {
+    if (!is.windows()) {
+      return
+    }
+
+    try {
+      if (enabled) {
+        await this.registerTorrentFileAssociation()
+      } else {
+        await this.unregisterTorrentFileAssociation()
+      }
+    } catch (err) {
+      logger.warn('[imFile] torrent file association setup failed:', err?.message ?? err)
+    }
+  }
+
+  async registerTorrentFileAssociation () {
+    const exePath = process.execPath
+    const openCommand = `"${exePath}" "%1"`
+    const iconRef = `"${exePath}",0`
+
+    await this.runReg([
+      'add',
+      `${WINDOWS_CLASSES_ROOT}\\${TORRENT_PROG_ID}`,
+      '/ve',
+      '/t',
+      'REG_SZ',
+      '/d',
+      'imFile Torrent File',
+      '/f'
+    ])
+    await this.runReg([
+      'add',
+      `${WINDOWS_CLASSES_ROOT}\\${TORRENT_PROG_ID}\\DefaultIcon`,
+      '/ve',
+      '/t',
+      'REG_SZ',
+      '/d',
+      iconRef,
+      '/f'
+    ])
+    await this.runReg([
+      'add',
+      `${WINDOWS_CLASSES_ROOT}\\${TORRENT_PROG_ID}\\shell\\open\\command`,
+      '/ve',
+      '/t',
+      'REG_SZ',
+      '/d',
+      openCommand,
+      '/f'
+    ])
+    await this.runReg([
+      'add',
+      `${WINDOWS_CLASSES_ROOT}\\.torrent\\OpenWithProgids`,
+      '/v',
+      TORRENT_PROG_ID,
+      '/t',
+      'REG_NONE',
+      '/d',
+      '',
+      '/f'
+    ])
+    await this.runReg([
+      'add',
+      `${WINDOWS_CLASSES_ROOT}\\.torrent`,
+      '/ve',
+      '/t',
+      'REG_SZ',
+      '/d',
+      TORRENT_PROG_ID,
+      '/f'
+    ])
+  }
+
+  async unregisterTorrentFileAssociation () {
+    const torrentExtKey = `${WINDOWS_CLASSES_ROOT}\\.torrent`
+    const isCurrentDefault = await this.queryRegDefaultValue(torrentExtKey)
+
+    if (isCurrentDefault) {
+      await this.runReg([
+        'delete',
+        torrentExtKey,
+        '/ve',
+        '/f'
+      ]).catch(() => {})
+    }
+
+    await this.runReg([
+      'delete',
+      `${torrentExtKey}\\OpenWithProgids`,
+      '/v',
+      TORRENT_PROG_ID,
+      '/f'
+    ]).catch(() => {})
+
+    await this.runReg([
+      'delete',
+      `${WINDOWS_CLASSES_ROOT}\\${TORRENT_PROG_ID}`,
+      '/f'
+    ]).catch(() => {})
   }
 
   handle (url) {

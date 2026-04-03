@@ -121,7 +121,7 @@ export default class ConfigManager {
         'new-task-show-downloading': true,
         'no-confirm-before-delete-task': false,
         'open-at-login': false,
-        protocols: { magnet: true, thunder: false },
+        protocols: { magnet: true, thunder: false, torrent: true },
         proxy: {
           enable: false,
           server: EMPTY_STRING,

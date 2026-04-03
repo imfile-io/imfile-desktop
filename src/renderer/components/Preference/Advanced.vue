@@ -385,6 +385,17 @@
               >
             </el-switch>
           </el-col>
+          <el-col class="form-item-sub" :span="24">
+            <el-switch
+              v-model="form.protocols.torrent"
+              :active-text="$t('preferences.protocols-torrent')"
+              @change="(val) => onProtocolsChange('torrent', val)"
+              >
+            </el-switch>
+          </el-col>
+          <el-col class="form-item-sub" :span="24">
+            <small>{{ $t('preferences.protocols-association-tips') }}</small>
+          </el-col>
         </el-form-item>
         <el-form-item
           :label="`${$t('preferences.user-agent')}: `"
