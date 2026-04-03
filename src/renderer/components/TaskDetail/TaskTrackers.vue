@@ -76,9 +76,14 @@ export default {
   textarea {
     line-height: 2;
   }
-  .el-textarea__inner{
-    background: $--dk-app-background;
+  .el-textarea__inner {
+    background: var(--im-input-bg);
+    color: var(--im-input-text);
     border: none;
+    box-shadow: 0 0 0 1px var(--im-input-border) inset;
+    &::placeholder {
+      color: var(--im-input-placeholder);
+    }
   }
 }
 </style>

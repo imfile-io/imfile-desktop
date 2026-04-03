@@ -3,7 +3,7 @@
     class="select-directory"
     @click.stop="onFolderClick"
   >
-    <mo-icon name="folder" width="22" height="22" />
+    <mo-icon name="folder" width="16" height="16" />
   </el-button>
 </template>
 
@@ -32,3 +32,11 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.select-directory {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

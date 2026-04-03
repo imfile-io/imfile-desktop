@@ -2,6 +2,7 @@ import is from 'electron-is'
 import { ipcRenderer } from 'electron'
 import { createApp } from 'vue'
 import 'element-plus/dist/index.css'
+import 'element-plus/theme-chalk/dark/css-vars.css'
 import { ElLoading, ElMessage } from 'element-plus'
 import axios from 'axios'
 

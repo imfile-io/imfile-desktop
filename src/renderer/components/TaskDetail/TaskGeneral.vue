@@ -188,49 +188,30 @@ export default {
 .copy-link {
   cursor: pointer;
 }
-.mo-task-general{
-  .el-form-item__label{
-    color: #CBCBCB;
+.mo-task-general {
+  .el-form-item__label {
+    color: var(--im-task-detail-label);
   }
-  .form-static-value{
-    color: #CBCBCB;
+  .form-static-value {
+    color: var(--im-task-detail-value);
   }
-  .el-input__inner::placeholder{
-    color: $--color-text-primary !important;
+  .el-input__inner::placeholder {
+    color: var(--im-input-placeholder) !important;
   }
-  .el-input__inner{
-    color: #cbcbcb !important;
-    background: $--background-color-gray !important;
-    border: 4px !important;
-    border-color: $--background-color-gray !important;
+  .el-input__wrapper {
+    background-color: var(--im-input-bg) !important;
+    box-shadow: 0 0 0 1px var(--im-input-border) inset !important;
   }
-  .el-input-group__append{
-    border-color: $--background-color-gray !important;
-    background: $--background-color-gray !important;
+  .el-input__inner {
+    color: var(--im-input-text) !important;
+    -webkit-text-fill-color: var(--im-input-text) !important;
+  }
+  .el-input-group__append {
+    border-color: var(--im-input-border) !important;
+    background: var(--im-input-bg) !important;
+    color: var(--im-input-text) !important;
     margin: 0 !important;
     padding: 0 !important;
-  }
-}
-.theme-dark {
-  .mo-task-general{
-    .el-form-item__label{
-      color: #CBCBCB;
-    }
-    .form-static-value{
-      color: #CBCBCB;
-    }
-    .el-input__inner::placeholder{
-      color: $--color-text-primary !important;
-    }
-    .el-input__inner{
-      color: #cbcbcb !important;
-      background: $--dk--background-color-gray !important;
-      border-color: $--dk--background-color-gray !important;
-    }
-    .el-input-group__append{
-      border-color: $--dk--background-color-gray !important;
-      background: $--dk--background-color-gray !important;
-    }
   }
 }
 </style>
