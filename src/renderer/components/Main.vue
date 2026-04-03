@@ -53,12 +53,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-  .mo-speedometer {
-    position: fixed;
-    right: 16px;
-    bottom: 24px;
-    z-index: 20;
-  }
-</style>

@@ -1,8 +1,14 @@
 <template>
-  <div class="mo-speedometer" :class="{ stopped: stat.numActive === 0 }">
+  <div
+    ref="root"
+    class="mo-speedometer"
+    :class="{ stopped: stat.numActive === 0, dragging }"
+    :style="positionStyle"
+    @pointerdown="onPointerDown"
+  >
     <div
       class="mode"
-      @click="toggleEngineMode"
+      @click="onModeClick"
     >
       <i>
         <mo-icon name="speedometer" width="24" height="24" />
@@ -21,21 +27,155 @@ import { mapState, mapActions } from 'vuex'
 import { bytesToSize } from '@shared/utils'
 import '@/components/Icons/speedometer'
 
+const STORAGE_KEY = 'imfile-speedometer-position'
+const DRAG_THRESHOLD_PX = 5
+
 export default {
   name: 'mo-speedometer',
+  data () {
+    return {
+      /** @type {{ left: number, top: number } | null} */
+      pos: null,
+      dragging: false,
+      suppressModeClick: false,
+      _dragStart: null,
+      _draggingActive: false,
+      _pointerOffset: null,
+      _boundMove: null,
+      _boundUp: null
+    }
+  },
   computed: {
     ...mapState('app', [
       'stat'
     ]),
     ...mapState('preference', [
       'engineMode'
-    ])
+    ]),
+    positionStyle () {
+      if (!this.pos) {
+        return {}
+      }
+      return {
+        left: `${this.pos.left}px`,
+        top: `${this.pos.top}px`,
+        right: 'auto',
+        bottom: 'auto'
+      }
+    }
+  },
+  mounted () {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      if (raw) {
+        const p = JSON.parse(raw)
+        if (
+          typeof p.left === 'number' &&
+          typeof p.top === 'number' &&
+          Number.isFinite(p.left) &&
+          Number.isFinite(p.top)
+        ) {
+          this.pos = { left: p.left, top: p.top }
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+  },
+  beforeUnmount () {
+    this.teardownDragListeners()
   },
   methods: {
     bytesToSize,
     ...mapActions('preference', [
       'toggleEngineMode'
-    ])
+    ]),
+    teardownDragListeners () {
+      if (this._boundMove) {
+        window.removeEventListener('pointermove', this._boundMove)
+        this._boundMove = null
+      }
+      if (this._boundUp) {
+        window.removeEventListener('pointerup', this._boundUp)
+        this._boundUp = null
+      }
+    },
+    clampToViewport (left, top, el) {
+      const w = el.offsetWidth
+      const h = el.offsetHeight
+      const maxL = Math.max(0, window.innerWidth - w)
+      const maxT = Math.max(0, window.innerHeight - h)
+      return {
+        left: Math.max(0, Math.min(left, maxL)),
+        top: Math.max(0, Math.min(top, maxT))
+      }
+    },
+    onPointerDown (e) {
+      if (e.button !== 0) {
+        return
+      }
+      this._dragStart = { x: e.clientX, y: e.clientY }
+      this._draggingActive = false
+      this._boundMove = (ev) => this.onPointerMove(ev)
+      this._boundUp = (ev) => this.onPointerUp(ev)
+      window.addEventListener('pointermove', this._boundMove)
+      window.addEventListener('pointerup', this._boundUp)
+    },
+    onPointerMove (e) {
+      if (!this._dragStart) {
+        return
+      }
+      const dx = e.clientX - this._dragStart.x
+      const dy = e.clientY - this._dragStart.y
+      const dist = Math.hypot(dx, dy)
+      if (!this._draggingActive) {
+        if (dist <= DRAG_THRESHOLD_PX) {
+          return
+        }
+        this._draggingActive = true
+        this.dragging = true
+        const el = this.$refs.root
+        const rect = el.getBoundingClientRect()
+        this._pointerOffset = {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top
+        }
+        if (!this.pos) {
+          this.pos = { left: rect.left, top: rect.top }
+        }
+      }
+      const el = this.$refs.root
+      let left = e.clientX - this._pointerOffset.x
+      let top = e.clientY - this._pointerOffset.y
+      this.pos = this.clampToViewport(left, top, el)
+      e.preventDefault()
+    },
+    onPointerUp () {
+      this.teardownDragListeners()
+      if (this._draggingActive) {
+        this.suppressModeClick = true
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(this.pos))
+        } catch (err) {
+          // ignore
+        }
+        setTimeout(() => {
+          this.suppressModeClick = false
+        }, 400)
+      }
+      this.dragging = false
+      this._draggingActive = false
+      this._dragStart = null
+      this._pointerOffset = null
+    },
+    onModeClick (e) {
+      if (this.suppressModeClick) {
+        e.preventDefault()
+        e.stopPropagation()
+        return
+      }
+      this.toggleEngineMode()
+    }
   }
 }
 </script>
@@ -43,7 +183,9 @@ export default {
 <style lang="scss">
   .mo-speedometer {
     font-size: 12px;
-    position: relative;
+    position: fixed;
+    right: 16px;
+    bottom: 24px;
     display: inline-block;
     box-sizing: border-box;
     width: 150px;
@@ -53,19 +195,30 @@ export default {
     transition: $--all-transition;
     border: 1px solid $--speedometer-border-color;
     background: $--speedometer-background;
+    z-index: 20;
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
     &:hover {
       border-color: $--speedometer-hover-border-color;
+    }
+    &.dragging {
+      cursor: grabbing;
+      transition: none;
     }
     &.stopped {
       width: 40px;
       padding: 0;
+      cursor: grab;
       .mode i {
         color: $--speedometer-stopped-color;
       }
       .mode em {
         display: none;
       }
-
+    }
+    &.stopped.dragging {
+      cursor: grabbing;
     }
     em {
       font-style: normal;
