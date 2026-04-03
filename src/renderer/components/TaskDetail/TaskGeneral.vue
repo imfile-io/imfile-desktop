@@ -194,6 +194,14 @@ export default {
   }
   .form-static-value {
     color: var(--im-task-detail-value);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .el-form-item__content {
+    flex: 1;
+    min-width: 0;
+    max-width: 100%;
   }
   .el-input__inner::placeholder {
     color: var(--im-input-placeholder) !important;

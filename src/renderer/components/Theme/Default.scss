@@ -417,6 +417,9 @@ iframe {
 .form-static-value {
   word-break: break-all;
   color: $--input-font-color;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .task-state-actions {

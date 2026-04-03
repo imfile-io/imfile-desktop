@@ -14,21 +14,17 @@
       />
     </div> -->
     <el-form-item :label="`${$t('task.task-progress-info')}: `">
-      <div class="form-static-value" style="overflow: hidden">
-        <el-row :gutter="12">
-          <el-col :span="18">
-            <div class="progress-wrapper">
-              <mo-task-progress
-                :completed="Number(task.completedLength)"
-                :total="Number(task.totalLength)"
-                :status="taskStatus"
-              />
-            </div>
-          </el-col>
-          <el-col :span="5">
-            {{ percent }}
-          </el-col>
-        </el-row>
+      <div class="form-static-value form-static-value--progress">
+        <div class="task-progress-row">
+          <div class="progress-wrapper">
+            <mo-task-progress
+              :completed="Number(task.completedLength)"
+              :total="Number(task.totalLength)"
+              :status="taskStatus"
+            />
+          </div>
+          <div class="task-progress-percent">{{ percent }}</div>
+        </div>
       </div>
     </el-form-item>
     <el-form-item>
@@ -206,8 +202,28 @@ export default {
 </script>
 
 <style lang="scss">
+.task-progress-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
 .progress-wrapper {
+  flex: 1;
+  min-width: 0;
   padding: 0.6875rem 0 0 0;
+}
+
+.task-progress-percent {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding-top: 0.6875rem;
+  line-height: 1.25;
+  min-width: 3.25rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .task-time-remaining {
@@ -219,6 +235,14 @@ export default {
   }
   .form-static-value{
     color: var(--im-task-detail-value);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .el-form-item__content {
+    flex: 1;
+    min-width: 0;
+    max-width: 100%;
   }
 }
 </style>
