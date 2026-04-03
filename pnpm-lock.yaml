@@ -133,7 +133,7 @@ importers:
         specifier: ^6.3.0
         version: 6.8.3
       element-plus:
-        specifier: ^2.9.4
+        specifier: ^2.13.6
         version: 2.13.6(typescript@6.0.2)(vue@3.5.32(typescript@6.0.2))
       eslint:
         specifier: ^9.22.0

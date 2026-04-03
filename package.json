@@ -85,7 +85,7 @@
     "electron-log": "^5.4.3",
     "electron-store": "^11.0.0",
     "electron-updater": "^6.3.0",
-    "element-plus": "^2.9.4",
+    "element-plus": "^2.13.6",
     "eslint": "^9.22.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-plugin-promise": "^7.2.1",
