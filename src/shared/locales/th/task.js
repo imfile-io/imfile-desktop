@@ -46,6 +46,7 @@ export default {
   'task-connections': 'การเชื่อมต่อ',
   'task-file-size': 'ขนาด',
   'task-download-speed': 'ความเร็วดาวน์โหลด',
+  'task-list-col-speed': 'ความเร็ว',
   'task-upload-speed': 'ความเร็วอัพโหลด',
   'task-download-length': 'ดาวน์โหลดแล้ว',
   'task-upload-length': 'อัพโหลดแล้ว',

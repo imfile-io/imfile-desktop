@@ -46,6 +46,7 @@ export default {
   'task-connections': 'Znajomości',
   'task-file-size': 'Rozmiar',
   'task-download-speed': 'Prędkość pobierania',
+  'task-list-col-speed': 'Prędkość',
   'task-upload-speed': 'Prędkość wysyłania',
   'task-download-length': 'Pobrano',
   'task-upload-length': 'Przesłane',

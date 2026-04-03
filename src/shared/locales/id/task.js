@@ -46,6 +46,7 @@ export default {
   'task-connections': 'Koneksi',
   'task-file-size': 'Ukuran',
   'task-download-speed': 'Kecepatan Download',
+  'task-list-col-speed': 'Kecepatan',
   'task-upload-speed': 'Kecepatan unggah',
   'task-download-length': 'Telah diunduh',
   'task-upload-length': 'Diupload',

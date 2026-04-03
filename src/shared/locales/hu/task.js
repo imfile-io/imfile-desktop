@@ -46,6 +46,7 @@ export default {
   'task-connections': 'Kapcsolatok',
   'task-file-size': 'Méret',
   'task-download-speed': 'Letöltési sebesség',
+  'task-list-col-speed': 'Sebesség',
   'task-upload-speed': 'Feltöltési sebesség',
   'task-download-length': 'Letöltött',
   'task-upload-length': 'Feltöltve',

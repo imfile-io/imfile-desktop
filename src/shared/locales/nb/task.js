@@ -46,6 +46,7 @@ export default {
   'task-connections': 'Tilkoblinger',
   'task-file-size': 'Størrelse',
   'task-download-speed': 'Nedlastningshastighet',
+  'task-list-col-speed': 'Hastighet',
   'task-upload-speed': 'Opplastningshastighet',
   'task-download-length': 'Lastet ned',
   'task-upload-length': 'Lastet opp',

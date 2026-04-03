@@ -35,7 +35,7 @@
 <script>
 import { mapState } from 'vuex'
 import { useI18n } from 'vue-i18n'
-import { bytesToSize, calcProgress, checkTaskIsSeeder, getTaskName } from '@shared/utils'
+import { bytesToSize, calcProgress, checkTaskIsSeeder, getTaskListDisplaySpeed, getTaskName } from '@shared/utils'
 import { TASK_STATUS } from '@shared/constants'
 import { openItem, getTaskFullPath } from '@/utils/native'
 import TaskItemActions from './TaskItemActions'
@@ -87,7 +87,7 @@ export default {
       return Number(this.task.connections) || 0
     },
     speedText () {
-      return `${this.bytesToSize(Number(this.task.downloadSpeed) || 0, 2)}/s`
+      return `${this.bytesToSize(getTaskListDisplaySpeed(this.task), 2)}/s`
     }
   },
   methods: {

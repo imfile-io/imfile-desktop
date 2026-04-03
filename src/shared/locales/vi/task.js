@@ -46,6 +46,7 @@ export default {
   'task-connections': 'Kết nối',
   'task-file-size': 'Kích thước',
   'task-download-speed': 'Tốc độ tải về',
+  'task-list-col-speed': 'Tốc độ',
   'task-upload-speed': 'Tốc độ tải lên',
   'task-download-length': 'Đã tải xuống',
   'task-upload-length': 'Đã tải lên',

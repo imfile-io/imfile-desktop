@@ -29,7 +29,8 @@ import {
   UNKNOWN_PEERID,
   SUPPORT_RTL_LOCALES,
   UNKNOWN_PEERID_NAME,
-  DOCUMENT_SUFFIXES
+  DOCUMENT_SUFFIXES,
+  TASK_STATUS
 } from '@shared/constants'
 
 export const bytesToSize = (bytes, precision = 1) => {
@@ -342,6 +343,15 @@ export const isMagnetTask = (task) => {
 export const checkTaskIsSeeder = (task) => {
   const { bittorrent, seeder } = task
   return !!bittorrent && seeder === 'true'
+}
+
+/** 列表「速度」列：做种任务用上传速度，其余用下载速度 */
+export const getTaskListDisplaySpeed = (task = {}) => {
+  const seeding = task.status === TASK_STATUS.SEEDING || checkTaskIsSeeder(task)
+  if (seeding) {
+    return Number(task.uploadSpeed) || 0
+  }
+  return Number(task.downloadSpeed) || 0
 }
 
 export const getTaskUri = (task, withTracker = false) => {

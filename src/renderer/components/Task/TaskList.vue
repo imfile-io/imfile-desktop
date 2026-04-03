@@ -55,7 +55,7 @@
           :aria-sort="ariaSortFor('speed')"
           @click="toggleSort('speed')"
         >
-          <span>{{ $t('task.task-download-speed') }}</span>
+          <span>{{ $t('task.task-list-col-speed') }}</span>
           <span class="task-list-sort-carets" aria-hidden="true">
             <span class="caret-up" :class="{ on: sortKey === 'speed' && sortOrder === 'asc' }" />
             <span class="caret-down" :class="{ on: sortKey === 'speed' && sortOrder === 'desc' }" />
@@ -92,7 +92,7 @@
 import { mapState } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { cloneDeep, pull } from 'lodash'
-import { getTaskName } from '@shared/utils'
+import { getTaskListDisplaySpeed, getTaskName } from '@shared/utils'
 import DragSelect from '@/components/DragSelect/Index'
 import TaskItem from './TaskItem'
 
@@ -156,7 +156,7 @@ export default {
           case 'size':
             return ((Number(a.totalLength) || 0) - (Number(b.totalLength) || 0)) * mul
           case 'speed':
-            return ((Number(a.downloadSpeed) || 0) - (Number(b.downloadSpeed) || 0)) * mul
+            return (getTaskListDisplaySpeed(a) - getTaskListDisplaySpeed(b)) * mul
           default:
             return 0
         }

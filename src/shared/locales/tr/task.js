@@ -46,6 +46,7 @@ export default {
   'task-connections': 'Bağlantılar',
   'task-file-size': 'Boyut',
   'task-download-speed': 'İndirme hızı',
+  'task-list-col-speed': 'Hız',
   'task-upload-speed': 'Yükleme hızı',
   'task-download-length': 'İndirildi',
   'task-upload-length': 'Yüklendi',

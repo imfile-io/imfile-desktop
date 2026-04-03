@@ -46,6 +46,7 @@ export default {
   'task-connections': 'اتصالات',
   'task-file-size': 'اندازه',
   'task-download-speed': 'سرعت بارگیری',
+  'task-list-col-speed': 'سرعت',
   'task-upload-speed': 'سرعت بارگذاری',
   'task-download-length': 'بارگیری شد',
   'task-upload-length': 'بارگذاری شد',
