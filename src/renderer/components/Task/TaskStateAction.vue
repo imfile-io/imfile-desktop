@@ -4,6 +4,12 @@
           <li @click="onRefreshClick" class="mr-2 refresh_btn">
             <mo-icon name="refresh" width="30" height="30" :spin="refreshing" />
           </li>
+          <el-button @click="onNewTaskClick"><div class="flex items-center justify-center">
+            <i class="task-action">
+                  <mo-icon name="task-add" width="15" height="15" />
+              </i>
+              <span>{{ $t('task.new-task') }}</span>
+          </div></el-button>
           <el-button @click="onResumeAllClick"><div class="flex items-center justify-center">
             <i class="task-action">
                   <mo-icon name="task-play" width="15" height="15" />
@@ -64,8 +70,9 @@
 import { mapState } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { ArrowDown } from '@element-plus/icons-vue'
-import { POST_DOWNLOAD_ACTION } from '@shared/constants'
+import { ADD_TASK_TYPE, POST_DOWNLOAD_ACTION } from '@shared/constants'
 import BatchDeleteTaskBtn from '@/components/Task/BatchDeleteTaskBtn.vue'
+import '@/components/Icons/task-add'
 import '@/components/Icons/task-pause'
 import '@/components/Icons/task-play'
 export default {
@@ -104,6 +111,9 @@ export default {
     }
   },
   methods: {
+    onNewTaskClick () {
+      this.$store.dispatch('app/showAddTaskDialog', ADD_TASK_TYPE.URI)
+    },
     onResumeAllClick () {
       this.$store.dispatch('task/resumeAllTask')
         .then(() => {

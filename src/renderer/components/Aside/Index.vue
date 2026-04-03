@@ -6,9 +6,6 @@
         <li @click="nav('/task')" class="flex items-center justify-center non-draggable">
           <mo-icon name="menu-task" width="30" height="30" />
         </li>
-        <li @click="showAddTask()" class="flex items-center justify-center non-draggable">
-          <mo-icon name="menu-add" width="30" height="30" />
-        </li>
         <li @click="nav('/search')" class="flex items-center justify-center non-draggable">
           <mo-icon name="menu-search" width="30" height="30" />
         </li>
@@ -28,10 +25,8 @@
 <script>
 import is from 'electron-is'
 import { mapState } from 'vuex'
-import { ADD_TASK_TYPE } from '@shared/constants'
 import LogoMini from '@/components/Logo/LogoMini'
 import '@/components/Icons/menu-task'
-import '@/components/Icons/menu-add'
 import '@/components/Icons/menu-search'
 import '@/components/Icons/menu-preference'
 import '@/components/Icons/menu-about'
@@ -57,9 +52,6 @@ export default {
     }
   },
   methods: {
-    showAddTask (taskType = ADD_TASK_TYPE.URI) {
-      this.$store.dispatch('app/showAddTaskDialog', taskType)
-    },
     showAboutPanel () {
       this.$store.dispatch('app/showAboutPanel')
     },
