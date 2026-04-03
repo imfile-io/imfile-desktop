@@ -128,7 +128,9 @@
       "artifactName": "${productName}-Setup-${version}.${ext}",
       "oneClick": true,
       "perMachine": false,
-      "allowToChangeInstallationDirectory": false
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     },
     "appx": {
       "artifactName": "${productName}-${version}-${arch}.${ext}",
