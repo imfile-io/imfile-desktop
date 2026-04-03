@@ -1,5 +1,7 @@
 import os from 'node:os'
 
+import { upnpNat } from '@achingbrain/nat-port-mapper'
+
 import logger from './Logger'
 
 /**
@@ -7,18 +9,10 @@ import logger from './Logger'
  * 原 @motrix/nat-api 在未指定 protocol 时对同一端口映射 TCP+UDP，此处保持一致。
  */
 
-let upnpNatLoader = null
 let client = null
 let gateway = null
 let discoverPromise = null
 const mappingStatus = {}
-
-async function loadUpnpNat () {
-  if (!upnpNatLoader) {
-    upnpNatLoader = import('@achingbrain/nat-port-mapper').then((mod) => mod.upnpNat)
-  }
-  return upnpNatLoader
-}
 
 function getLanIPv4 () {
   const nets = os.networkInterfaces()
@@ -43,7 +37,6 @@ export default class UPnPManager {
     if (client) {
       return
     }
-    const upnpNat = await loadUpnpNat()
     client = upnpNat({
       description: 'imFile',
       ttl: 7_200_000,

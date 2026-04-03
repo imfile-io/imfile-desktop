@@ -10,12 +10,15 @@ const { dependencies } = require('../package.json')
 const { appId } = require('../electron-builder.json')
 const devMode = process.env.NODE_ENV !== 'production'
 
+/** 纯 ESM、exports 无 require，不能作 external 由主进程 CJS require */
+const BUNDLE_IN_MAIN = new Set(['@achingbrain/nat-port-mapper'])
+
 let mainConfig = {
   entry: {
     main: path.join(__dirname, '../src/main/index.js')
   },
   externals: [
-    ...Object.keys(dependencies || {})
+    ...Object.keys(dependencies || {}).filter((name) => !BUNDLE_IN_MAIN.has(name))
   ],
   module: {
     rules: [
