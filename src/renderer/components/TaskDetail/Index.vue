@@ -307,7 +307,7 @@ export default {
 .task-detail-drawer {
   min-width: 478px;
   .el-drawer__header {
-    color:#fff;
+    color: var(--im-dialog-title);
     padding-top: 2rem;
     margin-bottom: 0;
   }

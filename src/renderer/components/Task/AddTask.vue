@@ -411,7 +411,7 @@ export default {
 .el-dialog.add-task-dialog {
   max-width: 632px;
   min-width: 380px;
-  background-color: $--panel-background;
+  background-color: var(--im-dialog-bg);
   border-radius: 4px;
   .el-tabs__nav-wrap::after {
     display: none !important;
@@ -425,35 +425,35 @@ export default {
   .el-tabs__header {
     user-select: none;
   }
-  .el-form-item__label{
-    color: #cbcbcb;
+  .el-form-item__label {
+    color: var(--im-form-label-color);
   }
-  .el-textarea__inner::placeholder{
-    color: $--color-text-primary !important;
-  }
-
-  .el-textarea__inner{
-    color: #cbcbcb !important;
-    /* background: $--background-color-gray !important; */
-    border: 4px !important;
-    border-color: $--background-color-gray !important;
-  }
-  .el-input__inner::placeholder{
-    color: $--color-text-primary !important;
-  }
-  .el-input__inner{
-    color: #cbcbcb !important;
-    background: $--background-color-gray !important;
-    border: 4px !important;
-    border-color: $--background-color-gray !important;
+  .el-textarea__inner::placeholder {
+    color: var(--im-input-placeholder);
   }
 
-  .el-input-group__append{
-    border-color: $--background-color-gray !important;
-    background: $--background-color-gray !important;
+  .el-textarea__inner {
+    color: var(--im-input-text);
+    box-shadow: 0 0 0 1px var(--im-input-border) inset;
   }
-  .el-button.select-directory.el-button--default.el-button--mini{
-    background: $--background-color-gray !important;
+  .el-input__inner::placeholder {
+    color: var(--im-input-placeholder);
+  }
+  .el-input__wrapper {
+    background-color: var(--im-input-bg);
+    box-shadow: 0 0 0 1px var(--im-input-border) inset;
+  }
+  .el-input__inner {
+    color: var(--im-input-text);
+    -webkit-text-fill-color: var(--im-input-text);
+  }
+
+  .el-input-group__append {
+    background: var(--im-input-bg);
+    color: var(--im-input-text);
+  }
+  .el-button.select-directory.el-button--default.el-button--mini {
+    background: var(--im-input-bg);
     margin: 0 !important;
     padding: 0 !important;
   }
@@ -466,18 +466,18 @@ export default {
     line-height: 14px;
     padding-top: 7px;
     > a {
-      color: #909399;
+      color: var(--im-text-secondary);
     }
   }
   .el-dialog__footer {
     padding-top: 20px;
-    background-color: $--panel-background;
+    background-color: transparent;
   }
   .dialog-footer {
-    .btn_cancel{
-      background: #282828;
-      color: #cbcbcb;
-      border-color: #282828;
+    .btn_cancel {
+      background: var(--im-button-default-bg);
+      color: var(--im-button-default-text);
+      border-color: var(--im-button-default-border);
     }
     .chk {
       float: left;
@@ -493,24 +493,7 @@ export default {
     }
   }
 }
-.theme-dark {
-  .el-dialog.add-task-dialog {
-    background-color: $--dk-panel-background;
-    .el-input__inner{
-      color: #cbcbcb !important;
-      background: $--dk--background-color-gray !important;
-      border-color: $--dk--background-color-gray !important;
-    }
-    .el-input-group__append{
-      border-color: $--dk--background-color-gray !important;
-      background: $--dk--background-color-gray !important;
-    }
-    .el-button.select-directory.el-button--default.el-button--mini{
-      background: $--dk--background-color-gray !important;
-    }
-    .el-dialog__footer {
-      background-color: $--dk-panel-background;
-    }
-  }
+.theme-dark .el-dialog.add-task-dialog .el-dialog__footer {
+  background-color: transparent;
 }
 </style>

@@ -82,7 +82,14 @@ export default {
   methods: {
     updateRootClassName () {
       const { themeClass = '', i18nClass = '', directionClass = '' } = this
-      const className = `${themeClass} ${i18nClass} ${directionClass}`
+      const classList = [themeClass, i18nClass, directionClass]
+
+      // Element Plus dark vars uses `.dark`; keep compatibility with existing `theme-dark`.
+      if (themeClass === `theme-${APP_THEME.DARK}`) {
+        classList.push('dark')
+      }
+
+      const className = classList.filter(Boolean).join(' ')
       document.documentElement.className = className
     }
   },

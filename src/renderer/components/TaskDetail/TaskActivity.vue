@@ -215,10 +215,10 @@ export default {
 }
 .mo-task-activity{
   .el-form-item__label{
-    color: #CBCBCB;
+    color: var(--im-task-detail-label);
   }
   .form-static-value{
-    color: #CBCBCB;
+    color: var(--im-task-detail-value);
   }
 }
 </style>

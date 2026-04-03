@@ -28,3 +28,4 @@ dist/web/*
 # release
 release/*
 data/
+.cursor/

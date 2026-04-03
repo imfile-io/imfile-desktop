@@ -1,0 +1,73 @@
+/*
+ * Theme semantic tokens.
+ * Prefer consuming these vars in app styles instead of hard-coded colors.
+ */
+:root,
+html.theme-light {
+  --im-text-primary: var(--el-text-color-primary);
+  --im-text-secondary: var(--el-text-color-regular);
+  --im-text-placeholder: var(--el-text-color-placeholder);
+  --im-surface-default: var(--el-bg-color);
+  --im-surface-overlay: var(--el-bg-color-overlay);
+  --im-surface-soft: var(--el-fill-color-light);
+  --im-border-default: var(--el-border-color);
+  --im-mask-color: rgba(0, 0, 0, 0.5);
+
+  --im-form-label-color: var(--el-text-color-primary);
+  --im-form-content-color: var(--el-text-color-primary);
+  --im-input-bg: var(--el-fill-color-blank);
+  --im-input-bg-disabled: var(--el-fill-color-light);
+  --im-input-text: var(--el-text-color-primary);
+  --im-input-placeholder: var(--el-text-color-placeholder);
+  --im-input-border: var(--el-border-color);
+  --im-input-border-hover: var(--el-border-color-hover);
+  --im-input-border-focus: var(--el-color-primary);
+
+  --im-button-default-bg: var(--el-fill-color-blank);
+  --im-button-default-text: var(--el-text-color-regular);
+  --im-button-default-border: var(--el-border-color);
+  --im-button-default-bg-hover: var(--el-fill-color-light);
+  --im-button-default-text-hover: var(--el-color-primary);
+
+  --im-dialog-bg: var(--el-bg-color-overlay);
+  --im-dialog-title: var(--el-text-color-primary);
+  --im-dialog-text: var(--el-text-color-regular);
+
+  --im-task-detail-label: var(--el-text-color-regular);
+  --im-task-detail-value: var(--el-text-color-primary);
+}
+
+html.theme-dark,
+html.dark {
+  --im-text-primary: var(--el-text-color-primary);
+  --im-text-secondary: var(--el-text-color-regular);
+  --im-text-placeholder: var(--el-text-color-placeholder);
+  --im-surface-default: var(--el-bg-color);
+  --im-surface-overlay: var(--el-bg-color-overlay);
+  --im-surface-soft: var(--el-fill-color-darker);
+  --im-border-default: var(--el-border-color);
+  --im-mask-color: rgba(0, 0, 0, 0.72);
+
+  --im-form-label-color: var(--el-text-color-primary);
+  --im-form-content-color: var(--el-text-color-primary);
+  --im-input-bg: var(--el-fill-color-darker);
+  --im-input-bg-disabled: var(--el-fill-color-dark);
+  --im-input-text: var(--el-text-color-primary);
+  --im-input-placeholder: var(--el-text-color-placeholder);
+  --im-input-border: var(--el-border-color-darker);
+  --im-input-border-hover: var(--el-border-color);
+  --im-input-border-focus: var(--el-color-primary);
+
+  --im-button-default-bg: var(--el-fill-color-darker);
+  --im-button-default-text: var(--el-text-color-regular);
+  --im-button-default-border: var(--el-border-color-darker);
+  --im-button-default-bg-hover: var(--el-fill-color-dark);
+  --im-button-default-text-hover: var(--el-color-primary-light-3);
+
+  --im-dialog-bg: var(--el-bg-color-overlay);
+  --im-dialog-title: var(--el-text-color-primary);
+  --im-dialog-text: var(--el-text-color-regular);
+
+  --im-task-detail-label: var(--el-text-color-regular);
+  --im-task-detail-value: var(--el-text-color-primary);
+}
