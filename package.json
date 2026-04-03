@@ -1,6 +1,6 @@
 {
   "name": "imFile",
-  "version": "1.2.3",
+  "version": "2.0.0",
   "description": "A full-featured download manager",
   "homepage": "https://github.com/imfile-io/imfile-desktop",
   "author": {
@@ -16,13 +16,6 @@
   },
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "prebuild": "pnpm run sync-go-aria2",
-    "prerelease": "pnpm run sync-go-aria2",
-    "prebuild:win7": "pnpm run sync-go-aria2",
-    "prebuild:win10": "pnpm run sync-go-aria2",
-    "prebuild:win:arm64": "pnpm run sync-go-aria2",
-    "prebuild:applesilicon": "pnpm run sync-go-aria2",
-    "prebuild:dir": "pnpm run sync-go-aria2",
     "release": "node .electron-vue/build.js && electron-builder --publish onTagOrDraft",
     "build": "node .electron-vue/build.js && electron-builder",
     "build:win7": "pnpm up electron@22 && node .electron-vue/build.js && electron-builder --win --config.directories.output=release/win32/7",
