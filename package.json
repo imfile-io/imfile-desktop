@@ -38,7 +38,8 @@
     "node": ">=24.0.0"
   },
   "dependencies": {
-    "node-fetch": "^3.0.0",
+    "@achingbrain/nat-port-mapper": "^4.0.5",
+    "node-fetch": "^2.7.0",
     "ws": "^8.20.0"
   },
   "devDependencies": {
@@ -55,7 +56,6 @@
     "@electron/remote": "^2.1.2",
     "@element-plus/icons-vue": "^2.3.2",
     "@motrix/multispinner": "^0.2.4",
-    "@motrix/nat-api": "^0.3.4",
     "@tailwindcss/postcss": "^4.2.2",
     "@vue/compiler-sfc": "^3.5.13",
     "@vue/eslint-config-standard": "^9.0.1",

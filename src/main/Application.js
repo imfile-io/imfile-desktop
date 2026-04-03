@@ -517,7 +517,7 @@ export default class Application extends EventEmitter {
         this.startUPnPMapping()
       } else {
         await this.stopUPnPMapping()
-        this.upnp.closeClient()
+        await this.upnp.closeClient()
       }
     })
   }
@@ -528,7 +528,7 @@ export default class Application extends EventEmitter {
       await this.stopUPnPMapping()
     }
 
-    this.upnp.closeClient()
+    await this.upnp.closeClient()
   }
 
   syncTrackers (source, proxy) {
