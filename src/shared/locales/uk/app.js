@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'Двигун пошкоджено, будь ласка переінсталюйте : (',
   'engine-missing-message': 'Двигун загублено, будь ласка переінсталюйте : (',
   'system-error-title': 'Системна помилка',
-  'system-error-message': 'Помилка запуску додатка: {{message}}',
+  'system-error-message': 'Помилка запуску додатка: {message}',
   'hide': 'Сховати imFile',
   'hide-others': 'Сховати інше',
   'unhide': 'Відобразити все',

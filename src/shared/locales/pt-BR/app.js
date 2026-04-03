@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'O motor está danificado, por favor, reinstale : (',
   'engine-missing-message': 'O motor está faltando, por favor, reinstale : (',
   'system-error-title': 'Erro do sistema',
-  'system-error-message': 'O aplicativo falhou ao iniciar: {{message}}',
+  'system-error-message': 'O aplicativo falhou ao iniciar: {message}',
   'hide': 'Ocultar imFile',
   'hide-others': 'Ocultar Outros',
   'unhide': 'Exibir Todos',

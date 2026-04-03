@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'Motoren er skadet. Vennligst installer den på nytt :(',
   'engine-missing-message': 'Motoren mangler. Vennligst installer den på nytt :(',
   'system-error-title': 'Systemfeil',
-  'system-error-message': 'Oppstart av applikasjon mislyktes: {{message}}',
+  'system-error-message': 'Oppstart av applikasjon mislyktes: {message}',
   'hide': 'Skjul imFile',
   'hide-others': 'Skjul andre',
   'unhide': 'Vis alt',

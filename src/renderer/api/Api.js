@@ -42,6 +42,10 @@ export default class Api {
     return result
   }
 
+  async fetchUpnpStatus () {
+    return ipcRenderer.invoke('get-upnp-status')
+  }
+
   async loadConfig () {
     let result = is.renderer()
       ? await this.loadConfigFromNativeStore()

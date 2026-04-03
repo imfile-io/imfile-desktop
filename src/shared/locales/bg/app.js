@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'Програмата е повредена, моля преинсталирайте :(',
   'engine-missing-message': 'Програмата е загубена, моля преинсталирайте :(',
   'system-error-title': 'Грешка',
-  'system-error-message': 'Грешка при стартиране на приложението: {{message}}',
+  'system-error-message': 'Грешка при стартиране на приложението: {message}',
   'hide': 'Скрия imFile',
   'hide-others': 'Скрийте всичко останало',
   'unhide': 'Показване на всички',

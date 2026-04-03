@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'A motor meghibásodot, kérjük telepitse újra a imFile-ot : (',
   'engine-missing-message': 'A motor hiányzik, kérjük telepitse újra a imFile-ot : (',
   'system-error-title': 'Rendszer hiba',
-  'system-error-message': 'imFile inditása sikertelen: {{message}}',
+  'system-error-message': 'imFile inditása sikertelen: {message}',
   'hide': 'imFile elrejtése',
   'hide-others': 'Egyebek elrejtése',
   'unhide': 'Minden megjelenitése',

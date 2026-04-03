@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'Σφάλμα στη μηχανή, παρακαλώ κάντε επανεγκατάσταση : (',
   'engine-missing-message': 'Η μηχανή λείπει, παρακαλώ κάντε επανεγκατάσταση : (',
   'system-error-title': 'Σφάλμα Συστήματος',
-  'system-error-message': 'Η εκκίνηση της εφαρμογής απέτυχε: {{message}}',
+  'system-error-message': 'Η εκκίνηση της εφαρμογής απέτυχε: {message}',
   'hide': 'Κρύψε το imFile',
   'hide-others': 'Κρύψε τα υπόλοιπα',
   'unhide': 'Εμφάνιση όλων',

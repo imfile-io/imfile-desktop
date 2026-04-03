@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'De engine is beschadigd, opnieuw installeren a.u.b. :(',
   'engine-missing-message': 'De engine mist, opnieuw installeren a.u.b. :(',
   'system-error-title': 'Systeemfout',
-  'system-error-message': 'Applicatie kon niet worden gestart: {{message}}',
+  'system-error-message': 'Applicatie kon niet worden gestart: {message}',
   'hide': 'imFile verbergen',
   'hide-others': 'Verberg anderen',
   'unhide': 'Laat alles zien',

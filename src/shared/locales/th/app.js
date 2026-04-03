@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'เอ็นจิ้นเกิดความเสียหาย กรุณาติดตั้งใหม่อีกครั้ง : (',
   'engine-missing-message': 'ไม่พบเอ็นจิ้น กรุณาติดตั้งใหม่อีกครั้ง : (',
   'system-error-title': 'ระบบผิดพลาด',
-  'system-error-message': 'การเริ่มต้นแอปพลิเคชันล้มเหลว: {{message}}',
+  'system-error-message': 'การเริ่มต้นแอปพลิเคชันล้มเหลว: {message}',
   'hide': 'ซ่อน imFile',
   'hide-others': 'ซ่อนอย่างอืน',
   'unhide': 'แสดงทั้งหมด',

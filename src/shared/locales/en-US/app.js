@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'The engine is damaged, please reinstall : (',
   'engine-missing-message': 'The engine is missing, please reinstall : (',
   'system-error-title': 'System Error',
-  'system-error-message': 'Application startup failed: {{message}}',
+  'system-error-message': 'Application startup failed: {message}',
   'hide': 'Hide imFile',
   'hide-others': 'Hide Others',
   'unhide': 'Show All',
@@ -30,5 +30,10 @@ export default {
   'gt1d': '> 1 day',
   'hour': 'h',
   'minute': 'm',
-  'second': 's'
+  'second': 's',
+  'status-upnp-on': 'On',
+  'status-upnp-off': 'Off',
+  'status-upnp-mapped': 'Mapped',
+  'status-upnp-not-mapped': 'Not mapped',
+  'status-upnp-line': 'UPnP/NAT-PMP: {upnpOn} · BT {btPort}: {btOk} · DHT {dhtPort}: {dhtOk}'
 }

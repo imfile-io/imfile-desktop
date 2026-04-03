@@ -213,4 +213,17 @@ export default class UPnPManager {
       mappingStatus[k] = false
     })
   }
+
+  /**
+   * @param {string|number} listenPort BT 监听端口
+   * @param {string|number} dhtListenPort DHT 端口
+   */
+  getPortMappingStatus (listenPort, dhtListenPort) {
+    const bt = Number(listenPort)
+    const dht = Number(dhtListenPort)
+    return {
+      btMapped: !!mappingStatus[bt],
+      dhtMapped: !!mappingStatus[dht]
+    }
+  }
 }

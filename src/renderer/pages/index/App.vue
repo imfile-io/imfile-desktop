@@ -6,6 +6,7 @@
         :showActions="showWindowActions"
       />
       <router-view />
+      <mo-status-bar />
       <mo-engine-client
         :secret="rpcSecret"
       />
@@ -23,6 +24,7 @@ import DynamicTray from '@/components/Native/DynamicTray'
 import EngineClient from '@/components/Native/EngineClient'
 import Ipc from '@/components/Native/Ipc'
 import TitleBar from '@/components/Native/TitleBar'
+import StatusBar from '@/components/StatusBar/StatusBar'
 import { getLanguage } from '@shared/locales'
 import { getLocaleManager } from '@/components/Locale'
 import { getElementPlusLocale } from '@/utils/elementPlusLocale'
@@ -33,7 +35,8 @@ export default {
     [DynamicTray.name]: DynamicTray,
     [EngineClient.name]: EngineClient,
     [Ipc.name]: Ipc,
-    [TitleBar.name]: TitleBar
+    [TitleBar.name]: TitleBar,
+    [StatusBar.name]: StatusBar
   },
   computed: {
     isMac: () => is.macOS(),

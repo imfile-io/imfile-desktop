@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': '引擎损坏，请重新安装 : (',
   'engine-missing-message': '引擎缺失，请重新安装 : (',
   'system-error-title': '系统错误',
-  'system-error-message': '应用启动失败: {{message}}',
+  'system-error-message': '应用启动失败: {message}',
   'hide': '隐藏 imFile',
   'hide-others': '隐藏其他',
   'unhide': '显示全部',
@@ -30,5 +30,10 @@ export default {
   'gt1d': '超过一天',
   'hour': '时',
   'minute': '分',
-  'second': '秒'
+  'second': '秒',
+  'status-upnp-on': '开',
+  'status-upnp-off': '关',
+  'status-upnp-mapped': '已映射',
+  'status-upnp-not-mapped': '未映射',
+  'status-upnp-line': 'UPnP/NAT-PMP：{upnpOn} · BT {btPort}：{btOk} · DHT {dhtPort}：{dhtOk}'
 }

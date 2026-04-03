@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'موتور صدمه دیده است! لطفا دوباره نصب کنید : (',
   'engine-missing-message': 'موتور گم شده است! لطفا دوباره نصب کنید : (',
   'system-error-title': 'خطای سیستم',
-  'system-error-message': 'برنامه نتوانست شروع به کار کند: {{message}}',
+  'system-error-message': 'برنامه نتوانست شروع به کار کند: {message}',
   'hide': 'ماتریکس را پنهان کن',
   'hide-others': 'بقیه را پنهان کن',
   'unhide': 'همه را نشان بده',

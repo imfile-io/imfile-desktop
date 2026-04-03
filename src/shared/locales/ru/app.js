@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'Движок поврежден. Пожалуйста, переустановите его : (',
   'engine-missing-message': 'Движок потерян. Пожалуйста, переустановите его : (',
   'system-error-title': 'Системная ошибка',
-  'system-error-message': 'Ошибка запуска приложения: {{message}}',
+  'system-error-message': 'Ошибка запуска приложения: {message}',
   'hide': 'Спрятать imFile',
   'hide-others': 'Спрятать все остальное',
   'unhide': 'Отобразить все',

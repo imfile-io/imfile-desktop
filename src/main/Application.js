@@ -447,6 +447,7 @@ export default class Application extends EventEmitter {
 
     const enabled = this.configManager.getUserConfig('enable-upnp')
     if (!enabled) {
+      this.broadcastUpnpStatus()
       return
     }
 
@@ -465,6 +466,8 @@ export default class Application extends EventEmitter {
       await Promise.allSettled(promises)
     } catch (e) {
       logger.warn('[imFile] start UPnP mapping fail', e.message)
+    } finally {
+      this.broadcastUpnpStatus()
     }
   }
 
@@ -480,6 +483,8 @@ export default class Application extends EventEmitter {
       await Promise.allSettled(promises)
     } catch (e) {
       logger.warn('[imFile] stop UPnP mapping fail', e)
+    } finally {
+      this.broadcastUpnpStatus()
     }
   }
 
@@ -503,6 +508,8 @@ export default class Application extends EventEmitter {
           await Promise.allSettled(promises)
         } catch (e) {
           logger.info('[imFile] change UPnP port mapping failed:', e)
+        } finally {
+          this.broadcastUpnpStatus()
         }
       })
     })
@@ -514,12 +521,32 @@ export default class Application extends EventEmitter {
     this.configListeners[key] = userConfig.onDidChange(key, async (newValue, oldValue) => {
       logger.info('[imFile] detected enable-upnp value change event:', newValue, oldValue)
       if (newValue) {
-        this.startUPnPMapping()
+        await this.startUPnPMapping()
       } else {
         await this.stopUPnPMapping()
         await this.upnp.closeClient()
+        this.broadcastUpnpStatus()
       }
     })
+  }
+
+  getUpnpStatus () {
+    const enabled = !!this.configManager.getUserConfig('enable-upnp')
+    const btPort = this.configManager.getSystemConfig('listen-port')
+    const dhtPort = this.configManager.getSystemConfig('dht-listen-port')
+    if (!this.upnp) {
+      return { enabled, btPort, dhtPort, btMapped: false, dhtMapped: false }
+    }
+    const { btMapped, dhtMapped } = this.upnp.getPortMappingStatus(btPort, dhtPort)
+    return { enabled, btPort, dhtPort, btMapped, dhtMapped }
+  }
+
+  broadcastUpnpStatus () {
+    const win = this.windowManager.getWindow('index')
+    if (!win || win.isDestroyed()) {
+      return
+    }
+    this.windowManager.sendMessageTo(win, 'upnp-status-changed')
   }
 
   async shutdownUPnPManager () {
@@ -1126,6 +1153,10 @@ export default class Application extends EventEmitter {
         updatedAt: 0,
         ...(this.goed2kdStatus || {})
       }
+    })
+
+    ipcMain.handle('get-upnp-status', async () => {
+      return this.getUpnpStatus()
     })
 
     ipcMain.handle('goed2kd:add-ed2k', async (event, payload = {}) => {

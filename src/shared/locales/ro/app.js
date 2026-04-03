@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'Motorul este deteriorat, vă rugăm să reinstalați : (',
   'engine-missing-message': 'Motorul lipseşte, vă rugăm să reinstalați : (',
   'system-error-title': 'Eroare sistem',
-  'system-error-message': 'Aplicaţia nu a putut porni: {{message}}',
+  'system-error-message': 'Aplicaţia nu a putut porni: {message}',
   'hide': 'Ascunde imFile',
   'hide-others': 'Ascunde celelalte',
   'unhide': 'Arată toate',

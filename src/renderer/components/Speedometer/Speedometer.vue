@@ -38,11 +38,13 @@ export default {
       pos: null,
       dragging: false,
       suppressModeClick: false,
-      _dragStart: null,
-      _draggingActive: false,
-      _pointerOffset: null,
-      _boundMove: null,
-      _boundUp: null
+      /** @type {{ x: number, y: number } | null} */
+      dragPointerStart: null,
+      dragBeyondThreshold: false,
+      /** @type {{ x: number, y: number } | null} */
+      dragPointerOffset: null,
+      dragMoveHandler: null,
+      dragUpHandler: null
     }
   },
   computed: {
@@ -91,13 +93,13 @@ export default {
       'toggleEngineMode'
     ]),
     teardownDragListeners () {
-      if (this._boundMove) {
-        window.removeEventListener('pointermove', this._boundMove)
-        this._boundMove = null
+      if (this.dragMoveHandler) {
+        window.removeEventListener('pointermove', this.dragMoveHandler)
+        this.dragMoveHandler = null
       }
-      if (this._boundUp) {
-        window.removeEventListener('pointerup', this._boundUp)
-        this._boundUp = null
+      if (this.dragUpHandler) {
+        window.removeEventListener('pointerup', this.dragUpHandler)
+        this.dragUpHandler = null
       }
     },
     clampToViewport (left, top, el) {
@@ -114,29 +116,29 @@ export default {
       if (e.button !== 0) {
         return
       }
-      this._dragStart = { x: e.clientX, y: e.clientY }
-      this._draggingActive = false
-      this._boundMove = (ev) => this.onPointerMove(ev)
-      this._boundUp = (ev) => this.onPointerUp(ev)
-      window.addEventListener('pointermove', this._boundMove)
-      window.addEventListener('pointerup', this._boundUp)
+      this.dragPointerStart = { x: e.clientX, y: e.clientY }
+      this.dragBeyondThreshold = false
+      this.dragMoveHandler = (ev) => this.onPointerMove(ev)
+      this.dragUpHandler = (ev) => this.onPointerUp(ev)
+      window.addEventListener('pointermove', this.dragMoveHandler)
+      window.addEventListener('pointerup', this.dragUpHandler)
     },
     onPointerMove (e) {
-      if (!this._dragStart) {
+      if (!this.dragPointerStart) {
         return
       }
-      const dx = e.clientX - this._dragStart.x
-      const dy = e.clientY - this._dragStart.y
+      const dx = e.clientX - this.dragPointerStart.x
+      const dy = e.clientY - this.dragPointerStart.y
       const dist = Math.hypot(dx, dy)
-      if (!this._draggingActive) {
+      if (!this.dragBeyondThreshold) {
         if (dist <= DRAG_THRESHOLD_PX) {
           return
         }
-        this._draggingActive = true
+        this.dragBeyondThreshold = true
         this.dragging = true
         const el = this.$refs.root
         const rect = el.getBoundingClientRect()
-        this._pointerOffset = {
+        this.dragPointerOffset = {
           x: e.clientX - rect.left,
           y: e.clientY - rect.top
         }
@@ -145,14 +147,14 @@ export default {
         }
       }
       const el = this.$refs.root
-      let left = e.clientX - this._pointerOffset.x
-      let top = e.clientY - this._pointerOffset.y
+      const left = e.clientX - this.dragPointerOffset.x
+      const top = e.clientY - this.dragPointerOffset.y
       this.pos = this.clampToViewport(left, top, el)
       e.preventDefault()
     },
     onPointerUp () {
       this.teardownDragListeners()
-      if (this._draggingActive) {
+      if (this.dragBeyondThreshold) {
         this.suppressModeClick = true
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(this.pos))
@@ -164,9 +166,9 @@ export default {
         }, 400)
       }
       this.dragging = false
-      this._draggingActive = false
-      this._dragStart = null
-      this._pointerOffset = null
+      this.dragBeyondThreshold = false
+      this.dragPointerStart = null
+      this.dragPointerOffset = null
     },
     onModeClick (e) {
       if (this.suppressModeClick) {
@@ -185,7 +187,7 @@ export default {
     font-size: 12px;
     position: fixed;
     right: 16px;
-    bottom: 24px;
+    bottom: 50px;
     display: inline-block;
     box-sizing: border-box;
     width: 150px;

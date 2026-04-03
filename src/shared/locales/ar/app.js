@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'المحرك متضرر، الرجاء إعادة التثبيت : (',
   'engine-missing-message': 'المحرك مفقود، الرجاء إعادة التثبيت : (',
   'system-error-title': 'خطأ في النظام',
-  'system-error-message': 'فشل بدء تشغيل التطبيق: {{message}}',
+  'system-error-message': 'فشل بدء تشغيل التطبيق: {message}',
   'hide': 'إخفاء موتركس',
   'hide-others': 'إخفاء الآخرين',
   'unhide': 'إظهار الكل',

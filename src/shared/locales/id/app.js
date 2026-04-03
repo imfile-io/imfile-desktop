@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'Mesin rusak, silahkan install ulang : (',
   'engine-missing-message': 'Mesin hilang, silahkan install ulang : (',
   'system-error-title': 'System Error',
-  'system-error-message': 'Gagal Menjalankan Aplikasi: {{message}}',
+  'system-error-message': 'Gagal Menjalankan Aplikasi: {message}',
   'hide': 'Sembungikan imFile',
   'hide-others': 'Sembunyikan yang lain',
   'unhide': 'Tunjukan Semua',

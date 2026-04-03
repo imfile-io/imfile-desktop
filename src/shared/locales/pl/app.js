@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'Silnik został uszkodzony, spróbuj zreinstalować program : (',
   'engine-missing-message': 'Nie można znaleźć silnika, spróbuj zreinstalować program : (',
   'system-error-title': 'Błąd systemu',
-  'system-error-message': 'Aplikacja nie mogła zostać uruchomiona: {{message}}',
+  'system-error-message': 'Aplikacja nie mogła zostać uruchomiona: {message}',
   'hide': 'Schowaj imFile',
   'hide-others': 'Schowaj pozostałe',
   'unhide': 'Pokaż wszystkie',

@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'Il motore è danneggiato, per favore, reinstalla l\'app : (',
   'engine-missing-message': 'Il motore è assente, per favore, reinstalla l\'app : (',
   'system-error-title': 'Errore di sistema',
-  'system-error-message': 'L\'applicazione non si è avviata: {{message}}',
+  'system-error-message': 'L\'applicazione non si è avviata: {message}',
   'hide': 'Nascondi imFile',
   'hide-others': 'Nascondi Altro',
   'unhide': 'Mostra Tutto',

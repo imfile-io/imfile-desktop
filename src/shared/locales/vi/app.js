@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'Ứng dụng bị lỗi, vui lòng cài đặt lại : (',
   'engine-missing-message': 'Ứng dụng bị thiếu tập tin, vui lòng cài đặt lại : (',
   'system-error-title': 'Lỗi hệ thống',
-  'system-error-message': 'Khởi động ứng dụng thất bại: {{message}}',
+  'system-error-message': 'Khởi động ứng dụng thất bại: {message}',
   'hide': 'Ẩn imFile',
   'hide-others': 'Ẩn tất cả',
   'unhide': 'Hiển thị tất cả',

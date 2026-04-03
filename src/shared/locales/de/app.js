@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'Der Motor ist beschädigt, bitte neu installieren : (',
   'engine-missing-message': 'Der Motor fehlt, bitte neu installieren : (',
   'system-error-title': 'Systemfehler',
-  'system-error-message': 'Die Anwendung konnte nicht gestartet werden: {{message}}',
+  'system-error-message': 'Die Anwendung konnte nicht gestartet werden: {message}',
   'hide': 'imFile verbergen',
   'hide-others': 'Andere verbergen',
   'unhide': 'Alles anzeigen',

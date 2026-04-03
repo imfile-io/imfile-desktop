@@ -14,7 +14,7 @@ export default {
   'engine-damaged-message': 'Le moteur est endommagé, veuillez réinstaller : (',
   'engine-missing-message': 'Le moteur est manquant, veuillez réinstaller : (',
   'system-error-title': 'Erreur système',
-  'system-error-message': 'L\'application n\'a pas pu démarrer: {{message}}',
+  'system-error-message': 'L\'application n\'a pas pu démarrer: {message}',
   'hide': 'Cacher imFile',
   'hide-others': 'Cacher les autres',
   'unhide': 'Tout montrer',
