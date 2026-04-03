@@ -35,7 +35,15 @@
         </div>
       </el-header>
       <el-main class="panel-content">
-        <mo-task-list :search-query="taskSearchQuery" />
+        <div
+          ref="taskContentPanel"
+          class="task-content-panel"
+          tabindex="0"
+          @mousedown.capture="focusTaskContentPanel"
+          @keydown="onTaskContentKeydown"
+        >
+          <mo-task-list :search-query="taskSearchQuery" />
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -54,6 +62,7 @@ import TaskList from '@/components/Task/TaskList'
 import TaskStateAction from '@/components/Task/TaskStateAction'
 import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
 import {
+  getTaskName,
   getTaskUri,
   parseHeader
 } from '@shared/utils'
@@ -123,6 +132,23 @@ export default {
     title () {
       const subnav = this.subnavs.find((item) => item.key === this.status)
       return subnav.title
+    },
+    /** 与 TaskList filteredTaskList 一致，用于 Ctrl/Cmd+A 全选 */
+    filteredTaskKeysForSelectAll () {
+      const q = this.taskSearchQuery.trim().toLowerCase()
+      if (!q) {
+        return this.taskList.map((t) => t.taskKey)
+      }
+      const defaultName = this.t('task.get-task-name')
+      return this.taskList
+        .filter((task) => {
+          const name = getTaskName(task, {
+            defaultName,
+            maxLen: -1
+          })
+          return name.toLowerCase().includes(q)
+        })
+        .map((t) => t.taskKey)
     }
   },
   watch: {
@@ -421,6 +447,29 @@ export default {
     handleShowTaskInfo (payload) {
       const { task } = payload
       this.$store.dispatch('task/showTaskDetail', task)
+    },
+    focusTaskContentPanel () {
+      this.$nextTick(() => {
+        this.$refs.taskContentPanel?.focus?.()
+      })
+    },
+    onTaskContentKeydown (e) {
+      if (!(e.ctrlKey || e.metaKey)) {
+        return
+      }
+      if (e.key !== 'a' && e.key !== 'A') {
+        return
+      }
+      if (this.taskList.length === 0) {
+        return
+      }
+      const keys = this.filteredTaskKeysForSelectAll
+      if (keys.length === 0) {
+        return
+      }
+      e.preventDefault()
+      e.stopPropagation()
+      this.$store.dispatch('task/selectTasks', keys)
     }
   },
   created () {
@@ -475,5 +524,9 @@ export default {
 .task-toolbar-actions {
   margin-left: auto;
   flex-shrink: 0;
+}
+.task-content-panel {
+  min-height: 100%;
+  outline: none;
 }
 </style>
