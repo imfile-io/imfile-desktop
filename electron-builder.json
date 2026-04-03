@@ -126,8 +126,9 @@
     },
     "nsis": {
       "artifactName": "${productName}-Setup-${version}.${ext}",
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false
     },
     "appx": {
       "artifactName": "${productName}-${version}-${arch}.${ext}",
