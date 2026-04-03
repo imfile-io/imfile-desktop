@@ -19,7 +19,7 @@ export default class UpdateManager extends EventEmitter {
     this.i18n = getI18n()
     this.isChecking = false
     this.updater = autoUpdater
-    this.updater.autoDownload = false
+    this.updater.autoDownload = true
     this.updater.autoInstallOnAppQuit = false
     this.updater.logger = logger
     logger.info('[imFile] setup proxy:', this.options.proxy)
@@ -140,7 +140,7 @@ export default class UpdateManager extends EventEmitter {
       this.isChecking = false
       this.emit('will-updated')
       setTimeout(() => {
-        this.updater.quitAndInstall()
+        this.updater.quitAndInstall(false, true)
       }, 200)
     })
   }
