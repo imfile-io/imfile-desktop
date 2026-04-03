@@ -31,6 +31,7 @@ export default {
   'no-confirm-before-delete-task': '删除任务前无需确认',
   'continue': '断点续传',
   'task-completed-notify': '下载完成后通知',
+  'task-complete-sound': '下载完成后播放提示音',
   'auto-purge-record': '当应用退出时自动清除下载记录',
   'ui': '界面',
   'appearance': '外观',

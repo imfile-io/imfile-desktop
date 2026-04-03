@@ -279,6 +279,11 @@
             </el-checkbox>
           </el-col>
           <el-col class="form-item-sub" :span="24">
+            <el-checkbox v-model="form.taskCompleteSound">
+              {{ $t('preferences.task-complete-sound') }}
+            </el-checkbox>
+          </el-col>
+          <el-col class="form-item-sub" :span="24">
             <el-checkbox v-model="form.noConfirmBeforeDeleteTask">
               {{ $t('preferences.no-confirm-before-delete-task') }}
             </el-checkbox>
@@ -360,9 +365,12 @@ const initForm = (config) => {
     seedTime,
     showProgressBar,
     taskNotification,
+    taskCompleteSound: taskCompleteSoundPref,
     theme,
     traySpeedometer
   } = config
+
+  const taskCompleteSound = taskCompleteSoundPref ?? true
 
   const btAutoDownloadContent = followTorrent &&
       followMetalink &&
@@ -396,6 +404,7 @@ const initForm = (config) => {
     seedTime,
     showProgressBar,
     taskNotification,
+    taskCompleteSound,
     theme,
     traySpeedometer
   }

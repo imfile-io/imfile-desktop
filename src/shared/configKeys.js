@@ -24,6 +24,7 @@ const userKeys = [
   'run-mode',
   'show-progress-bar',
   'task-notification',
+  'task-complete-sound',
   'theme',
   'tracker-source',
   'tray-speedometer'

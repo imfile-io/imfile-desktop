@@ -31,6 +31,7 @@ export default {
   'no-confirm-before-delete-task': 'No confirmation is required before deleting task',
   'continue': 'Continue',
   'task-completed-notify': 'Notify after download is complete',
+  'task-complete-sound': 'Play sound when download completes',
   'auto-purge-record': 'Automatically purge download records when exiting app',
   'ui': 'UI',
   'appearance': 'Appearance',

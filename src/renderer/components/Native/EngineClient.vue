@@ -9,6 +9,7 @@ import is from 'electron-is'
 import { mapState } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import api from '@/api'
+import taskCompleteSoundUrl from '@/assets/sounds/task-complete.mp3'
 import {
   getTaskFullPath,
   showItemInFolder
@@ -40,7 +41,8 @@ export default {
       currentTaskItem: state => state.currentTaskItem
     }),
     ...mapState('preference', {
-      taskNotification: state => state.config.taskNotification
+      taskNotification: state => state.config.taskNotification,
+      taskCompleteSound: state => state.config.taskCompleteSound ?? true
     }),
     currentTaskIsBT () {
       return checkTaskIsBT(this.currentTaskItem)
@@ -161,6 +163,11 @@ export default {
       this.showTaskCompleteNotify(task, isBT, path)
       this.$electron.ipcRenderer.send('event', 'task-download-complete', task, path)
     },
+    playTaskCompleteSound () {
+      const audio = new Audio(taskCompleteSoundUrl)
+      audio.volume = 0.5
+      audio.play().catch(() => {})
+    },
     showTaskCompleteNotify (task, isBT, path) {
       const taskName = getTaskName(task)
       const message = isBT
@@ -171,6 +178,10 @@ export default {
         : ''
 
       this.$msg.success(`${message}${tips}`)
+
+      if (this.taskCompleteSound) {
+        this.playTaskCompleteSound()
+      }
 
       if (!this.taskNotification) {
         return
