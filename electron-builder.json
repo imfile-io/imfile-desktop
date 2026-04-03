@@ -37,6 +37,12 @@
         "schemes": [
           "thunder"
         ]
+      },
+      {
+        "name": "ED2K Protocol",
+        "schemes": [
+          "ed2k"
+        ]
       }
     ],
     "dmg": {
@@ -151,7 +157,8 @@
       "category": "Network",
       "mimeTypes": [
         "application/x-bittorrent",
-        "x-scheme-handler/magnet"
+        "x-scheme-handler/magnet",
+        "x-scheme-handler/ed2k"
       ],
       "target": [
         {
