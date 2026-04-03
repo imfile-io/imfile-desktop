@@ -128,6 +128,7 @@ export default class ConfigManager {
         'run-mode': APP_RUN_MODE.STANDARD,
         'show-progress-bar': true,
         'task-notification': true,
+        'task-complete-sound': true,
         theme: APP_THEME.LIGHT,
         'tracker-source': [
           NGOSANG_TRACKERS_BEST_IP_URL_CDN,
