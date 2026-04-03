@@ -129,7 +129,7 @@ jobs:
           name: release-windows
           path: |
             release/latest*.yml
-            release/*.blockmap
+            release/*x64*.blockmap
             release/*x64*.exe
             release/*x64*.appx
             release/*x64*.zip
@@ -173,7 +173,7 @@ jobs:
           name: release-windows-arm64
           path: |
             release/latest*.yml
-            release/*.blockmap
+            release/*arm64*.blockmap
             release/*arm64*.exe
             release/*arm64*.appx
             release/*arm64*.zip
