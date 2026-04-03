@@ -1,6 +1,7 @@
 import { EventEmitter } from 'node:events'
 import { readFile, unlink } from 'node:fs'
 import { extname, basename } from 'node:path'
+import { spawn } from 'node:child_process'
 import { app, shell, dialog, ipcMain } from 'electron'
 import is from 'electron-is'
 import { isEmpty, isEqual } from 'lodash'
@@ -9,6 +10,7 @@ import {
   APP_RUN_MODE,
   AUTO_SYNC_TRACKER_INTERVAL,
   AUTO_CHECK_UPDATE_INTERVAL,
+  POST_DOWNLOAD_ACTION,
   PROXY_SCOPES
 } from '@shared/constants'
 import { checkIsNeedRun } from '@shared/utils'
@@ -816,6 +818,102 @@ export default class Application extends EventEmitter {
     app.exit()
   }
 
+  /**
+   * 全部下载完成后的会话动作（关机 / 睡眠 / 退出）。
+   * @returns {Promise<{ ok: boolean, error?: string }>}
+   */
+  async handlePostDownloadAction (action) {
+    if (!action || action === POST_DOWNLOAD_ACTION.NONE) {
+      return { ok: true }
+    }
+
+    logger.log('[imFile] post-download action:', action)
+
+    if (action === POST_DOWNLOAD_ACTION.QUIT) {
+      try {
+        await this.quit()
+        return { ok: true }
+      } catch (err) {
+        logger.warn('[imFile] post-download quit failed:', err?.message ?? err)
+        return { ok: false, error: err?.message || String(err) }
+      }
+    }
+
+    const spawnOpts = { detached: true, stdio: 'ignore' }
+    if (is.windows()) {
+      spawnOpts.windowsHide = true
+    }
+
+    let cmd
+    let args
+
+    if (action === POST_DOWNLOAD_ACTION.SLEEP) {
+      if (is.macos()) {
+        cmd = 'pmset'
+        args = ['sleepnow']
+      } else if (is.windows()) {
+        cmd = 'cmd.exe'
+        args = ['/c', 'rundll32 powrprof.dll,SetSuspendState 0,1,0']
+      } else {
+        cmd = 'systemctl'
+        args = ['suspend']
+      }
+    } else if (action === POST_DOWNLOAD_ACTION.SHUTDOWN) {
+      if (is.macos()) {
+        cmd = 'osascript'
+        args = ['-e', 'tell application "System Events" to shut down']
+      } else if (is.windows()) {
+        cmd = 'shutdown.exe'
+        args = ['/s', '/t', '0']
+      } else {
+        cmd = 'systemctl'
+        args = ['poweroff']
+      }
+    } else {
+      return { ok: true }
+    }
+
+    return await new Promise((resolve) => {
+      let settled = false
+      let timer
+
+      const finish = (ok, err) => {
+        if (settled) {
+          return
+        }
+        settled = true
+        if (timer) {
+          clearTimeout(timer)
+        }
+        if (ok) {
+          resolve({ ok: true })
+        } else {
+          resolve({ ok: false, error: err })
+        }
+      }
+
+      try {
+        const child = spawn(cmd, args, spawnOpts)
+        child.on('error', (err) => {
+          logger.warn('[imFile] post-download spawn error:', err)
+          finish(false, err.message)
+        })
+        child.on('exit', (code) => {
+          if (code === 0 || code === null) {
+            finish(true)
+          } else {
+            logger.warn('[imFile] post-download exit code:', code)
+            finish(false, `exit ${code}`)
+          }
+        })
+        child.unref()
+        timer = setTimeout(() => finish(true), 2000)
+      } catch (err) {
+        finish(false, err.message)
+      }
+    })
+  }
+
   sendCommand (command, ...args) {
     if (!this.emit(command, ...args)) {
       const window = this.windowManager.getFocusedWindow()
@@ -1227,6 +1325,10 @@ export default class Application extends EventEmitter {
   }
 
   handleIpcInvokes () {
+    ipcMain.handle('application:post-download-action', async (event, action) => {
+      return this.handlePostDownloadAction(action)
+    })
+
     ipcMain.handle('get-app-config', async () => {
       const systemConfig = this.configManager.getSystemConfig()
       const userConfig = this.configManager.getUserConfig()

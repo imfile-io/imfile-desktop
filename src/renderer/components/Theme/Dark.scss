@@ -495,6 +495,18 @@
   /* Dialog */
   .el-dialog {
     background-color: $--dk-dialog-background;
+    .el-dialog__header {
+      border-bottom-color: $--dk-table-border-color;
+    }
+    .el-dialog__title {
+      color: $--dk-panel-title-color;
+    }
+    .el-dialog__headerbtn .el-dialog__close {
+      color: #aaa;
+      &:hover {
+        color: $--color-primary-light-4;
+      }
+    }
     .el-dialog__body {
       color: $--dk-dialog-text-color;
     }

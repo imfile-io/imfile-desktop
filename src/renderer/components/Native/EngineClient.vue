@@ -1,7 +1,22 @@
 <template>
-  <!-- 占位节点，不参与渲染 -->
-  <!-- eslint-disable-next-line vue/no-constant-condition -->
-  <div v-if="false"></div>
+  <div class="mo-engine-client-host">
+    <el-dialog
+      v-model="postDownloadConfirmVisible"
+      :title="$t('task.post-download-confirm-title')"
+      width="420px"
+      align-center
+      append-to-body
+      :close-on-click-modal="false"
+      @closed="onPostDownloadDialogClosed"
+    >
+      <p class="post-download-confirm-body">{{ postDownloadConfirmBody }}</p>
+      <template #footer>
+        <el-button size="small" @click="handlePostDownloadConfirmCancel">
+          {{ $t('task.post-download-confirm-cancel') }}
+        </el-button>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
@@ -15,12 +30,23 @@ import {
   showItemInFolder
 } from '@/utils/native'
 import { checkTaskIsBT, getTaskName } from '@shared/utils'
+import { POST_DOWNLOAD_ACTION } from '@shared/constants'
+
+const POST_DOWNLOAD_CONFIRM_SECONDS = 10
 
 export default {
   name: 'mo-engine-client',
   setup () {
     const { t } = useI18n()
     return { t }
+  },
+  data () {
+    return {
+      postDownloadConfirmVisible: false,
+      postDownloadCountdown: POST_DOWNLOAD_CONFIRM_SECONDS,
+      postDownloadPendingAction: null,
+      postDownloadConfirmTimerId: null
+    }
   },
   computed: {
     isRenderer: () => is.renderer(),
@@ -46,6 +72,15 @@ export default {
     }),
     currentTaskIsBT () {
       return checkTaskIsBT(this.currentTaskItem)
+    },
+    postDownloadConfirmBody () {
+      if (!this.postDownloadPendingAction) {
+        return ''
+      }
+      return this.t('task.post-download-confirm-countdown', {
+        seconds: this.postDownloadCountdown,
+        actionName: this.postDownloadActionLabel(this.postDownloadPendingAction)
+      })
     }
   },
   watch: {
@@ -162,6 +197,20 @@ export default {
       const path = getTaskFullPath(task)
       this.showTaskCompleteNotify(task, isBT, path)
       this.$electron.ipcRenderer.send('event', 'task-download-complete', task, path)
+
+      this.$nextTick(() => {
+        this.$store.dispatch('task/runPostDownloadActionIfIdle')
+          .then((res) => {
+            if (res && res.ready && res.action) {
+              this.openPostDownloadConfirm(res.action)
+              return
+            }
+            if (res && res.ok === false && res.error) {
+              this.$msg.error(this.t('task.post-download-action-fail', { detail: res.error }))
+            }
+          })
+          .catch((e) => console.warn('[imFile] runPostDownloadActionIfIdle', e))
+      })
     },
     playTaskCompleteSound () {
       const audio = new Audio(taskCompleteSoundUrl)
@@ -253,6 +302,69 @@ export default {
     stopPolling () {
       clearTimeout(this.timer)
       this.timer = null
+    },
+    clearPostDownloadConfirmTimer () {
+      if (this.postDownloadConfirmTimerId != null) {
+        clearInterval(this.postDownloadConfirmTimerId)
+        this.postDownloadConfirmTimerId = null
+      }
+    },
+    postDownloadActionLabel (action) {
+      if (action === POST_DOWNLOAD_ACTION.SHUTDOWN) {
+        return this.t('task.post-download-action-shutdown')
+      }
+      if (action === POST_DOWNLOAD_ACTION.SLEEP) {
+        return this.t('task.post-download-action-sleep')
+      }
+      if (action === POST_DOWNLOAD_ACTION.QUIT) {
+        return this.t('task.post-download-action-quit')
+      }
+      return ''
+    },
+    openPostDownloadConfirm (action) {
+      if (!action || action === POST_DOWNLOAD_ACTION.NONE) {
+        return
+      }
+      this.clearPostDownloadConfirmTimer()
+      this.postDownloadPendingAction = action
+      this.postDownloadCountdown = POST_DOWNLOAD_CONFIRM_SECONDS
+      this.postDownloadConfirmVisible = true
+      this.postDownloadConfirmTimerId = setInterval(() => {
+        this.postDownloadCountdown -= 1
+        if (this.postDownloadCountdown <= 0) {
+          this.clearPostDownloadConfirmTimer()
+          this.handlePostDownloadConfirmExecute()
+        }
+      }, 1000)
+    },
+    handlePostDownloadConfirmCancel () {
+      this.clearPostDownloadConfirmTimer()
+      this.postDownloadPendingAction = null
+      this.postDownloadConfirmVisible = false
+      this.$store.dispatch('task/cancelPostDownloadConfirm')
+    },
+    handlePostDownloadConfirmExecute () {
+      const action = this.postDownloadPendingAction
+      if (!action) {
+        return
+      }
+      this.clearPostDownloadConfirmTimer()
+      this.postDownloadPendingAction = null
+      this.postDownloadConfirmVisible = false
+      this.$store.dispatch('task/executePostDownloadAction', action)
+        .then((res) => {
+          if (res && res.ok === false && res.error) {
+            this.$msg.error(this.t('task.post-download-action-fail', { detail: res.error }))
+          }
+        })
+        .catch((e) => console.warn('[imFile] executePostDownloadAction', e))
+    },
+    onPostDownloadDialogClosed () {
+      this.clearPostDownloadConfirmTimer()
+      if (this.postDownloadPendingAction) {
+        this.$store.dispatch('task/cancelPostDownloadConfirm')
+        this.postDownloadPendingAction = null
+      }
     }
   },
   created () {
@@ -267,6 +379,12 @@ export default {
     }, 100)
   },
   unmounted () {
+    this.clearPostDownloadConfirmTimer()
+    if (this.postDownloadPendingAction) {
+      this.$store.dispatch('task/cancelPostDownloadConfirm')
+      this.postDownloadPendingAction = null
+    }
+
     this.$store.dispatch('task/saveSession')
 
     this.unbindEngineEvents()

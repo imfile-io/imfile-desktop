@@ -123,5 +123,14 @@ export default {
   'task-add':'Add task',
   'task-all-start' : 'Start all',
   'task-all-stop' : 'pause all',
-  'task-not-data' : 'No task'
+  'task-not-data' : 'No task',
+  'post-download-action-menu': 'After downloads complete',
+  'post-download-action-none': 'None',
+  'post-download-action-shutdown': 'Shut down',
+  'post-download-action-sleep': 'Sleep',
+  'post-download-action-quit': 'Quit app',
+  'post-download-action-fail': 'Post-download action failed: {detail}',
+  'post-download-confirm-title': 'After downloads complete',
+  'post-download-confirm-countdown': '{actionName} in {seconds} s. Click Cancel to abort.',
+  'post-download-confirm-cancel': 'Cancel'
 }

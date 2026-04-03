@@ -29,6 +29,14 @@ export const TASK_STATUS = {
   SEEDING: 'seeding'
 }
 
+/** 会话内：全部下载完成后的动作（不持久化） */
+export const POST_DOWNLOAD_ACTION = {
+  NONE: 'none',
+  SHUTDOWN: 'shutdown',
+  SLEEP: 'sleep',
+  QUIT: 'quit'
+}
+
 export const LOG_LEVELS = [
   'error',
   'warn',
