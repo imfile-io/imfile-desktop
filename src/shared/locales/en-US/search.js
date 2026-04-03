@@ -20,5 +20,8 @@ export default {
   'copy-link': 'Copy link',
   'copy-link-success': 'Link copied',
   'copy-link-fail': 'Copy failed. Please try again.',
-  'results-truncated': 'Only the first {max} results are kept for performance. Try a narrower keyword and search again.'
+  'results-truncated': 'Only the first {max} results are kept for performance. Try a narrower keyword and search again.',
+  'history-label': 'Recent searches',
+  'clear-history': 'Clear history',
+  'clear-history-confirm': 'Clear all search history?'
 }

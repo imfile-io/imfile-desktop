@@ -20,5 +20,8 @@ export default {
   'copy-link': '复制链接',
   'copy-link-success': '已复制链接',
   'copy-link-fail': '复制失败，请重试',
-  'results-truncated': '为减轻界面负担，仅保留前 {max} 条结果；可缩小关键词范围后重新搜索。'
+  'results-truncated': '为减轻界面负担，仅保留前 {max} 条结果；可缩小关键词范围后重新搜索。',
+  'history-label': '最近搜索',
+  'clear-history': '清空历史',
+  'clear-history-confirm': '确定清空全部搜索历史？'
 }

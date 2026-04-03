@@ -790,3 +790,9 @@ export {
   getSearchResultEd2kUri,
   isGoed2kSearchActive
 } from './goed2kSearch'
+export {
+  loadEd2kSearchHistory,
+  addEd2kSearchHistoryItem,
+  removeEd2kSearchHistoryItem,
+  clearEd2kSearchHistory
+} from './ed2kSearchHistory'

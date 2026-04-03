@@ -41,6 +41,31 @@
               {{ $t('search.reset') }}
             </el-button>
           </div>
+          <div v-if="searchHistory.length" class="search-history">
+            <div class="search-history-head">
+              <span class="search-history-label">{{ $t('search.history-label') }}</span>
+              <el-button
+                link
+                type="danger"
+                size="small"
+                @click="clearAllHistory"
+              >
+                {{ $t('search.clear-history') }}
+              </el-button>
+            </div>
+            <div class="search-history-tags">
+              <el-tag
+                v-for="(item, idx) in searchHistory"
+                :key="idx + '-' + item"
+                class="search-history-tag"
+                closable
+                @click="onHistoryTagClick(item, $event)"
+                @close="removeHistoryItem(item)"
+              >
+                {{ item }}
+              </el-tag>
+            </div>
+          </div>
         </div>
       </el-header>
       <el-main class="panel-content search-panel-main">
@@ -113,7 +138,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { useI18n } from 'vue-i18n'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import api from '@/api'
 import { GOED2K_SEARCH_MAX_RESULTS } from '@shared/constants'
 import {
@@ -121,7 +146,11 @@ import {
   mapSearchResultsFromDto,
   mergeSearchResultRows,
   getSearchResultEd2kUri,
-  isGoed2kSearchActive
+  isGoed2kSearchActive,
+  loadEd2kSearchHistory,
+  addEd2kSearchHistoryItem,
+  removeEd2kSearchHistoryItem,
+  clearEd2kSearchHistory
 } from '@shared/utils'
 
 const POLL_MS = 1000
@@ -137,7 +166,8 @@ export default {
     return {
       searchButtonLoading: false,
       pollTimer: null,
-      downloadingByHash: {}
+      downloadingByHash: {},
+      searchHistory: []
     }
   },
   computed: {
@@ -170,6 +200,7 @@ export default {
     }
   },
   mounted () {
+    this.searchHistory = loadEd2kSearchHistory()
     this.resumeSearchIfNeeded()
   },
   unmounted () {
@@ -310,6 +341,8 @@ export default {
         ElMessage.error(res.message || this.t('search.search-failed'))
         return
       }
+      addEd2kSearchHistoryItem(q)
+      this.searchHistory = loadEd2kSearchHistory()
       this.applyDto(res.data)
       if (!isGoed2kSearchActive(res.data)) {
         this.setSearchLoading(false)
@@ -334,6 +367,34 @@ export default {
       } catch {
         ElMessage.error(this.t('search.copy-link-fail'))
       }
+    },
+    onHistoryTagClick (item, e) {
+      if (e && e.target && e.target.closest && e.target.closest('.el-tag__close')) {
+        return
+      }
+      this.keyword = item
+      this.runSearch()
+    },
+    removeHistoryItem (item) {
+      removeEd2kSearchHistoryItem(item)
+      this.searchHistory = loadEd2kSearchHistory()
+    },
+    async clearAllHistory () {
+      try {
+        await ElMessageBox.confirm(
+          this.t('search.clear-history-confirm'),
+          this.t('search.clear-history'),
+          {
+            type: 'warning',
+            confirmButtonText: this.t('app.yes'),
+            cancelButtonText: this.t('app.cancel')
+          }
+        )
+      } catch {
+        return
+      }
+      clearEd2kSearchHistory()
+      this.searchHistory = []
     },
     async onDownload (row) {
       if (!row || !row.hash) return
@@ -407,6 +468,40 @@ export default {
 
 .search-reset-btn {
   flex: 0 0 auto;
+}
+
+.search-history {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.search-history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.search-history-label {
+  font-size: 13px;
+  color: $--color-text-secondary;
+}
+
+.search-history-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.search-history-tag {
+  cursor: pointer;
+  max-width: 100%;
+
+  :deep(.el-tag__content) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .search-searching-only {
@@ -530,6 +625,10 @@ html.theme-light .search-page {
 }
 
 .theme-dark .search-page .search-searching-only {
+  color: $--dk-panel-title-color;
+}
+
+.theme-dark .search-page .search-history-label {
   color: $--dk-panel-title-color;
 }
 
