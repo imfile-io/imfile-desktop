@@ -12,6 +12,18 @@ import {
 } from '@shared/utils'
 import { ENGINE_RPC_HOST } from '@shared/constants'
 
+/**
+ * go-aria2 等内核未实现全部 aria2 RPC 时返回 JSON-RPC「method not found」。
+ * @param {unknown} err
+ * @returns {boolean}
+ */
+function isRpcMethodNotFound (err) {
+  if (!err) return false
+  if (Number(err.code) === -32601) return true
+  const msg = String(err.message || '').toLowerCase()
+  return msg.includes('method not found')
+}
+
 export default class Api {
   constructor (options = {}) {
     this.options = options
@@ -438,7 +450,12 @@ export default class Api {
   }
 
   forcePauseAllTask (params = {}) {
-    return this.client.call('forcePauseAll')
+    return this.client.call('forcePauseAll').catch((err) => {
+      if (isRpcMethodNotFound(err)) {
+        return this.client.call('pauseAll')
+      }
+      throw err
+    })
   }
 
   resumeTask (params = {}) {
@@ -464,7 +481,13 @@ export default class Api {
   }
 
   saveSession (params = {}) {
-    return this.client.call('saveSession')
+    return this.client.call('saveSession').catch((err) => {
+      // go-aria2 由 save-session-interval 自动落盘，未实现 aria2.saveSession
+      if (isRpcMethodNotFound(err)) {
+        return undefined
+      }
+      throw err
+    })
   }
 
   purgeTaskRecord (params = {}) {

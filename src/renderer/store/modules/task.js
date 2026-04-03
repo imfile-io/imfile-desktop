@@ -466,7 +466,9 @@ const actions = {
       })
   },
   saveSession () {
-    api.saveSession()
+    return api.saveSession().catch((err) => {
+      console.warn('[imFile] saveSession failed:', err)
+    })
   },
   purgeTaskRecord ({ dispatch }) {
     return api.purgeTaskRecord()
