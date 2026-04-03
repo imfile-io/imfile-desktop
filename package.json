@@ -16,6 +16,13 @@
   },
   "packageManager": "pnpm@10.33.0",
   "scripts": {
+    "prebuild": "pnpm run sync-go-aria2",
+    "prerelease": "pnpm run sync-go-aria2",
+    "prebuild:win7": "pnpm run sync-go-aria2",
+    "prebuild:win10": "pnpm run sync-go-aria2",
+    "prebuild:win:arm64": "pnpm run sync-go-aria2",
+    "prebuild:applesilicon": "pnpm run sync-go-aria2",
+    "prebuild:dir": "pnpm run sync-go-aria2",
     "release": "node .electron-vue/build.js && electron-builder --publish onTagOrDraft",
     "build": "node .electron-vue/build.js && electron-builder",
     "build:win7": "pnpm up electron@22 && node .electron-vue/build.js && electron-builder --win --config.directories.output=release/win32/7",
@@ -34,6 +41,7 @@
     "pack:main": "webpack --node-env production --progress --color --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "webpack --node-env production --progress --color --config .electron-vue/webpack.renderer.config.js",
     "sync-goed2kd": "node scripts/sync-goed2kd.mjs",
+    "sync-go-aria2": "node scripts/sync-go-aria2.mjs",
     "postinstall": "electron-builder install-app-deps && pnpm run lint:fix"
   },
   "engines": {
