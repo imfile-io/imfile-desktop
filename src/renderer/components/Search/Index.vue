@@ -1,5 +1,11 @@
 <template>
   <el-container class="main panel search-page" direction="horizontal">
+    <el-aside width="200px" class="subnav hidden-xs-only">
+      <nav class="subnav-inner subnav-inner--stacked">
+        <div class="subnav-inner-body" aria-hidden="true" />
+        <mo-subnav-footer />
+      </nav>
+    </el-aside>
     <el-container class="content panel" direction="vertical">
       <el-header class="panel-header search-panel-header" height="auto">
         <div class="search-title-wrap">
@@ -139,6 +145,7 @@
 import { mapState, mapMutations } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import SubnavFooter from '@/components/Subnav/SubnavFooter.vue'
 import api from '@/api'
 import { GOED2K_SEARCH_MAX_RESULTS } from '@shared/constants'
 import {
@@ -158,6 +165,9 @@ const MAX_POLLS = 120
 
 export default {
   name: 'mo-content-search',
+  components: {
+    [SubnavFooter.name]: SubnavFooter
+  },
   setup () {
     const { t } = useI18n()
     return { t }

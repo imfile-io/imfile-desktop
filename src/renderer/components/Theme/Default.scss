@@ -261,6 +261,12 @@ iframe {
   color: $--subnav-text-color;
 }
 
+.el-aside.subnav {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .main {
   background-color: $--main-background;
 }
@@ -311,6 +317,26 @@ iframe {
       }
     }
   }
+
+  &.subnav-inner--stacked {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    box-sizing: border-box;
+
+    .subnav-inner-body {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+  }
+}
+
+.subnav-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 8px;
 }
 
 .subnav-icon {

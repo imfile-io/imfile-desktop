@@ -10,14 +10,6 @@
           <mo-icon name="menu-search" width="30" height="30" />
         </li>
       </ul>
-      <ul class="menu bottom-menu">
-        <li @click="nav('/preference')" class="flex items-center justify-center non-draggable">
-          <mo-icon name="menu-preference" width="30" height="30" />
-        </li>
-        <li @click="showAboutPanel" class="flex items-center justify-center non-draggable">
-          <mo-icon name="menu-about" width="30" height="30" />
-        </li>
-      </ul>
     </div>
   </el-aside>
 </template>
@@ -28,8 +20,6 @@ import { mapState } from 'vuex'
 import LogoMini from '@/components/Logo/LogoMini'
 import '@/components/Icons/menu-task'
 import '@/components/Icons/menu-search'
-import '@/components/Icons/menu-preference'
-import '@/components/Icons/menu-about'
 
 export default {
   name: 'mo-aside',
@@ -52,9 +42,6 @@ export default {
     }
   },
   methods: {
-    showAboutPanel () {
-      this.$store.dispatch('app/showAboutPanel')
-    },
     nav (page) {
       this.$router.push({
         path: page
@@ -99,8 +86,6 @@ export default {
 }
 .top-menu {
   flex: 1;
-}
-.bottom-menu {
   margin-bottom: 24px;
 }
 </style>
