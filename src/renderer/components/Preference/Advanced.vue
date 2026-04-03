@@ -155,8 +155,8 @@
           :label-width="formLabelWidth"
         >
           <div class="form-item-sub bt-tracker">
-            <el-row :gutter="10" style="line-height: 0;">
-              <el-col :span="20">
+            <el-row :gutter="10" class="bt-tracker-toolbar-row">
+              <el-col :span="21">
                 <div class="track-source">
                   <el-select
                     class="select-track-source"
@@ -223,16 +223,32 @@
               :placeholder="`${$t('preferences.bt-tracker-input-tips')}`"
               v-model="form.btTracker">
             </el-input>
-            <div class="el-form-item__info" style="margin-top: 8px;">
-              {{ $t('preferences.bt-tracker-tips') }}
-              <a target="_blank" href="https://github.com/ngosang/trackerslist" rel="noopener noreferrer">
-                ngosang/trackerslist
-                <mo-icon name="link" width="12" height="12" />
-              </a>
-              <a target="_blank" href="https://github.com/XIU2/TrackersListCollection" rel="noopener noreferrer">
-                XIU2/TrackersListCollection
-                <mo-icon name="link" width="12" height="12" />
-              </a>
+            <div class="el-form-item__info bt-tracker-recommended">
+              <div class="bt-tracker-recommended__label">
+                {{ $t('preferences.bt-tracker-tips') }}
+              </div>
+              <ul class="bt-tracker-recommended__links">
+                <li>
+                  <a
+                    target="_blank"
+                    href="https://github.com/ngosang/trackerslist"
+                    rel="noopener noreferrer"
+                  >
+                    ngosang/trackerslist
+                    <mo-icon name="link" width="12" height="12" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    target="_blank"
+                    href="https://github.com/XIU2/TrackersListCollection"
+                    rel="noopener noreferrer"
+                  >
+                    XIU2/TrackersListCollection
+                    <mo-icon name="link" width="12" height="12" />
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
           <div class="form-item-sub">
@@ -962,6 +978,43 @@ export default {
 <style lang="scss">
 .proxy-scope {
   width: 100%;
+}
+
+.bt-tracker-toolbar-row {
+  align-items: flex-start;
+}
+
+.bt-tracker-recommended {
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.bt-tracker-recommended__label {
+  margin-bottom: 6px;
+  color: inherit;
+}
+
+.bt-tracker-recommended__links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    margin: 0 0 4px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    word-break: break-all;
+    vertical-align: top;
+  }
 }
 
 .bt-tracker {
