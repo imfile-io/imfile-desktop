@@ -504,9 +504,11 @@ export default {
 </script>
 
 <style lang="scss">
-.task-panel-toolbar {
-  padding-top: 10px;
+/* 特异性需高于 .panel .panel-header，否则会沿用全局 padding 且与标题栏叠在一起 */
+.panel .panel-header.task-panel-toolbar {
+  padding-top: 56px;
   padding-bottom: 10px;
+  overflow: visible;
 }
 .task-toolbar {
   display: flex;
@@ -524,6 +526,7 @@ export default {
 .task-toolbar-actions {
   margin-left: auto;
   flex-shrink: 0;
+  padding-right: 8px;
 }
 .task-content-panel {
   min-height: 100%;

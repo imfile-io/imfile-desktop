@@ -5,6 +5,8 @@ import is from 'electron-is'
 
 export default {
   index: {
+    /** 无保存窗口状态时，用主显示器 workArea 铺满（不占满任务栏区域） */
+    defaultFillWorkArea: true,
     attrs: {
       title: 'imFile',
       width: 1024,

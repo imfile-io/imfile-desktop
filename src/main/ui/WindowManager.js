@@ -102,9 +102,27 @@ export default class WindowManager extends EventEmitter {
       }
     })
 
-    const bounds = this.getPageBounds(page)
-    if (bounds) {
-      window.setBounds(bounds)
+    const savedBounds = this.getPageBounds(page)
+    if (savedBounds) {
+      window.setBounds(savedBounds)
+    } else if (
+      pageOptions.defaultFillWorkArea &&
+      (is.windows() || is.linux()) &&
+      pageOptions.attrs &&
+      pageOptions.attrs.frame === false
+    ) {
+      window.setBounds(screen.getPrimaryDisplay().workArea)
+    }
+
+    // Windows/Linux 无边框窗口：系统 maximize 可能略超出工作区，底部会被任务栏遮住；对齐到 workArea
+    if (
+      (is.windows() || is.linux()) &&
+      pageOptions.attrs &&
+      pageOptions.attrs.frame === false
+    ) {
+      window.on('maximize', () => {
+        window.setBounds(screen.getPrimaryDisplay().workArea)
+      })
     }
 
     if (is.dev() && pageOptions.openDevTools) {

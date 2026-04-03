@@ -105,9 +105,10 @@ export default {
     display: inline-flex;
     top: auto;
     right: auto;
-    height: 50px;
-    padding: 0;
-    overflow: hidden;
+    min-height: 50px;
+    height: auto;
+    padding: 4px 0;
+    overflow: visible;
     user-select: none;
     text-align: center;
     align-items: center;
