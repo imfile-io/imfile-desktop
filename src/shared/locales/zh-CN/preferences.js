@@ -1,6 +1,14 @@
 export default {
   'basic': '基础设置',
   'advanced': '进阶设置',
+  'download-engine': '下载引擎',
+  'download-engine-go-aria2': 'go-aria2（新内核）',
+  'download-engine-aria2c': 'aria2c（经典）',
+  'download-engine-tips':
+    '切换会短暂停止下载服务；切换到 go-aria2 时，如有未迁移的旧会话将先迁移再启动。',
+  'download-engine-switch-failed': '切换引擎失败',
+  'download-engine-binary-hint':
+    '说明：若未在引擎目录检测到对应可执行文件，保存切换时会报错。开发环境请将 go-aria2 / aria2c 放在仓库 extra/<平台>/<架构>/engine/ 下。',
   'lab': '实验室',
   'save': '保存并应用',
   'save-success-message': '偏好设置保存成功',

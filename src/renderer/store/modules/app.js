@@ -127,6 +127,9 @@ const actions = {
       .then((data) => {
         commit('UPDATE_ENGINE_INFO', data)
       })
+      .catch((err) => {
+        console.warn('[imFile] fetch engine info fail:', err)
+      })
   },
   fetchEngineOptions ({ commit }) {
     return new Promise((resolve) => {
@@ -134,6 +137,10 @@ const actions = {
         .then((data) => {
           commit('UPDATE_ENGINE_OPTIONS', data)
           resolve(data)
+        })
+        .catch((err) => {
+          console.warn('[imFile] fetch engine options fail:', err)
+          resolve({})
         })
     })
   },
@@ -178,6 +185,9 @@ const actions = {
           dispatch('increaseInterval')
         }
         commit('UPDATE_GLOBAL_STAT', stat)
+      })
+      .catch((err) => {
+        console.warn('[imFile] fetch global stat fail:', err)
       })
   },
   increaseInterval ({ commit }, millisecond = 100) {
@@ -230,6 +240,9 @@ const actions = {
           }
         }
         commit('UPDATE_PROGRESS', progress)
+      })
+      .catch((err) => {
+        console.warn('[imFile] fetch progress fail:', err)
       })
   }
 }

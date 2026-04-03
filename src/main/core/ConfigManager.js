@@ -103,9 +103,13 @@ export default class ConfigManager {
         'auto-check-update': is.macOS(),
         'auto-hide-window': false,
         'auto-sync-tracker': true,
+        /** 是否在「go-aria2 + aria2c」二选一弹窗中点过按钮（避免仅自动写入的配置挡住询问） */
+        'download-engine-dual-prompt-done': false,
         'enable-upnp': true,
         'engine-max-connection-per-server': getMaxConnectionPerServer(),
         'favorite-directories': [],
+        /** 仅 go-aria2 时用户在「导入旧会话」弹窗中选择暂不导入后为 true */
+        'go-aria2-skip-legacy-import': false,
         'hide-app-menu': is.windows() || is.linux(),
         'history-directories': [],
         'keep-seeding': false,

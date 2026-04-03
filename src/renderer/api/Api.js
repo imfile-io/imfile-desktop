@@ -23,7 +23,10 @@ export default class Api {
     this.config = await this.loadConfig()
 
     this.client = this.initClient()
-    this.client.open()
+    this.client.open().catch((err) => {
+      // WebSocket 在引擎未启动时会失败；_send 会回退到 HTTP JSON-RPC，此处必须吞掉 rejection，避免 dev overlay 报错
+      console.warn('[imFile] engine RPC WebSocket open failed, using HTTP:', err)
+    })
   }
 
   loadConfigFromLocalStorage () {

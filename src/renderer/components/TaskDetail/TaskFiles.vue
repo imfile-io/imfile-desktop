@@ -210,6 +210,16 @@ export default {
 </script>
 
 <style lang="scss">
+.mo-task-files {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  .mo-table-wrapper {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+}
 .file-filters {
   margin-top: 0.5rem;
   .quick-filters {

@@ -425,6 +425,21 @@ export default {
   .el-tabs__header {
     user-select: none;
   }
+  /* 链接/种子 tab：表单项内容区占满弹窗宽度，避免种子文件表格缩成窄条 */
+  .el-tabs {
+    width: 100%;
+  }
+  .el-tabs__content,
+  .el-tab-pane {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .el-tabs .el-form-item__content {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
   .el-form-item__label {
     color: var(--im-form-label-color);
   }

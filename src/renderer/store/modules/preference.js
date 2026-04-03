@@ -28,11 +28,15 @@ const mutations = {
 
 const actions = {
   fetchPreference ({ dispatch }) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       api.fetchPreference()
         .then((config) => {
           dispatch('updatePreference', config)
           resolve(config)
+        })
+        .catch((err) => {
+          console.warn('[imFile] fetch preference fail:', err)
+          reject(err)
         })
     })
   },

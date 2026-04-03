@@ -234,6 +234,9 @@ const actions = {
         const list = intersection(selectedTaskKeyList, taskKeys)
         commit('UPDATE_SELECTED_TASK_KEY_LIST', list)
       })
+      .catch((err) => {
+        console.warn('[imFile] fetch task list fail:', err)
+      })
   },
   selectTasks ({ commit }, list) {
     commit('UPDATE_SELECTED_TASK_KEY_LIST', list)
@@ -247,12 +250,18 @@ const actions = {
       .then((data) => {
         dispatch('updateCurrentTaskItem', data)
       })
+      .catch((err) => {
+        console.warn('[imFile] fetch task item fail:', err)
+      })
   },
   fetchItemWithPeers ({ dispatch }, gid) {
     return api.fetchTaskItemWithPeers({ gid })
       .then((data) => {
         console.log('fetchItemWithPeers===>', data)
         dispatch('updateCurrentTaskItem', data)
+      })
+      .catch((err) => {
+        console.warn('[imFile] fetch task item with peers fail:', err)
       })
   },
   showTaskDetailByGid ({ commit, dispatch }, gid) {

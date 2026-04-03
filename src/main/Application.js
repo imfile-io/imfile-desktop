@@ -1,8 +1,8 @@
 import { EventEmitter } from 'node:events'
-import { readFile, unlink } from 'node:fs'
+import { existsSync, readFile, statSync, unlink } from 'node:fs'
 import { extname, basename } from 'node:path'
 import { spawn } from 'node:child_process'
-import { app, shell, dialog, ipcMain } from 'electron'
+import { app, shell, dialog, ipcMain, BrowserWindow } from 'electron'
 import is from 'electron-is'
 import { isEmpty, isEqual } from 'lodash'
 
@@ -19,7 +19,13 @@ import {
   fetchBtTrackerFromSource,
   reduceTrackerString
 } from '@shared/utils/tracker'
-import { showItemInFolder } from './utils'
+import {
+  ENGINE_BACKEND,
+  getEngineBinPathByBackend,
+  getGoAria2SessionJsonPath,
+  getSessionPath,
+  showItemInFolder
+} from './utils'
 import logger from './core/Logger'
 import Context from './core/Context'
 import ConfigManager from './core/ConfigManager'
@@ -41,18 +47,26 @@ import TouchBarManager from './ui/TouchBarManager'
 import TrayManager from './ui/TrayManager'
 import DockManager from './ui/DockManager'
 import ThemeManager from './ui/ThemeManager'
+import {
+  closeEngineBootstrapOverlay,
+  showEngineBootstrapOverlay
+} from './ui/EngineBootstrapOverlay'
 
 export default class Application extends EventEmitter {
   constructor () {
     super()
     this.isReady = false
+    /**
+     * 用户确认执行 migrate-from-aria2 时为 true，用于显示迁移加载动画。
+     */
+    this._pendingLegacySessionMigrate = false
     this.init()
   }
 
   init () {
-    this.initContext()
-
     this.initConfigManager()
+
+    this.initContext()
 
     this.setupLogger()
 
@@ -64,7 +78,6 @@ export default class Application extends EventEmitter {
 
     this.initUPnPManager()
 
-    this.startEngine()
     this.startGoed2kd()
 
     this.initEngineClient()
@@ -97,7 +110,7 @@ export default class Application extends EventEmitter {
   }
 
   initContext () {
-    this.context = new Context()
+    this.context = new Context(this.configManager)
   }
 
   initConfigManager () {
@@ -150,14 +163,54 @@ export default class Application extends EventEmitter {
     }
   }
 
-  startEngine () {
+  /**
+   * 解析下载引擎并在需要时迁移会话后启动进程。
+   * 双引擎：旧会话未迁移时询问升级或保留经典内核；仅 go-aria2：询问是否导入旧会话。
+   * 在首屏窗口创建后调用，以便对话框可挂到主窗口。
+   */
+  async bootstrapDownloadEngine (browserWindow) {
     const self = this
-
     try {
+      const backend = await this.resolveDownloadEngineBackend(browserWindow)
+
+      if (
+        backend === ENGINE_BACKEND.GO_ARIA2 &&
+        Engine.shouldRunMigrateFromAria2() &&
+        !this.configManager.getUserConfig('go-aria2-skip-legacy-import')
+      ) {
+        const { platform, arch } = process
+        const goBin = getEngineBinPathByBackend(
+          platform,
+          arch,
+          ENGINE_BACKEND.GO_ARIA2
+        )
+        let overlayWin = null
+        try {
+          if (this._pendingLegacySessionMigrate) {
+            overlayWin = await showEngineBootstrapOverlay(
+              browserWindow,
+              this.i18n.t('app.engine-migrating-message')
+            )
+            await new Promise((resolve) => setImmediate(resolve))
+          }
+          Engine.runMigrateFromAria2Session(
+            goBin,
+            this.configManager.getSystemConfig()
+          )
+        } finally {
+          closeEngineBootstrapOverlay(overlayWin)
+        }
+      }
+      this._pendingLegacySessionMigrate = false
+
       this.engine = new Engine({
         systemConfig: this.configManager.getSystemConfig(),
-        userConfig: this.configManager.getUserConfig()
+        userConfig: this.configManager.getUserConfig(),
+        engineBackend: backend
       })
+      const binPath = this.engine.getEngineBinPath()
+      this.context.set('engine-bin-path', binPath)
+      this.context.set('aria2-bin-path', binPath)
       this.engine.start()
     } catch (err) {
       const { message } = err
@@ -173,8 +226,275 @@ export default class Application extends EventEmitter {
     }
   }
 
+  async resolveDownloadEngineBackend (browserWindow) {
+    const parent =
+      browserWindow && !browserWindow.isDestroyed()
+        ? browserWindow
+        : undefined
+
+    const { platform, arch } = process
+    const goBin = getEngineBinPathByBackend(
+      platform,
+      arch,
+      ENGINE_BACKEND.GO_ARIA2
+    )
+    const ariaBin = getEngineBinPathByBackend(
+      platform,
+      arch,
+      ENGINE_BACKEND.ARIA2
+    )
+    const hasGo = existsSync(goBin)
+    const hasAria = existsSync(ariaBin)
+
+    if (!hasGo && !hasAria) {
+      throw new Error(this.i18n.t('app.engine-missing-message'))
+    }
+
+    const legacySession = getSessionPath()
+    let legacyHasData = false
+    if (existsSync(legacySession)) {
+      try {
+        legacyHasData = statSync(legacySession).size > 0
+      } catch {
+        legacyHasData = false
+      }
+    }
+    const goSessionJson = getGoAria2SessionJsonPath()
+    let goSessionEmpty = true
+    if (existsSync(goSessionJson)) {
+      try {
+        goSessionEmpty = statSync(goSessionJson).size === 0
+      } catch {
+        goSessionEmpty = false
+      }
+    }
+
+    const needDualPrompt =
+      legacyHasData && goSessionEmpty && hasGo && hasAria
+    const needMigrateOnlyPrompt =
+      legacyHasData && goSessionEmpty && hasGo && !hasAria
+
+    let stored = this.configManager.getUserConfig('download-engine')
+    const dualPromptDone = this.configManager.getUserConfig(
+      'download-engine-dual-prompt-done'
+    )
+    const skipLegacyImport = this.configManager.getUserConfig(
+      'go-aria2-skip-legacy-import'
+    )
+
+    if (stored === ENGINE_BACKEND.GO_ARIA2 || stored === ENGINE_BACKEND.ARIA2) {
+      if (stored === ENGINE_BACKEND.GO_ARIA2 && !hasGo) {
+        if (!hasAria) {
+          throw new Error(this.i18n.t('app.engine-missing-message'))
+        }
+        this.configManager.setUserConfig('download-engine', ENGINE_BACKEND.ARIA2)
+        stored = ENGINE_BACKEND.ARIA2
+      } else if (stored === ENGINE_BACKEND.ARIA2 && !hasAria) {
+        if (!hasGo) {
+          throw new Error(this.i18n.t('app.engine-missing-message'))
+        }
+        this.configManager.setUserConfig('download-engine', ENGINE_BACKEND.GO_ARIA2)
+        stored = ENGINE_BACKEND.GO_ARIA2
+      }
+    }
+
+    const needUserMigrationPrompt =
+      (needDualPrompt && !dualPromptDone) ||
+      (needMigrateOnlyPrompt && !skipLegacyImport)
+
+    if (
+      (stored === ENGINE_BACKEND.GO_ARIA2 || stored === ENGINE_BACKEND.ARIA2) &&
+      !needUserMigrationPrompt
+    ) {
+      logger.info(
+        '[imFile] 使用已保存 download-engine=%s（无待处理迁移询问）',
+        stored
+      )
+      return stored
+    }
+
+    logger.info('[imFile] 引擎迁移弹窗条件', {
+      goBin,
+      ariaBin,
+      hasGo,
+      hasAria,
+      legacyHasData,
+      goSessionEmpty,
+      'download-engine(已存)': stored,
+      needDualPrompt,
+      needMigrateOnlyPrompt,
+      dualPromptDone,
+      skipLegacyImport,
+      needUserMigrationPrompt
+    })
+
+    if (needDualPrompt && !dualPromptDone) {
+      const { response } = await dialog.showMessageBox(parent, {
+        type: 'question',
+        buttons: [
+          this.i18n.t('app.engine-upgrade-confirm'),
+          this.i18n.t('app.engine-upgrade-use-legacy')
+        ],
+        defaultId: 0,
+        cancelId: 1,
+        title: this.i18n.t('app.engine-upgrade-title'),
+        message: this.i18n.t('app.engine-upgrade-message'),
+        detail: this.i18n.t('app.engine-upgrade-detail')
+      })
+      const choice =
+        response === 0 ? ENGINE_BACKEND.GO_ARIA2 : ENGINE_BACKEND.ARIA2
+      this.configManager.setUserConfig('download-engine', choice)
+      this.configManager.setUserConfig('download-engine-dual-prompt-done', true)
+      if (response === 0) {
+        this.configManager.setUserConfig('go-aria2-skip-legacy-import', false)
+        this._pendingLegacySessionMigrate = true
+      } else {
+        this._pendingLegacySessionMigrate = false
+      }
+      return choice
+    }
+
+    if (needMigrateOnlyPrompt && !skipLegacyImport) {
+      const { response } = await dialog.showMessageBox(parent, {
+        type: 'question',
+        buttons: [
+          this.i18n.t('app.engine-migrate-import-confirm'),
+          this.i18n.t('app.engine-migrate-import-skip')
+        ],
+        defaultId: 0,
+        cancelId: 1,
+        title: this.i18n.t('app.engine-migrate-import-title'),
+        message: this.i18n.t('app.engine-migrate-import-message'),
+        detail: this.i18n.t('app.engine-migrate-import-detail')
+      })
+      this.configManager.setUserConfig('download-engine', ENGINE_BACKEND.GO_ARIA2)
+      if (response === 0) {
+        this.configManager.setUserConfig('go-aria2-skip-legacy-import', false)
+        this._pendingLegacySessionMigrate = true
+      } else {
+        this.configManager.setUserConfig('go-aria2-skip-legacy-import', true)
+        this._pendingLegacySessionMigrate = false
+      }
+      return ENGINE_BACKEND.GO_ARIA2
+    }
+
+    const choice = hasGo ? ENGINE_BACKEND.GO_ARIA2 : ENGINE_BACKEND.ARIA2
+    this.configManager.setUserConfig('download-engine', choice)
+    return choice
+  }
+
+  /**
+   * 停止当前引擎进程（切换前使用，确保 kill 与 RPC 关闭完成后再起新进程）。
+   */
+  async hardStopEngineForSwitch () {
+    if (!this.engine) {
+      return
+    }
+    try {
+      await this.engineClient.shutdown({ force: true })
+    } catch (err) {
+      logger.warn('[imFile] hardStopEngineForSwitch shutdown:', err.message)
+    }
+    if (this.engine) {
+      this.engine.stop()
+      this.engine = null
+    }
+    await new Promise((resolve) => setTimeout(resolve, 450))
+  }
+
+  /**
+   * 偏好设置中切换下载引擎：停旧进程 → 按需迁移 → 启动新进程。
+   * @param {'go-aria2'|'aria2'} backend
+   * @param {import('electron').BrowserWindow | null} browserWindow
+   */
+  async switchDownloadEngine (backend, browserWindow = null) {
+    if (
+      backend !== ENGINE_BACKEND.GO_ARIA2 &&
+      backend !== ENGINE_BACKEND.ARIA2
+    ) {
+      return { ok: false, error: this.i18n.t('app.engine-switch-invalid') }
+    }
+
+    const { platform, arch } = process
+    const goBin = getEngineBinPathByBackend(
+      platform,
+      arch,
+      ENGINE_BACKEND.GO_ARIA2
+    )
+    const ariaBin = getEngineBinPathByBackend(
+      platform,
+      arch,
+      ENGINE_BACKEND.ARIA2
+    )
+    const hasGo = existsSync(goBin)
+    const hasAria = existsSync(ariaBin)
+
+    if (backend === ENGINE_BACKEND.GO_ARIA2 && !hasGo) {
+      return {
+        ok: false,
+        error: this.i18n.t('app.engine-switch-missing-go-aria2')
+      }
+    }
+    if (backend === ENGINE_BACKEND.ARIA2 && !hasAria) {
+      return {
+        ok: false,
+        error: this.i18n.t('app.engine-switch-missing-aria2c')
+      }
+    }
+
+    const current = this.configManager.getUserConfig('download-engine')
+    if (current === backend) {
+      return { ok: true, noop: true }
+    }
+
+    const parent =
+      browserWindow && !browserWindow.isDestroyed()
+        ? browserWindow
+        : this.windowManager.getWindow('index')
+
+    await this.hardStopEngineForSwitch()
+
+    this.configManager.setUserConfig('download-engine', backend)
+    this.configManager.setUserConfig('download-engine-dual-prompt-done', true)
+    this.configManager.setUserConfig('go-aria2-skip-legacy-import', false)
+
+    if (
+      backend === ENGINE_BACKEND.GO_ARIA2 &&
+      Engine.shouldRunMigrateFromAria2()
+    ) {
+      let overlayWin = null
+      try {
+        overlayWin = await showEngineBootstrapOverlay(
+          parent,
+          this.i18n.t('app.engine-migrating-message')
+        )
+        await new Promise((resolve) => setImmediate(resolve))
+        Engine.runMigrateFromAria2Session(
+          goBin,
+          this.configManager.getSystemConfig()
+        )
+      } finally {
+        closeEngineBootstrapOverlay(overlayWin)
+      }
+    }
+
+    this.engine = new Engine({
+      systemConfig: this.configManager.getSystemConfig(),
+      userConfig: this.configManager.getUserConfig(),
+      engineBackend: backend
+    })
+    const binPath = this.engine.getEngineBinPath()
+    this.context.set('engine-bin-path', binPath)
+    this.context.set('aria2-bin-path', binPath)
+    this.engine.start()
+    return { ok: true }
+  }
+
   async stopEngine () {
     logger.info('[imFile] stopEngine===>')
+    if (!this.engine) {
+      return
+    }
     try {
       await this.engineClient.shutdown({ force: true })
       logger.info('[imFile] stopEngine.setImmediate===>')
@@ -755,6 +1075,13 @@ export default class Application extends EventEmitter {
   start (page, options = {}) {
     const win = this.showPage(page, options)
 
+    this.bootstrapDownloadEngine(win).catch((err) => {
+      logger.warn(
+        '[imFile] bootstrapDownloadEngine unexpected:',
+        err?.message ?? err
+      )
+    })
+
     win.once('ready-to-show', () => {
       this.isReady = true
       this.emit('ready')
@@ -1060,12 +1387,20 @@ export default class Application extends EventEmitter {
     app.clearRecentDocuments()
 
     const sessionPath = this.context.get('session-path')
+    const goAria2SessionPath = this.context.get('go-aria2-session-path')
     setTimeout(() => {
       unlink(sessionPath, (err) => {
         logger.info('[imFile] Removed the download seesion file:', err)
       })
+      if (goAria2SessionPath) {
+        unlink(goAria2SessionPath, (err) => {
+          logger.info('[imFile] Removed go-aria2 session file:', err)
+        })
+      }
 
-      this.engine.start()
+      if (this.engine) {
+        this.engine.start()
+      }
     }, 3000)
   }
 
@@ -1340,6 +1675,40 @@ export default class Application extends EventEmitter {
         ...context
       }
       return result
+    })
+
+    ipcMain.handle('application:get-download-engine-info', async () => {
+      const { platform, arch } = process
+      const goBin = getEngineBinPathByBackend(
+        platform,
+        arch,
+        ENGINE_BACKEND.GO_ARIA2
+      )
+      const ariaBin = getEngineBinPathByBackend(
+        platform,
+        arch,
+        ENGINE_BACKEND.ARIA2
+      )
+      const canUseGoAria2 = existsSync(goBin)
+      const canUseAria2c = existsSync(ariaBin)
+      const current = this.configManager.getUserConfig('download-engine')
+      const effective =
+        current === ENGINE_BACKEND.GO_ARIA2 || current === ENGINE_BACKEND.ARIA2
+          ? current
+          : canUseGoAria2
+            ? ENGINE_BACKEND.GO_ARIA2
+            : ENGINE_BACKEND.ARIA2
+      return {
+        canUseGoAria2,
+        canUseAria2c,
+        current,
+        effective
+      }
+    })
+
+    ipcMain.handle('application:switch-download-engine', async (event, payload = {}) => {
+      const win = BrowserWindow.fromWebContents(event.sender)
+      return this.switchDownloadEngine(payload.backend, win)
     })
 
     ipcMain.handle('get-goed2kd-status', async () => {

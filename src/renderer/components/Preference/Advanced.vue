@@ -52,6 +52,33 @@
           </el-col>
         </el-form-item>
         <el-form-item
+          :label="`${$t('preferences.download-engine')}: `"
+          :label-width="formLabelWidth"
+        >
+          <el-col class="form-item-sub" :span="24">
+            <el-select
+              v-model="form.downloadEngine"
+              style="min-width: 240px;"
+            >
+              <el-option
+                value="go-aria2"
+                :label="$t('preferences.download-engine-go-aria2')"
+              />
+              <el-option
+                value="aria2"
+                :label="$t('preferences.download-engine-aria2c')"
+              />
+            </el-select>
+            <div class="el-form-item__info" style="margin-top: 8px;">
+              {{ $t('preferences.download-engine-tips') }}
+              <template v-if="!downloadEngineInfo.canUseGoAria2 || !downloadEngineInfo.canUseAria2c">
+                <br>
+                {{ $t('preferences.download-engine-binary-hint') }}
+              </template>
+            </div>
+          </el-col>
+        </el-form-item>
+        <el-form-item
           :label="`${$t('preferences.proxy')}: `"
           :label-width="formLabelWidth"
         >
@@ -498,6 +525,7 @@ const initForm = (config) => {
     autoSyncTracker,
     btTracker,
     dhtListenPort,
+    downloadEngine,
     enableUpnp,
     hideAppMenu,
     lastCheckUpdateTime,
@@ -517,6 +545,7 @@ const initForm = (config) => {
     autoSyncTracker,
     btTracker: convertCommaToLine(btTracker),
     dhtListenPort,
+    downloadEngine,
     enableUpnp,
     hideAppMenu,
     lastCheckUpdateTime,
@@ -558,8 +587,17 @@ export default {
       proxyScopeOptions: PROXY_SCOPE_OPTIONS,
       rules: {},
       trackerSourceOptions: TRACKER_SOURCE_OPTIONS,
-      trackerSyncing: false
+      trackerSyncing: false,
+      downloadEngineInfo: {
+        canUseGoAria2: false,
+        canUseAria2c: false,
+        current: null,
+        effective: 'go-aria2'
+      }
     }
+  },
+  created () {
+    this.loadDownloadEngineInfo()
   },
   computed: {
     isRenderer: () => is.renderer(),
@@ -746,8 +784,29 @@ export default {
           this.formOriginal = cloneDeep(this.form)
         })
     },
+    async loadDownloadEngineInfo () {
+      if (!this.isRenderer) {
+        return
+      }
+      try {
+        const info = await this.$electron.ipcRenderer.invoke(
+          'application:get-download-engine-info'
+        )
+        this.downloadEngineInfo = info
+        if (
+          this.form.downloadEngine == null ||
+          this.form.downloadEngine === ''
+        ) {
+          const eff = info.current || info.effective
+          this.form.downloadEngine = eff
+          this.formOriginal.downloadEngine = eff
+        }
+      } catch (e) {
+        console.warn('[imFile] loadDownloadEngineInfo', e)
+      }
+    },
     submitForm (formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(async (valid) => {
         if (!valid) {
           console.error('[imFile] preference form valid:', valid)
           return false
@@ -756,6 +815,32 @@ export default {
         const data = {
           ...diffConfig(this.formOriginal, this.form),
           ...changedConfig.basic
+        }
+
+        let engineSwitched = false
+        if (
+          Object.prototype.hasOwnProperty.call(data, 'downloadEngine') &&
+          data.downloadEngine !== this.formOriginal.downloadEngine
+        ) {
+          try {
+            const res = await this.$electron.ipcRenderer.invoke(
+              'application:switch-download-engine',
+              { backend: data.downloadEngine }
+            )
+            if (!res || !res.ok) {
+              this.$msg.error(
+                (res && res.error) ||
+                  this.t('preferences.download-engine-switch-failed')
+              )
+              return false
+            }
+            engineSwitched = true
+          } catch (e) {
+            console.error(e)
+            this.$msg.error(this.t('preferences.download-engine-switch-failed'))
+            return false
+          }
+          delete data.downloadEngine
         }
 
         const {
@@ -781,18 +866,30 @@ export default {
 
         console.log('[imFile] preference changed data:', data)
 
+        changedConfig.basic = {}
+        changedConfig.advanced = {}
+
+        if (isEmpty(data)) {
+          if (engineSwitched) {
+            await this.$store.dispatch('preference/fetchPreference')
+            this.syncFormConfig()
+            await this.loadDownloadEngineInfo()
+            await this.$store.dispatch('app/fetchEngineOptions')
+            this.$msg.success(this.t('preferences.save-success-message'))
+          }
+          return
+        }
+
         this.$store.dispatch('preference/save', data)
           .then(() => {
             this.$store.dispatch('app/fetchEngineOptions')
             this.syncFormConfig()
+            this.loadDownloadEngineInfo()
             this.$msg.success(this.t('preferences.save-success-message'))
           })
           .catch((e) => {
             this.$msg.success(this.t('preferences.save-fail-message'))
           })
-
-        changedConfig.basic = {}
-        changedConfig.advanced = {}
 
         if (this.isRenderer) {
           if ('autoHideWindow' in data) {

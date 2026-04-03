@@ -159,6 +159,9 @@ export default {
   }
 }
 .selective-torrent {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   .torrent-name {
     overflow: hidden;
     white-space: nowrap;

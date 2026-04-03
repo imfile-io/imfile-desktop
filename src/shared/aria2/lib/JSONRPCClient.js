@@ -166,8 +166,13 @@ export class JSONRPCClient extends EventEmitter {
     socket.onopen = (...args) => {
       this.emit('open', ...args)
     }
-    socket.onerror = (...args) => {
-      this.emit('error', ...args)
+    socket.onerror = (event) => {
+      // 浏览器 WebSocket 的 onerror 参数是 Event，直接 reject 会在 dev overlay 里显示成 [object Event]
+      const err =
+        event instanceof Error
+          ? event
+          : new Error('WebSocket connection error')
+      this.emit('error', err)
     }
 
     return promiseEvent(this, 'open')

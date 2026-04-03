@@ -1,4 +1,4 @@
-import { resolve } from 'node:path'
+import { basename, resolve } from 'node:path'
 import { access, constants, existsSync, lstatSync } from 'node:fs'
 import { app, nativeTheme, shell } from 'electron'
 import is from 'electron-is'
@@ -10,7 +10,13 @@ import {
   IS_PORTABLE,
   PORTABLE_EXECUTABLE_DIR
 } from '@shared/constants'
-import { engineBinMap, engineArchMap, goed2kdBinMap } from '../configs/engine'
+import {
+  engineGoAria2BinMap,
+  engineAria2cBinMap,
+  engineArchMap,
+  getGoAria2ExecutableNames,
+  goed2kdBinMap
+} from '../configs/engine'
 import logger from '../core/Logger'
 
 export const getUserDataPath = () => {
@@ -34,6 +40,29 @@ export const getSessionPath = () => {
   return resolve(getUserDataPath(), './download.session')
 }
 
+/** go-aria2 运行时状态目录（与 aria2 文本 session 分离） */
+export const getGoAria2DataDir = () => {
+  return resolve(getUserDataPath(), '.go-aria2')
+}
+
+/** go-aria2 内部 session（JSON），由 migrate-from-aria2 或守护进程写入 */
+export const getGoAria2SessionJsonPath = () => {
+  return resolve(getGoAria2DataDir(), 'session.json')
+}
+
+/** 一次性迁移用的合并配置（含 dir / data-dir / save-session） */
+export const getGoAria2MigrationConfPath = () => {
+  return resolve(getUserDataPath(), '.go-aria2-migration.conf')
+}
+
+/** 可执行文件名包含 go-aria2 时走 go-aria2 分支（迁移 + session 路径） */
+export const isGoAria2EngineBin = (binPath) => {
+  if (!binPath || typeof binPath !== 'string') {
+    return false
+  }
+  return basename(binPath).toLowerCase().includes('go-aria2')
+}
+
 export const getEnginePidPath = () => {
   return resolve(getUserDataPath(), './engine.pid')
 }
@@ -43,9 +72,60 @@ export const getDhtPath = (protocol) => {
   return resolve(getUserDataPath(), `./${name}`)
 }
 
+export const ENGINE_BACKEND = {
+  GO_ARIA2: 'go-aria2',
+  ARIA2: 'aria2'
+}
+
 export const getEngineBin = (platform) => {
-  const result = engineBinMap[platform] || ''
+  const result = engineGoAria2BinMap[platform] || ''
   return result
+}
+
+/**
+ * @param {'go-aria2'|'aria2'} backend
+ */
+export const getEngineBinPathByBackend = (platform, arch, backend) => {
+  const base = getEnginePath(platform, arch)
+  if (backend === ENGINE_BACKEND.GO_ARIA2) {
+    const names = getGoAria2ExecutableNames(platform)
+    for (const name of names) {
+      const full = resolve(base, name)
+      if (existsSync(full)) {
+        return full
+      }
+    }
+    return resolve(base, names[0])
+  }
+  const binName = engineAria2cBinMap[platform]
+  return resolve(base, `./${binName || ''}`)
+}
+
+/**
+ * 根据 user 配置与磁盘上是否存在引擎文件，推断当前应使用的后端（与启动时自动选择逻辑一致，不含弹窗分支）。
+ */
+export const inferDownloadEngineBackendFromUserStore = (configManager) => {
+  const stored = configManager.getUserConfig('download-engine')
+  if (
+    stored === ENGINE_BACKEND.GO_ARIA2 ||
+    stored === ENGINE_BACKEND.ARIA2
+  ) {
+    return stored
+  }
+  const { platform, arch } = process
+  const hasGo = existsSync(
+    getEngineBinPathByBackend(platform, arch, ENGINE_BACKEND.GO_ARIA2)
+  )
+  const hasAria = existsSync(
+    getEngineBinPathByBackend(platform, arch, ENGINE_BACKEND.ARIA2)
+  )
+  if (hasGo) {
+    return ENGINE_BACKEND.GO_ARIA2
+  }
+  if (hasAria) {
+    return ENGINE_BACKEND.ARIA2
+  }
+  return ENGINE_BACKEND.GO_ARIA2
 }
 
 export const getEngineArch = (platform, arch) => {
@@ -57,11 +137,40 @@ export const getEngineArch = (platform, arch) => {
   return result
 }
 
-export const getDevEnginePath = (platform, arch) => {
+/**
+ * 开发环境下定位仓库内 extra/<platform>/<arch>/… 目录。
+ * 同时尝试 app.getAppPath() 与沿 __dirname 向上查找，避免打包后 __dirname 层级不一致导致启动失败。
+ */
+const resolveDevExtraSubdir = (platform, arch, ...segments) => {
   const ah = getEngineArch(platform, arch)
-  const base = `../../../extra/${platform}/${ah}/engine`
-  const result = resolve(__dirname, base)
-  return result
+  const suffix = [platform, ah, ...segments]
+  const tryDirs = []
+  try {
+    tryDirs.push(resolve(app.getAppPath(), 'extra', ...suffix))
+  } catch (_) {
+    // app 未就绪时忽略
+  }
+  let dir = __dirname
+  for (let i = 0; i < 8; i++) {
+    tryDirs.push(resolve(dir, 'extra', ...suffix))
+    dir = resolve(dir, '..')
+  }
+  const seen = new Set()
+  for (const p of tryDirs) {
+    if (seen.has(p)) {
+      continue
+    }
+    seen.add(p)
+    if (existsSync(p)) {
+      return p
+    }
+  }
+  const lastResort = resolve(__dirname, '../../extra', ...suffix)
+  return tryDirs[0] || lastResort
+}
+
+export const getDevEnginePath = (platform, arch) => {
+  return resolveDevExtraSubdir(platform, arch, 'engine')
 }
 
 export const getProdEnginePath = () => {
@@ -73,10 +182,7 @@ export const getEnginePath = (platform, arch) => {
 }
 
 export const getAria2BinPath = (platform, arch) => {
-  const base = getEnginePath(platform, arch)
-  const binName = getEngineBin(platform)
-  const result = resolve(base, `./${binName}`)
-  return result
+  return getEngineBinPathByBackend(platform, arch, ENGINE_BACKEND.GO_ARIA2)
 }
 
 export const getAria2ConfPath = (platform, arch) => {
@@ -93,9 +199,7 @@ export const getGoed2kdBin = (platform) => {
 }
 
 export const getDevGoed2kdPath = (platform, arch) => {
-  const ah = getEngineArch(platform, arch)
-  const base = `../../../extra/${platform}/${ah}/goed2kd`
-  return resolve(__dirname, base)
+  return resolveDevExtraSubdir(platform, arch, 'goed2kd')
 }
 
 export const getProdGoed2kdPath = () => {

@@ -1,6 +1,14 @@
 export default {
   'basic': 'Basic',
   'advanced': 'Advanced',
+  'download-engine': 'Download engine',
+  'download-engine-go-aria2': 'go-aria2 (new)',
+  'download-engine-aria2c': 'aria2c (classic)',
+  'download-engine-tips':
+    'Switching briefly stops the download engine; switching to go-aria2 may migrate an existing session first.',
+  'download-engine-switch-failed': 'Failed to switch engine',
+  'download-engine-binary-hint':
+    'If a binary is not found under the engine folder, switching will fail. In development, place go-aria2 / aria2c under extra/<platform>/<arch>/engine/.',
   'lab': 'Lab',
   'save': 'Save & Apply',
   'save-success-message': 'Preferences saved successfully',

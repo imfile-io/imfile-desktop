@@ -13,6 +13,26 @@ export default {
   'update-error-message': 'Update Error',
   'engine-damaged-message': 'The engine is damaged, please reinstall : (',
   'engine-missing-message': 'The engine is missing, please reinstall : (',
+  'engine-upgrade-title': 'Upgrade download engine',
+  'engine-upgrade-message':
+    'An existing download session was found. Upgrade the engine to go-aria2?',
+  'engine-upgrade-detail':
+    'If you upgrade, your session will be migrated to the new format. If you keep the classic engine, the original aria2 session is used and no migration runs.',
+  'engine-upgrade-confirm': 'Upgrade',
+  'engine-upgrade-use-legacy': 'Keep classic engine',
+  'engine-migrating-message': 'Migrating download session, please wait…',
+  'engine-migrate-import-title': 'Import download session',
+  'engine-migrate-import-message':
+    'An existing classic download session was found. Import it into go-aria2?',
+  'engine-migrate-import-detail':
+    'If you import, it will be converted for the new engine. If you skip, go-aria2 starts with an empty session (the old file stays on disk).',
+  'engine-migrate-import-confirm': 'Import',
+  'engine-migrate-import-skip': 'Skip for now',
+  'engine-switch-invalid': 'Invalid engine type',
+  'engine-switch-missing-go-aria2':
+    'go-aria2 executable was not found; cannot switch.',
+  'engine-switch-missing-aria2c':
+    'aria2c executable was not found; cannot switch.',
   'system-error-title': 'System Error',
   'system-error-message': 'Application startup failed: {message}',
   'hide': 'Hide imFile',
