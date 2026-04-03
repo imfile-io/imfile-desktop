@@ -1,4 +1,5 @@
 import { app } from 'electron'
+import path from 'node:path'
 import is from 'electron-is'
 import { initialize } from '@electron/remote/main'
 
@@ -12,7 +13,7 @@ initialize()
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 
 if (process.env.NODE_ENV !== 'development') {
-  global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
+  global.__static = path.join(app.getAppPath(), 'dist', 'electron', 'static').replace(/\\/g, '\\\\')
 }
 
 /**

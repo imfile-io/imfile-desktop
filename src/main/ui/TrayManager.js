@@ -85,8 +85,8 @@ export default class TrayManager extends EventEmitter {
   }
 
   loadImagesForWindows () {
-    this.normalIcon = this.getFromCacheOrCreateImage('mo-tray-colorful-normal.png')
-    this.activeIcon = this.getFromCacheOrCreateImage('mo-tray-colorful-active.png')
+    this.normalIcon = this.getFromCacheOrCreateImage('mo-tray-colorful-normal.ico')
+    this.activeIcon = this.getFromCacheOrCreateImage('mo-tray-colorful-active.ico')
   }
 
   loadImagesForLinux () {
@@ -111,7 +111,11 @@ export default class TrayManager extends EventEmitter {
       return file
     }
 
-    file = nativeImage.createFromPath(join(__static, `./${key}`))
+    const filePath = join(__static, `./${key}`)
+    file = nativeImage.createFromPath(filePath)
+    if (file.isEmpty()) {
+      logger.warn('[imFile] tray image is empty:', filePath)
+    }
     file.setTemplateImage(this.macOS)
     this.setCache(key, file)
     return file
