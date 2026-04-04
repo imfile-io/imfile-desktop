@@ -60,6 +60,7 @@ import {
 
 export default {
   name: 'mo-select-torrent',
+  emits: ['torrent-change'],
   components: {
     [TaskFiles.name]: TaskFiles
   },
@@ -105,6 +106,8 @@ export default {
         getAsBase64(file.raw, (torrent) => {
           this.name = file.name
           this.currentTorrent = torrent
+          // 先把种子内容同步给父表单，避免后续 selection-change 竞态把 torrent 留空。
+          this.$emit('torrent-change', torrent, NONE_SELECTED_FILES)
           this.$nextTick(() => {
             if (this.$refs.torrentFileList) {
               this.$refs.torrentFileList.toggleAllSelection()
@@ -122,7 +125,7 @@ export default {
       if (this.$refs.torrentFileList) {
         this.$refs.torrentFileList.clearSelection()
       }
-      this.$emit('change', EMPTY_STRING, NONE_SELECTED_FILES)
+      this.$emit('torrent-change', EMPTY_STRING, NONE_SELECTED_FILES)
     },
     handleChange (file, fileList) {
       this.$store.dispatch('app/addTaskAddTorrents', { fileList })
@@ -138,7 +141,7 @@ export default {
       if (!this.currentTorrent) {
         return
       }
-      this.$emit('change', this.currentTorrent, val)
+      this.$emit('torrent-change', this.currentTorrent, val)
     }
   }
 }
