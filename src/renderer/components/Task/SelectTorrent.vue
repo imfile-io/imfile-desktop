@@ -50,8 +50,7 @@ import TaskFiles from '@/components/TaskDetail/TaskFiles'
 import '@/components/Icons/inbox'
 import {
   EMPTY_STRING,
-  NONE_SELECTED_FILES,
-  SELECTED_ALL_FILES
+  NONE_SELECTED_FILES
 } from '@shared/constants'
 import {
   buildFileList,
@@ -101,12 +100,16 @@ export default {
         if (err) throw err
         console.log('[imFile] parsed torrent: ', parsedTorrent)
         this.files = listTorrentFiles(parsedTorrent.files)
-        this.$refs.torrentFileList.toggleAllSelection()
-
+        // 必须先拿到 Base64 再 toggle：否则 TaskFiles 的 selection-change 会在 currentTorrent 仍为空时冒泡，
+        // 父表单会得到 torrent="" + select-file，RPC 首参非法；「不选文件」时仅靠后续 emit 可能掩盖竞态。
         getAsBase64(file.raw, (torrent) => {
           this.name = file.name
           this.currentTorrent = torrent
-          this.$emit('change', torrent, SELECTED_ALL_FILES)
+          this.$nextTick(() => {
+            if (this.$refs.torrentFileList) {
+              this.$refs.torrentFileList.toggleAllSelection()
+            }
+          })
         })
       })
     }
@@ -132,8 +135,10 @@ export default {
       this.$store.dispatch('app/addTaskAddTorrents', { fileList: [] })
     },
     handleSelectionChange (val) {
-      const { currentTorrent } = this
-      this.$emit('change', currentTorrent, val)
+      if (!this.currentTorrent) {
+        return
+      }
+      this.$emit('change', this.currentTorrent, val)
     }
   }
 }
