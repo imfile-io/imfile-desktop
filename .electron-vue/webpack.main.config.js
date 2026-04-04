@@ -24,6 +24,7 @@ const BUNDLE_IN_MAIN = new Set(['@achingbrain/nat-port-mapper'])
 let mainConfig = {
   entry: {
     main: [
+      path.join(__dirname, '../src/main/portable-userdata.js'),
       path.join(__dirname, '../src/main/punycode-patch.js'),
       path.join(__dirname, '../src/main/index.js')
     ]
