@@ -377,10 +377,6 @@ export default {
           this.$msg.error(err.message)
         })
       } else if (type === ADD_TASK_TYPE.TORRENT) {
-        // 选择部分文件时若表单里的 torrent 被竞态事件清空，提交前从子组件回填一次。
-        if (isEmpty(form.torrent) && this.$refs.selectTorrent && this.$refs.selectTorrent.currentTorrent) {
-          form.torrent = this.$refs.selectTorrent.currentTorrent
-        }
         payload = buildTorrentPayload(form)
         this.$store.dispatch('task/addTorrent', payload).catch(err => {
           this.$msg.error(err.message)

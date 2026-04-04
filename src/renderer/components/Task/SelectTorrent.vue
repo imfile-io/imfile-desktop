@@ -106,8 +106,6 @@ export default {
         getAsBase64(file.raw, (torrent) => {
           this.name = file.name
           this.currentTorrent = torrent
-          // 先把种子内容同步给父表单，避免后续 selection-change 竞态把 torrent 留空。
-          this.$emit('torrent-change', torrent, NONE_SELECTED_FILES)
           this.$nextTick(() => {
             if (this.$refs.torrentFileList) {
               this.$refs.torrentFileList.toggleAllSelection()
