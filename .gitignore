@@ -33,3 +33,12 @@ flatpak/stage/
 flatpak/.flatpak-build/
 data/
 .cursor/
+extra/darwin/arm64/engine/go-aria2
+extra/darwin/x64/engine/go-aria2
+extra/linux/arm64/engine/go-aria2
+extra/linux/armv7l/engine/go-aria2
+extra/linux/x64/engine/go-aria2
+extra/win32/arm64/engine/aria2.conf
+extra/win32/arm64/engine/go-aria2.exe
+extra/win32/ia32/engine/go-aria2.exe
+extra/win32/x64/engine/go-aria2c.exe

@@ -19,6 +19,7 @@ export default {
   'file-completed-size': '已下載',
   'selected-files-sum': '已選取：{{selectedFilesCount}}個檔案，總計 {{selectedFilesTotalSize}}',
   'select-at-least-one': '請選擇至少一個檔案',
+  'change-select-file-fail': '更新要下載的檔案失敗，請稍後再試',
   'task-gid': 'GID',
   'task-name': '任務名稱',
   'task-out': '重新命名',

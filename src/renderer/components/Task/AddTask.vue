@@ -11,7 +11,10 @@
     @closed="handleClosed"
   >
     <el-form ref="taskForm" label-position="left" :model="form" :rules="rules">
-      <el-tabs :model-value="type" @tab-click="handleTabClick">
+      <el-tabs
+        :model-value="type"
+        @update:model-value="handleAddTaskTabChange"
+      >
         <el-tab-pane :label="$t('task.uri-task')" name="uri" >
           <el-form-item>
             <el-input
@@ -330,8 +333,11 @@ export default {
         this.submitForm('taskForm')
       }
     },
-    handleTabClick (tab) {
-      this.$store.dispatch('app/changeAddTaskType', tab.name)
+    /** 与 Vuex 的 addTaskType 同步；仅 @tab-click 且用 tab.name 在 Element Plus 下无效，会导致仍按 URL 任务提交 */
+    handleAddTaskTabChange (name) {
+      if (name === ADD_TASK_TYPE.URI || name === ADD_TASK_TYPE.TORRENT) {
+        this.$store.dispatch('app/changeAddTaskType', name)
+      }
     },
     handleUriPaste () {
       setImmediate(() => {

@@ -36,33 +36,26 @@
         </template>
         <mo-task-trackers :task="task" />
       </el-tab-pane>
-      <!-- <el-tab-pane name="peers" lazy v-if="isBT">
-        <span class="task-detail-tab-label" slot="label"><i class="el-icon-s-custom"></i></span>
-        <mo-task-peers :peers="peers" />
-      </el-tab-pane> -->
-      <!-- <el-tab-pane name="files" lazy>
-        <span class="task-detail-tab-label" slot="label"><i class="el-icon-files"></i></span>
+      <el-tab-pane name="files" lazy v-if="isBT">
+        <template #label>
+          <span class="task-detail-tab-label"><el-icon><Document /></el-icon></span>
+        </template>
         <mo-task-files
           ref="detailFileList"
           mode="DETAIL"
           :files="fileList"
-          @selection-change="handleSelectionChange"
+          emit-from-table-selection-only
+          @selection-change="handleFilesSelectionChange"
         />
+      </el-tab-pane>
+      <!-- <el-tab-pane name="peers" lazy v-if="isBT">
+        <span class="task-detail-tab-label" slot="label"><i class="el-icon-s-custom"></i></span>
+        <mo-task-peers :peers="peers" />
       </el-tab-pane> -->
     </el-tabs>
     <div class="task-detail-actions">
-      <div class="action-wrapper action-wrapper-left" v-if="optionsChanged">
-        <el-button @click="resetChanged">
-          {{$t('app.reset')}}
-        </el-button>
-      </div>
       <div class="action-wrapper action-wrapper-center">
         <mo-task-item-actions mode="DETAIL" :task="task" />
-      </div>
-      <div class="action-wrapper action-wrapper-right" v-if="optionsChanged">
-        <el-button type="primary" @click="saveChanged">
-          {{$t('app.save')}}
-        </el-button>
       </div>
     </div>
   </el-drawer>
@@ -76,8 +69,9 @@ import {
   calcFormLabelWidth,
   checkTaskIsBT,
   checkTaskIsSeeder,
+  getFileExtension,
   getFileName,
-  getFileExtension
+  isTaskFileEntrySelected
 } from '@shared/utils'
 import {
   EMPTY_STRING,
@@ -85,7 +79,7 @@ import {
   SELECTED_ALL_FILES,
   TASK_STATUS
 } from '@shared/constants'
-import { Compass, Grid, InfoFilled } from '@element-plus/icons-vue'
+import { Compass, Document, Grid, InfoFilled } from '@element-plus/icons-vue'
 import TaskItemActions from '@/components/Task/TaskItemActions'
 import TaskGeneral from './TaskGeneral'
 import TaskActivity from './TaskActivity'
@@ -105,6 +99,7 @@ export default {
   },
   components: {
     Compass,
+    Document,
     Grid,
     InfoFilled,
     [TaskItemActions.name]: TaskItemActions,
@@ -145,10 +140,7 @@ export default {
       formLabelWidth: calcFormLabelWidth(locale),
       locale,
       activeTab: 'general',
-      graphicWidth: 0,
-      optionsChanged: false,
-      filesSelection: EMPTY_STRING,
-      selectionChangedCount: 0
+      graphicWidth: 0
     }
   },
   computed: {
@@ -167,6 +159,24 @@ export default {
         return task.status
       }
     },
+    /** 与引擎 files[].selected / Selected 一致的勾选语义，用于去重 RPC */
+    currentServerFileSelectionToken () {
+      const raw = this.files
+      if (!raw || !raw.length) {
+        return SELECTED_ALL_FILES
+      }
+      const selected = raw.filter((item) => isTaskFileEntrySelected(item))
+      if (selected.length === 0) {
+        return NONE_SELECTED_FILES
+      }
+      if (selected.length === raw.length) {
+        return SELECTED_ALL_FILES
+      }
+      return selected
+        .map((item) => Number(item.index))
+        .sort((a, b) => a - b)
+        .join(',')
+    },
     fileList () {
       const { files } = this
       const result = files.map((item) => {
@@ -174,7 +184,7 @@ export default {
         const extension = getFileExtension(name)
         return {
           idx: Number(item.index),
-          selected: item.selected === 'true',
+          selected: isTaskFileEntrySelected(item),
           path: item.path,
           name,
           extension: `.${extension}`,
@@ -192,10 +202,16 @@ export default {
       return result
     }
   },
+  created () {
+    this._debouncedApplyFileSelect = debounce((sel) => {
+      this.applyFileSelectToken(sel)
+    }, 280)
+  },
   mounted () {
     window.addEventListener('resize', this.handleAppResize)
   },
   unmounted () {
+    this._debouncedApplyFileSelect?.cancel?.()
     window.removeEventListener('resize', this.handleAppResize)
     cached.files = []
   },
@@ -206,25 +222,21 @@ export default {
   },
   methods: {
     handleClose (done) {
+      this._debouncedApplyFileSelect?.cancel?.()
       window.removeEventListener('resize', this.handleAppResize)
       this.$store.dispatch('task/hideTaskDetail')
       done()
     },
     handleClosed (done) {
+      this._debouncedApplyFileSelect?.cancel?.()
       this.$store.dispatch('task/updateCurrentTaskGid', EMPTY_STRING)
       this.$store.dispatch('task/updateCurrentTaskItem', null)
-      this.optionsChanged = false
-      this.resetFaskFilesSelection()
     },
     handleTabBeforeLeave (activeName, oldActiveName) {
       this.activeTab = activeName
-      this.optionsChanged = false
       switch (oldActiveName) {
         case 'peers':
           this.$store.dispatch('task/toggleEnabledFetchPeers', false)
-          break
-        case 'files':
-          this.resetFaskFilesSelection()
           break
       }
     },
@@ -240,25 +252,6 @@ export default {
           })
           break
       }
-    },
-    resetChanged () {
-      const { activeTab } = this
-      switch (activeTab) {
-        case 'files':
-          this.resetFaskFilesSelection()
-          this.updateFilesListSelection()
-          break
-      }
-      this.optionsChanged = false
-    },
-    saveChanged () {
-      const { activeTab } = this
-      switch (activeTab) {
-        case 'files':
-          this.saveFaskFilesSelection()
-          break
-      }
-      this.optionsChanged = false
     },
     handleAppResize () {
       debounce(() => {
@@ -276,28 +269,52 @@ export default {
       const { selectedFileList } = this
       this.$refs.detailFileList.toggleSelection(selectedFileList)
     },
-    handleSelectionChange (val) {
-      this.filesSelection = val
-      this.selectionChangedCount += 1
-      if (this.selectionChangedCount > 1) {
-        this.optionsChanged = true
+    normalizeSelectFileToken (sel) {
+      if (sel === NONE_SELECTED_FILES || sel === SELECTED_ALL_FILES) {
+        return sel
       }
+      return String(sel)
+        .split(',')
+        .map((s) => Number(String(s).trim()))
+        .filter((n) => Number.isFinite(n))
+        .sort((a, b) => a - b)
+        .join(',')
     },
-    resetFaskFilesSelection () {
-      this.filesSelection = EMPTY_STRING
-      this.selectionChangedCount = 0
-    },
-    saveFaskFilesSelection () {
-      const { gid, filesSelection } = this
-      if (filesSelection === NONE_SELECTED_FILES) {
-        this.$msg.warning(this.t('task.select-at-least-one'))
+    handleFilesSelectionChange (sel) {
+      if (!this._debouncedApplyFileSelect) {
         return
       }
-
-      const options = {
-        selectFile: filesSelection !== SELECTED_ALL_FILES ? filesSelection : EMPTY_STRING
+      this._debouncedApplyFileSelect(sel)
+    },
+    async applyFileSelectToken (sel) {
+      const { gid } = this
+      if (!gid || !this.isBT) {
+        return
       }
-      this.$store.dispatch('task/changeTaskOption', { gid, options })
+      const normalizedSel = this.normalizeSelectFileToken(sel)
+      const normalizedCur = this.normalizeSelectFileToken(this.currentServerFileSelectionToken)
+      if (normalizedSel === normalizedCur) {
+        return
+      }
+      if (sel === NONE_SELECTED_FILES) {
+        this.$msg.warning(this.t('task.select-at-least-one'))
+        await this.$nextTick()
+        this.updateFilesListSelection()
+        return
+      }
+      const selectFile =
+        sel !== SELECTED_ALL_FILES ? this.normalizeSelectFileToken(sel) : EMPTY_STRING
+      const options = { selectFile }
+      try {
+        await this.$store.dispatch('task/changeTaskOption', { gid, options })
+        await this.$store.dispatch('task/fetchItem', gid)
+        this.$store.dispatch('task/saveSession')
+      } catch (e) {
+        console.warn('[imFile] change select-file failed:', e)
+        this.$msg.error(this.t('task.change-select-file-fail'))
+        await this.$nextTick()
+        this.updateFilesListSelection()
+      }
     }
   }
 }

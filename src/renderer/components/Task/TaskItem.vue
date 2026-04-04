@@ -175,6 +175,7 @@ export default {
   bottom: 0px;
   right: 12px;
 } */
+
 .theme-dark {
   .task-item {
     background-color: $--task-item-background;

@@ -215,8 +215,23 @@ export const ellipsis = (str = '', maxLen = 64) => {
   return result
 }
 
+/** BT/任务文件项是否标记为要下载（兼容 aria2 小写 selected 字符串与其它引擎 Selected 布尔） */
+export const isTaskFileEntrySelected = (item = {}) => {
+  const v = item.selected !== undefined && item.selected !== null
+    ? item.selected
+    : item.Selected
+  if (v === true) {
+    return true
+  }
+  if (v === false) {
+    return false
+  }
+  const s = String(v).trim().toLowerCase()
+  return s === 'true' || s === '1'
+}
+
 export const getFileSelection = (files = []) => {
-  const selectedFiles = files.filter((file) => file.selected)
+  const selectedFiles = files.filter((file) => isTaskFileEntrySelected(file))
   if (files.length === 0 || selectedFiles.length === 0) {
     return NONE_SELECTED_FILES
   }
@@ -226,7 +241,7 @@ export const getFileSelection = (files = []) => {
   }
 
   const selectedIndexes = files.reduce((acc, file, index) => {
-    if (file && file.selected) {
+    if (file && isTaskFileEntrySelected(file)) {
       acc.push(index)
     }
     return acc

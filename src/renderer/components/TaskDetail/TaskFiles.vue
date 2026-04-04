@@ -121,6 +121,11 @@ export default {
       default: function () {
         return []
       }
+    },
+    /** 为 true 时仅在 el-table 选择变化时向上抛出 selection-change，避免挂载阶段误报 none（任务详情即时同步 select-file 用） */
+    emitFromTableSelectionOnly: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -153,8 +158,10 @@ export default {
   },
   watch: {
     selectedFileIndex () {
-      const { selectedFileIndex } = this
-      this.$emit('selection-change', selectedFileIndex)
+      if (this.emitFromTableSelectionOnly) {
+        return
+      }
+      this.$emit('selection-change', this.selectedFileIndex)
     }
   },
   methods: {
@@ -202,8 +209,25 @@ export default {
     handleRowDbClick (row, column, event) {
       this.$refs.torrentTable.toggleRowSelection(row)
     },
+    selectionTokenFromRows (rows) {
+      const { files } = this
+      if (!files || files.length === 0) {
+        return NONE_SELECTED_FILES
+      }
+      if (!rows || rows.length === 0) {
+        return NONE_SELECTED_FILES
+      }
+      if (rows.length === files.length) {
+        return SELECTED_ALL_FILES
+      }
+      const indexArr = rows.map((r) => r.idx).sort((a, b) => a - b)
+      return indexArr.join(',')
+    },
     handleSelectionChange (val) {
       this.selectedFiles = val
+      if (this.emitFromTableSelectionOnly) {
+        this.$emit('selection-change', this.selectionTokenFromRows(val))
+      }
     }
   }
 }

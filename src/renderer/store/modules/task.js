@@ -300,8 +300,8 @@ const actions = {
   updateCurrentTaskItem ({ commit }, task) {
     commit('UPDATE_CURRENT_TASK_ITEM', task)
     if (task) {
-      commit('UPDATE_CURRENT_TASK_FILES', task.files)
-      commit('UPDATE_CURRENT_TASK_PEERS', task.peers)
+      commit('UPDATE_CURRENT_TASK_FILES', task.files || [])
+      commit('UPDATE_CURRENT_TASK_PEERS', task.peers || [])
     } else {
       commit('UPDATE_CURRENT_TASK_FILES', [])
       commit('UPDATE_CURRENT_TASK_PEERS', [])
