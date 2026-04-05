@@ -47,7 +47,7 @@ export const getGoAria2DataDir = () => {
 
 /** go-aria2 内部 session（JSON），由 migrate-from-aria2 或守护进程写入 */
 export const getGoAria2SessionJsonPath = () => {
-  return resolve(getGoAria2DataDir(), 'session.json')
+  return resolve(getUserDataPath(), 'session.json')
 }
 
 /** 一次性迁移用的合并配置（含 dir / data-dir / save-session） */
