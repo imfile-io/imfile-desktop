@@ -369,20 +369,60 @@ export const getTaskListDisplaySpeed = (task = {}) => {
   return Number(task.downloadSpeed) || 0
 }
 
+const extractHttpUriFromFile = (file) => {
+  if (!file) {
+    return ''
+  }
+  const fromUris = file.uris?.[0]?.uri
+  if (fromUris) {
+    return fromUris
+  }
+  const { path } = file
+  if (path && /^https?:\/\//i.test(String(path))) {
+    return String(path)
+  }
+  return ''
+}
+
 export const getTaskUri = (task, withTracker = false) => {
-  const { files } = task
-  let result = ''
+  if (!task) {
+    return ''
+  }
   if (checkTaskIsBT(task)) {
-    result = buildMagnetLink(task, withTracker)
-    return result
+    return buildMagnetLink(task, withTracker)
   }
 
-  if (files && files.length === 1) {
-    const { uris } = files[0]
-    result = uris[0].uri
+  if (task.engine === 'goed2kd') {
+    const raw = task.raw || {}
+    return (
+      task.link ||
+      task.url ||
+      task.source_url ||
+      task.ed2k_link ||
+      task.ed2kLink ||
+      raw.link ||
+      raw.url ||
+      raw.source_url ||
+      raw.ed2k_link ||
+      ''
+    )
   }
 
-  return result
+  const files = task.files || []
+  if (files.length === 1) {
+    const one = extractHttpUriFromFile(files[0])
+    if (one) {
+      return one
+    }
+  }
+  for (let i = 0; i < files.length; i++) {
+    const u = extractHttpUriFromFile(files[i])
+    if (u) {
+      return u
+    }
+  }
+
+  return ''
 }
 
 export const buildMagnetLink = (task, withTracker = false, btTracker = []) => {
