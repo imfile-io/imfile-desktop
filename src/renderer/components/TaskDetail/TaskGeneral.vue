@@ -65,7 +65,7 @@
     </el-form-item>
     <el-form-item :label="`${$t('task.task-num-pieces')} `" v-if="isBT">
       <div class="form-static-value">
-        {{ task.numPieces }}
+        {{ btNumPiecesDisplay }}
       </div>
     </el-form-item>
     <el-form-item :label="`${$t('task.task-bittorrent-creation-date')} `" v-if="isBT">
@@ -91,6 +91,7 @@ import {
   checkTaskIsBT,
   checkTaskIsSeeder,
   getTaskName,
+  getTaskNumPieces,
   getTaskUri,
   localeDateTimeFormat
 } from '@shared/utils'
@@ -167,6 +168,11 @@ export default {
     },
     isBT () {
       return checkTaskIsBT(this.task)
+    },
+    /** 引擎未返回 numPieces 时用 totalLength/pieceLength 推算，避免详情里只有分片大小、数量空白 */
+    btNumPiecesDisplay () {
+      const n = getTaskNumPieces(this.task)
+      return n != null ? n : '—'
     }
   },
   methods: {

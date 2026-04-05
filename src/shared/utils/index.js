@@ -464,6 +464,29 @@ export const checkTaskIsBT = (task = {}) => {
   return !!bittorrent
 }
 
+/**
+ * BT 任务分片数量：优先用引擎返回的 numPieces；部分实现（如精简 RPC）未返回时可由 totalLength / pieceLength 推算。
+ * @returns {number|null}
+ */
+export const getTaskNumPieces = (task = {}) => {
+  if (!checkTaskIsBT(task)) {
+    return null
+  }
+  const raw = task.numPieces ?? task.num_pieces
+  if (raw !== undefined && raw !== null && raw !== '') {
+    const n = Number(raw)
+    if (Number.isFinite(n) && n >= 0) {
+      return n
+    }
+  }
+  const total = Number(task.totalLength)
+  const pieceLen = Number(task.pieceLength ?? task.piece_length)
+  if (Number.isFinite(total) && total > 0 && Number.isFinite(pieceLen) && pieceLen > 0) {
+    return Math.ceil(total / pieceLen)
+  }
+  return null
+}
+
 export const isTorrent = (file) => {
   const { name, type } = file
   return name.endsWith('.torrent') || type === 'application/x-bittorrent'
