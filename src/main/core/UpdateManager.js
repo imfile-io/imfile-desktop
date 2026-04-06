@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events'
-import { resolve } from 'node:path'
-import { dialog } from 'electron'
+import { dirname, resolve } from 'node:path'
+import { app, dialog } from 'electron'
 import is from 'electron-is'
 import { autoUpdater } from 'electron-updater'
 
@@ -140,9 +140,32 @@ export default class UpdateManager extends EventEmitter {
       this.isChecking = false
       this.emit('will-updated')
       setTimeout(() => {
+        this.applyWindowsNsisInstallArgs()
+        // quitAndInstall(isSilent, isForceRunAfter)：
+        // - false：非静默（不追加 NSIS /S），用户可见安装界面
+        // - true：追加 --force-run，安装结束后启动应用
+        // electron-updater 内部固定会传 --updated，与 NSIS 的 skipPageIfUpdated / 升级逻辑配合
         this.updater.quitAndInstall(false, true)
       }, 200)
     })
+  }
+
+  /**
+   * Windows NSIS：在 quitAndInstall 前设置 installDirectory，electron-updater 会追加 `/D=路径`，
+   * 使覆盖安装落到当前运行中的安装目录（与手动下载安装包后加 `/D=...` 效果一致）。
+   * 其余参数由 electron-updater 组装：--updated、[--force-run]、[/S]、（Web 安装包时）--package-file=...
+   */
+  applyWindowsNsisInstallArgs () {
+    if (process.platform !== 'win32') {
+      return
+    }
+    try {
+      const dir = dirname(app.getPath('exe'))
+      this.updater.installDirectory = dir
+      logger.info('[imFile] NSIS upgrade argv includes /D=' + dir)
+    } catch (e) {
+      logger.warn('[imFile] applyWindowsNsisInstallArgs:', e)
+    }
   }
 
   updateCancelled () {
