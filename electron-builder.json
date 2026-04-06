@@ -137,9 +137,9 @@
     },
     "nsis": {
       "artifactName": "${productName}-Setup-${version}-${arch}.${ext}",
-      "oneClick": true,
+      "oneClick": false,
       "perMachine": false,
-      "allowToChangeInstallationDirectory": false,
+      "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     },
