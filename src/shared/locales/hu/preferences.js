@@ -5,6 +5,7 @@ export default {
   'save': 'Mentés és alkalmazás',
   'save-success-message': 'Mentés sikeres volt',
   'save-fail-message': 'Mentés sikertelen volt',
+  'no-changes-to-save': 'Nincs menthető változás',
   'discard': 'Elvetés',
   'startup': 'Inditás',
   'open-at-login': 'Megnyitás bejelenkezéskor',

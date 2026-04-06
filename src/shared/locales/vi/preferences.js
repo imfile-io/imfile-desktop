@@ -5,6 +5,7 @@ export default {
   'save': 'Lưu & Áp dụng',
   'save-success-message': 'Lưu cài đặt thành công',
   'save-fail-message': 'Lưu cài đặt thất bại',
+  'no-changes-to-save': 'Không có thay đổi nào cần lưu',
   'discard': 'Loại bỏ',
   'startup': 'Khởi động',
   'open-at-login': 'Mở khi đăng nhập',

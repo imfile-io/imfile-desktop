@@ -5,6 +5,7 @@ export default {
   'save': '保存して適用',
   'save-success-message': '設定を保存します',
   'save-fail-message': '設定を保存できませんでした',
+  'no-changes-to-save': '保存する変更はありません',
   'discard': '放棄',
   'startup': '起動',
   'open-at-login': '自動的に起動します',

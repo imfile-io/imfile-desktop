@@ -858,6 +858,16 @@ export default {
           ...changedConfig.basic
         }
 
+        const origTrackerNorm = reduceTrackerString(
+          convertLineToComma(String(this.formOriginal.btTracker ?? ''))
+        )
+        const nextTrackerNorm = reduceTrackerString(
+          convertLineToComma(String(this.form.btTracker ?? ''))
+        )
+        if (origTrackerNorm !== nextTrackerNorm) {
+          data.btTracker = this.form.btTracker
+        }
+
         let engineSwitched = false
         if (
           Object.prototype.hasOwnProperty.call(data, 'downloadEngine') &&
@@ -917,6 +927,8 @@ export default {
             await this.loadDownloadEngineInfo()
             await this.$store.dispatch('app/fetchEngineOptions')
             this.$msg.success(this.t('preferences.save-success-message'))
+          } else {
+            this.$msg.info(this.t('preferences.no-changes-to-save'))
           }
           return
         }

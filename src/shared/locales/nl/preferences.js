@@ -5,6 +5,7 @@ export default {
   'save': 'Opslaan & Toepassen',
   'save-success-message': 'Instellingen succesvol opgeslagen',
   'save-fail-message': 'Instellingen opslaan mislukt',
+  'no-changes-to-save': 'Geen wijzigingen om op te slaan',
   'discard': 'Weggooien',
   'startup': 'Opstarten',
   'open-at-login': 'Bij login openen',

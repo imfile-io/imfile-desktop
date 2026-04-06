@@ -5,6 +5,7 @@ export default {
   'save': 'Guardar i aplicar',
   'save-success-message': 'Preferències guardades amb èxit',
   'save-fail-message': 'Hi va haver un error al guardar les teves preferències',
+  'no-changes-to-save': 'No hi ha canvis per desar',
   'discard': 'Descartar',
   'startup': 'Inici',
   'open-at-login': 'Obrir en iniciar sessió',

@@ -5,6 +5,7 @@ export default {
   'save': 'Simpan & Terapkan',
   'save-success-message': 'Berhasil menyimpan pengaturan',
   'save-fail-message': 'Gagal menyimpan pengaturan',
+  'no-changes-to-save': 'Tidak ada perubahan untuk disimpan',
   'discard': 'Batal',
   'startup': 'Memulai',
   'open-at-login': 'Buka saat login',

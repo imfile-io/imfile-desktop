@@ -5,6 +5,7 @@ export default {
   'save': 'Salvează şi Aplică',
   'save-success-message': 'Setările au fost salvate cu succes',
   'save-fail-message': 'Nu s-au putut salva setările',
+  'no-changes-to-save': 'Nu există modificări de salvat',
   'discard': 'Renunţă',
   'startup': 'Pornire',
   'open-at-login': 'Deschide la logare',

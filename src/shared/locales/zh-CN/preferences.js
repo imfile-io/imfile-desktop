@@ -13,6 +13,7 @@ export default {
   'save': '保存并应用',
   'save-success-message': '偏好设置保存成功',
   'save-fail-message': '偏好设置保存失败',
+  'no-changes-to-save': '没有检测到需要保存的更改',
   'discard': '放弃',
   'startup': '启动',
   'open-at-login': '开机自动启动',

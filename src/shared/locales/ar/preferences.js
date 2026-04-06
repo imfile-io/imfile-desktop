@@ -5,6 +5,7 @@ export default {
   'save': 'حفظ وتطبيق',
   'save-success-message': 'تم حفظ التفضيلات بنجاح',
   'save-fail-message': 'فشل في حفظ التفضيلات',
+  'no-changes-to-save': 'لا توجد تغييرات لحفظها',
   'discard': 'تجاهل',
   'startup': 'التشغيل',
   'open-at-login': 'الفتح عند تسجيل الدخول',

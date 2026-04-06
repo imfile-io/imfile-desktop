@@ -5,6 +5,7 @@ export default {
   'save': 'Speichern & übernehmen',
   'save-success-message': 'Einstellungen erfolgreich speichern',
   'save-fail-message': 'Speichern der Einstellungen fehlgeschlagen',
+  'no-changes-to-save': 'Keine Änderungen zum Speichern',
   'discard': 'Verwerfen',
   'startup': 'Startup',
   'open-at-login': 'Beim Login öffnen',

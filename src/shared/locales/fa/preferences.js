@@ -5,6 +5,7 @@ export default {
   'save': 'ذخیره و اعمال',
   'save-success-message': 'ترجیحات با موفقیت ذخیره شد',
   'save-fail-message': 'ذخیرهٔ ترجیحات شکست خورد',
+  'no-changes-to-save': 'تغییری برای ذخیره وجود ندارد',
   'discard': 'دور انداختن',
   'startup': 'شروع برنامه',
   'open-at-login': 'گشودن هنگام ورود به سیستم',

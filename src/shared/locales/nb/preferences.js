@@ -5,6 +5,7 @@ export default {
   'save': 'Lagre og bruk',
   'save-success-message': 'Lagre innstillinger vellykket',
   'save-fail-message': 'Lagring av innstillinger mislyktes',
+  'no-changes-to-save': 'Ingen endringer å lagre',
   'discard': 'Forkast',
   'startup': 'Oppstart',
   'open-at-login': 'Åpne ved pålogging',

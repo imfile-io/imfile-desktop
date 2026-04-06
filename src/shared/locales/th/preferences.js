@@ -5,6 +5,7 @@ export default {
   'save': 'บันทึกและนำไปใช้',
   'save-success-message': 'บันทึกการตั้งค่าเรียบร้อยแล้ว',
   'save-fail-message': 'บันทึกการตั้งค่าไม่สำเร็จ',
+  'no-changes-to-save': 'ไม่มีการเปลี่ยนแปลงที่จะบันทึก',
   'discard': 'ทิ้ง',
   'startup': 'เริ่มขึ้น',
   'open-at-login': 'เปิดเมื่อเข้าสู่ระบบ',

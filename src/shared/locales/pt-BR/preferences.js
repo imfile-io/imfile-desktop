@@ -5,6 +5,7 @@ export default {
   'save': 'Salvar & Aplicar',
   'save-success-message': 'Salvar preferências com sucesso',
   'save-fail-message': 'Salvar preferências falhadas',
+  'no-changes-to-save': 'Nenhuma alteração para salvar',
   'discard': 'Descartar',
   'startup': 'Inicialização',
   'open-at-login': 'Abra no login',

@@ -5,6 +5,7 @@ export default {
   'save': '저장 및 적용',
   'save-success-message': '설정을 성공적으로 저장했습니다',
   'save-fail-message': '설정을 저장하지 못했습니다',
+  'no-changes-to-save': '저장할 변경 사항이 없습니다',
   'discard': '취소',
   'startup': '시작',
   'open-at-login': '로그인 시 실행',

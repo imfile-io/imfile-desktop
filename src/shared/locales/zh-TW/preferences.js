@@ -5,6 +5,7 @@ export default {
   'save': '儲存並套用',
   'save-success-message': '偏好設定儲存成功',
   'save-fail-message': '偏好設定儲存失敗',
+  'no-changes-to-save': '沒有偵測到需要儲存的變更',
   'discard': '捨棄',
   'startup': '啟動',
   'open-at-login': '開機自動啟動',

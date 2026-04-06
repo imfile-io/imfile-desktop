@@ -13,6 +13,7 @@ export default {
   'save': 'Save & Apply',
   'save-success-message': 'Preferences saved successfully',
   'save-fail-message': 'Preferences failed to save',
+  'no-changes-to-save': 'No changes to save',
   'discard': 'Discard',
   'startup': 'Startup',
   'open-at-login': 'Open at login',
