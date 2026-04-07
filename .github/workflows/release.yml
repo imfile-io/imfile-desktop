@@ -263,6 +263,57 @@ jobs:
           [[ -n "${X_PATH:-}" ]] && rm -f "$X_PATH"
           [[ -n "${A_PATH:-}" ]] && rm -f "$A_PATH"
 
+      # 防止 yml 与 exe 来自不同构建（手动重传、合并错误等）；不通过则不上传 Release
+      - name: Verify merged Windows latest.yml matches on-disk installers
+        run: |
+          set -euo pipefail
+          YML="release-artifacts/windows-combined/latest.yml"
+          test -f "$YML"
+          export YML
+          ruby <<'RUBY'
+          require "yaml"
+          require "digest"
+          require "base64"
+
+          root = "release-artifacts"
+          yml_path = ENV.fetch("YML")
+          data = YAML.load_file(yml_path)
+          files = data["files"] || []
+          abort "latest.yml has no files[]" if files.empty?
+
+          files.each do |entry|
+            next unless entry.is_a?(Hash) && entry["url"]
+            name = File.basename(entry["url"].to_s)
+            next unless name.end_with?(".exe")
+            path = Dir.glob(File.join(root, "**", name)).find { |p| File.file?(p) }
+            abort "missing file for #{name} (declared in latest.yml)" unless path
+            bytes = File.binread(path)
+            expected_size = entry["size"]
+            if expected_size && bytes.bytesize != expected_size
+              abort "size mismatch #{name}: yml=#{expected_size} actual=#{bytes.bytesize}"
+            end
+            actual_b64 = Base64.strict_encode64(Digest::SHA512.digest(bytes))
+            expected_b64 = entry["sha512"].to_s.strip
+            if actual_b64 != expected_b64
+              abort "sha512 mismatch #{name}: yml=#{expected_b64} actual=#{actual_b64}"
+            end
+            puts "ok #{name} #{bytes.bytesize} bytes"
+          end
+
+          primary_url = data["path"]
+          if primary_url && !primary_url.to_s.empty?
+            name = File.basename(primary_url.to_s)
+            path = Dir.glob(File.join(root, "**", name)).find { |p| File.file?(p) }
+            abort "missing primary path #{name}" unless path
+            bytes = File.binread(path)
+            actual_b64 = Base64.strict_encode64(Digest::SHA512.digest(bytes))
+            if actual_b64 != data["sha512"].to_s.strip
+              abort "sha512 mismatch top-level path #{name}"
+            end
+          end
+          puts "Windows latest.yml OK: #{yml_path}"
+          RUBY
+
       # electron-updater 从 Release 资源拉取 latest*.yml；差分更新需同目录下的 *.blockmap
       - name: Create GitHub release from generated artifacts
         env:
@@ -280,17 +331,21 @@ jobs:
           declare -A seen_assets=()
           assets=()
 
-          while IFS= read -r -d '' asset; do
-            asset_name="$(basename "$asset")"
+          add_assets () {
+            while IFS= read -r -d '' asset; do
+              asset_name="$(basename "$asset")"
+              if [[ -n "${seen_assets[$asset_name]:-}" ]]; then
+                echo "::error::Duplicate release asset name '$asset_name' from '$asset' and '${seen_assets[$asset_name]}'"
+                exit 1
+              fi
+              seen_assets["$asset_name"]="$asset"
+              assets+=("$asset")
+            done
+          }
 
-            if [[ -n "${seen_assets[$asset_name]:-}" ]]; then
-              echo "::error::Duplicate release asset name '$asset_name' from '$asset' and '${seen_assets[$asset_name]}'"
-              exit 1
-            fi
-
-            seen_assets["$asset_name"]="$asset"
-            assets+=("$asset")
-          done < <(find release-artifacts -type f -print0 | sort -z)
+          # 先上传二进制与 blockmap，最后上传 latest*.yml，降低用户短暂拉到新 yml 与旧包不一致的概率
+          add_assets < <(find release-artifacts -type f ! -name 'latest*.yml' -print0 | sort -z)
+          add_assets < <(find release-artifacts -type f -name 'latest*.yml' -print0 | sort -z)
 
           if [[ ${#assets[@]} -eq 0 ]]; then
             echo "::error::No files under release-artifacts to upload; check build artifact paths."
