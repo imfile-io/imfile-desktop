@@ -24,6 +24,8 @@ export default {
     'Impossibile raggiungere il server di aggiornamento tramite proxy. Controlla le impostazioni proxy dell’app.',
   'update-error-generic':
     'Impossibile verificare gli aggiornamenti. Controlla la rete e riprova.',
+  'update-error-checksum':
+    'Il file di aggiornamento non ha superato la verifica. Il download potrebbe essere incompleto o danneggiato. Riprova a cercare aggiornamenti.',
   'update-error-unknown':
     'Impossibile verificare gli aggiornamenti. Se il problema persiste, controlla la rete o riprova più tardi.',
   'engine-damaged-message': 'Il motore è danneggiato, per favore, reinstalla l\'app : (',

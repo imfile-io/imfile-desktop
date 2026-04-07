@@ -24,6 +24,8 @@ export default {
     'Kunne ikke nå oppdateringsserveren via proxy. Sjekk proxy-innstillingene for appen.',
   'update-error-generic':
     'Kunne ikke søke etter oppdateringer. Sjekk nettverket og prøv igjen.',
+  'update-error-checksum':
+    'Oppdateringsfilen besto ikke verifiseringen. Nedlastingen kan være ufullstendig eller skadet. Prøv å søke etter oppdateringer igjen senere.',
   'update-error-unknown':
     'Kunne ikke søke etter oppdateringer. Hvis det fortsetter, sjekk nettverket eller prøv senere.',
   'engine-damaged-message': 'Motoren er skadet. Vennligst installer den på nytt :(',

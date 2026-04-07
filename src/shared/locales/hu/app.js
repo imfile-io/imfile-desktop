@@ -24,6 +24,8 @@ export default {
     'A frissítési szerver nem érhető el proxy-n keresztül. Ellenőrizze az alkalmazás proxybeállításait.',
   'update-error-generic':
     'Nem sikerült ellenőrizni a frissítéseket. Ellenőrizze a hálózatot, és próbálja újra.',
+  'update-error-checksum':
+    'A frissítési fájl nem felelt meg az ellenőrzésnek. A letöltés hiányos vagy sérült lehet. Próbálja később újra ellenőrizni a frissítéseket.',
   'update-error-unknown':
     'Nem sikerült ellenőrizni a frissítéseket. Ha továbbra is fennáll, ellenőrizze a hálózatot vagy próbálja később.',
   'engine-damaged-message': 'A motor meghibásodot, kérjük telepitse újra a imFile-ot : (',

@@ -24,6 +24,8 @@ export default {
     'No s\'ha pogut arribar al servidor d\'actualitzacions a través del proxy. Comprova la configuració de proxy de l\'aplicació.',
   'update-error-generic':
     'No s\'han pogut comprovar les actualitzacions. Comprova la xarxa i torna-ho a provar.',
+  'update-error-checksum':
+    'El fitxer d\'actualització no ha superat la verificació. La baixada pot ser incompleta o corrupta. Torna a comprovar les actualitzacions més tard.',
   'update-error-unknown':
     'No s\'han pogut comprovar les actualitzacions. Si continua passant, comprova la xarxa o torna-ho a provar més tard.',
   'engine-damaged-message': 'El motor està danyat, per favor reinstal·la :(',

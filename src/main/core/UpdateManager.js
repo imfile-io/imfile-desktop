@@ -173,7 +173,7 @@ export default class UpdateManager extends EventEmitter {
   }
 
   /**
-   * 将 electron-updater / Chromium 网络错误转换为用户可读的 i18n key（app.*）。
+   * 将 electron-updater / Chromium 网络错误及校验失败转换为用户可读的 i18n key（app.*）。
    * @param {Error | null | undefined} error
    * @returns {string}
    */
@@ -205,6 +205,7 @@ export default class UpdateManager extends EventEmitter {
     }
     if (s.includes('err_network_changed')) return 'app.update-error-generic'
     if (s.includes('net::')) return 'app.update-error-generic'
+    if (s.includes('checksum mismatch')) return 'app.update-error-checksum'
 
     return 'app.update-error-unknown'
   }

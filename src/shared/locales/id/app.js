@@ -24,6 +24,8 @@ export default {
     'Tidak dapat menjangkau server pembaruan melalui proxy. Periksa pengaturan proxy aplikasi ini.',
   'update-error-generic':
     'Tidak dapat memeriksa pembaruan. Periksa jaringan dan coba lagi.',
+  'update-error-checksum':
+    'Berkas pembaruan gagal verifikasi. Unduhan mungkin tidak lengkap atau rusak. Coba periksa pembaruan lagi nanti.',
   'update-error-unknown':
     'Tidak dapat memeriksa pembaruan. Jika berlanjut, periksa jaringan atau coba lagi nanti.',
   'engine-damaged-message': 'Mesin rusak, silahkan install ulang : (',

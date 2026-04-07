@@ -24,6 +24,8 @@ export default {
     'Güncelleme sunucusuna proxy üzerinden ulaşılamadı. Uygulamanın proxy ayarlarını kontrol edin.',
   'update-error-generic':
     'Güncellemeler denetlenemedi. Ağı kontrol edip tekrar deneyin.',
+  'update-error-checksum':
+    'Güncelleme dosyası doğrulamayı geçemedi. İndirme eksik veya bozuk olabilir. Daha sonra güncellemeleri yeniden denetlemeyi deneyin.',
   'update-error-unknown':
     'Güncellemeler denetlenemedi. Sorun sürerse ağı kontrol edin veya daha sonra deneyin.',
   'engine-damaged-message': 'Motor hasarlı, lütfen tekrar takın : (',

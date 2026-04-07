@@ -24,6 +24,8 @@ export default {
     'Could not reach the update server through the proxy. Check proxy settings for this app.',
   'update-error-generic':
     'Could not check for updates. Check your network connection and try again.',
+  'update-error-checksum':
+    'The update file did not pass verification. The download may be incomplete or corrupted. Please try checking for updates again.',
   'update-error-unknown':
     'Could not check for updates. If this keeps happening, check your network or try again later.',
   'engine-damaged-message': 'The engine is damaged, please reinstall : (',

@@ -24,6 +24,8 @@ export default {
     'Không tới được máy chủ cập nhật qua proxy. Hãy kiểm tra cài đặt proxy của ứng dụng.',
   'update-error-generic':
     'Không thể kiểm tra cập nhật. Hãy kiểm tra mạng và thử lại.',
+  'update-error-checksum':
+    'Gói cập nhật không vượt qua xác minh. Tệp tải xuống có thể chưa đầy đủ hoặc bị hỏng. Hãy thử kiểm tra cập nhật lại sau.',
   'update-error-unknown':
     'Không thể kiểm tra cập nhật. Nếu vẫn lỗi, hãy kiểm tra mạng hoặc thử lại sau.',
   'engine-damaged-message': 'Ứng dụng bị lỗi, vui lòng cài đặt lại : (',

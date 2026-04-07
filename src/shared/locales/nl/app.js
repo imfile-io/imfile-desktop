@@ -24,6 +24,8 @@ export default {
     'De updateserver is niet bereikbaar via de proxy. Controleer de proxy-instellingen van deze app.',
   'update-error-generic':
     'Kan niet op updates controleren. Controleer het netwerk en probeer het opnieuw.',
+  'update-error-checksum':
+    'Het updatebestand heeft de verificatie niet doorstaan. De download is mogelijk onvolledig of beschadigd. Probeer later opnieuw op updates te controleren.',
   'update-error-unknown':
     'Kan niet op updates controleren. Blijft dit gebeuren, controleer het netwerk of probeer later opnieuw.',
   'engine-damaged-message': 'De engine is beschadigd, opnieuw installeren a.u.b. :(',

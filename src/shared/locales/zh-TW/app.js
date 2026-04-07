@@ -18,6 +18,7 @@ export default {
   'update-error-ssl': '無法與更新伺服器建立安全連線。',
   'update-error-proxy': '透過 Proxy 連線更新伺服器失敗，請在偏好設定中檢查 Proxy。',
   'update-error-generic': '無法檢查更新，請確認網路正常後再試。',
+  'update-error-checksum': '更新套件驗證未通過，下載可能不完整或傳輸中已損毀。請稍後再試檢查更新。',
   'update-error-unknown': '無法檢查更新。若問題持續，請檢查網路或稍後再試。',
   'engine-damaged-message': '引擎損壞，請重新安裝 : (',
   'engine-missing-message': '引擎缺失，請重新安裝 : (',

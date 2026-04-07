@@ -24,6 +24,8 @@ export default {
     'Der Update-Server war über den Proxy nicht erreichbar. Prüfen Sie die Proxy-Einstellungen der App.',
   'update-error-generic':
     'Updates konnten nicht geprüft werden. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.',
+  'update-error-checksum':
+    'Die Aktualisierungsdatei hat die Prüfung nicht bestanden. Der Download war möglicherweise unvollständig oder beschädigt. Versuchen Sie erneut, nach Updates zu suchen.',
   'update-error-unknown':
     'Updates konnten nicht geprüft werden. Wenn das weiterhin passiert, prüfen Sie das Netzwerk oder versuchen Sie es später erneut.',
   'engine-damaged-message': 'Der Motor ist beschädigt, bitte neu installieren : (',

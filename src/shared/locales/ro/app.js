@@ -24,6 +24,8 @@ export default {
     'Serverul de actualizări nu este accesibil prin proxy. Verificați setările proxy ale aplicației.',
   'update-error-generic':
     'Nu s-au putut verifica actualizările. Verificați rețeaua și încercați din nou.',
+  'update-error-checksum':
+    'Fișierul de actualizare nu a trecut verificarea. Descărcarea poate fi incompletă sau deteriorată. Încercați din nou mai târziu să verificați actualizările.',
   'update-error-unknown':
     'Nu s-au putut verifica actualizările. Dacă problema persistă, verificați rețeaua sau încercați mai târziu.',
   'engine-damaged-message': 'Motorul este deteriorat, vă rugăm să reinstalați : (',

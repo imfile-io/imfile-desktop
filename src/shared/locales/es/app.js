@@ -24,6 +24,8 @@ export default {
     'No se pudo alcanzar el servidor de actualizaciones a través del proxy. Comprueba la configuración de proxy de la aplicación.',
   'update-error-generic':
     'No se pudieron comprobar las actualizaciones. Comprueba la red e inténtalo de nuevo.',
+  'update-error-checksum':
+    'El archivo de actualización no superó la verificación. La descarga puede estar incompleta o dañada. Vuelve a comprobar las actualizaciones más tarde.',
   'update-error-unknown':
     'No se pudieron comprobar las actualizaciones. Si sigue ocurriendo, comprueba la red o inténtalo más tarde.',
   'engine-damaged-message': 'El motor está dañado, por favor reinstalar :(',

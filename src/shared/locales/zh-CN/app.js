@@ -18,6 +18,7 @@ export default {
   'update-error-ssl': '无法与更新服务器建立安全连接。',
   'update-error-proxy': '通过代理连接更新服务器失败，请在偏好设置中检查代理配置。',
   'update-error-generic': '无法检查更新，请确认网络正常后重试。',
+  'update-error-checksum': '更新包校验未通过，下载可能不完整或传输中已损坏。请稍后重试检查更新。',
   'update-error-unknown': '无法检查更新。若问题持续，请检查网络或稍后重试。',
   'engine-damaged-message': '引擎损坏，请重新安装 : (',
   'engine-missing-message': '引擎缺失，请重新安装 : (',

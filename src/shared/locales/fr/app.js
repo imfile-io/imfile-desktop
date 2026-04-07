@@ -24,6 +24,8 @@ export default {
     'Impossible d’atteindre le serveur de mise à jour via le proxy. Vérifiez les paramètres proxy de l’application.',
   'update-error-generic':
     'Impossible de vérifier les mises à jour. Vérifiez le réseau et réessayez.',
+  'update-error-checksum':
+    'Le fichier de mise à jour n’a pas passé la vérification. Le téléchargement est peut-être incomplet ou corrompu. Réessayez de vérifier les mises à jour.',
   'update-error-unknown':
     'Impossible de vérifier les mises à jour. Si le problème persiste, vérifiez le réseau ou réessayez plus tard.',
   'engine-damaged-message': 'Le moteur est endommagé, veuillez réinstaller : (',

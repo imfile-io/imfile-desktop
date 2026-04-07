@@ -24,6 +24,8 @@ export default {
     'Brak dostępu do serwera aktualizacji przez proxy. Sprawdź ustawienia proxy tej aplikacji.',
   'update-error-generic':
     'Nie można sprawdzić aktualizacji. Sprawdź sieć i spróbuj ponownie.',
+  'update-error-checksum':
+    'Plik aktualizacji nie przeszedł weryfikacji. Pobranie mogło być niekompletne lub uszkodzone. Spróbuj ponownie sprawdzić aktualizacje.',
   'update-error-unknown':
     'Nie można sprawdzić aktualizacji. Jeśli problem się powtarza, sprawdź sieć lub spróbuj później.',
   'engine-damaged-message': 'Silnik został uszkodzony, spróbuj zreinstalować program : (',
