@@ -11,6 +11,21 @@ export default {
   'update-not-available-message': 'Você esta atualizado!',
   'update-downloaded-message': 'Pronto para instalar...',
   'update-error-message': 'Atualizar erro',
+  'update-error-dns':
+    'Não foi possível resolver o endereço do servidor de atualizações. Verifique a internet e as configurações de DNS.',
+  'update-error-offline': 'Parece que você está offline. Verifique sua conexão com a internet.',
+  'update-error-timeout':
+    'A conexão com o servidor de atualizações expirou. Tente novamente mais tarde.',
+  'update-error-connection':
+    'Não foi possível conectar ao servidor de atualizações. Se usar firewall ou proxy, verifique se as atualizações são permitidas.',
+  'update-error-ssl':
+    'Não foi possível estabelecer uma conexão segura com o servidor de atualizações.',
+  'update-error-proxy':
+    'Não foi possível alcançar o servidor de atualizações pelo proxy. Verifique as configurações de proxy do app.',
+  'update-error-generic':
+    'Não foi possível verificar atualizações. Verifique a rede e tente novamente.',
+  'update-error-unknown':
+    'Não foi possível verificar atualizações. Se continuar, verifique a rede ou tente mais tarde.',
   'engine-damaged-message': 'O motor está danificado, por favor, reinstale : (',
   'engine-missing-message': 'O motor está faltando, por favor, reinstale : (',
   'system-error-title': 'Erro do sistema',

@@ -11,6 +11,21 @@ export default {
   'update-not-available-message': 'Sie sind auf dem neuesten Stand!',
   'update-downloaded-message': 'Bereit zur Installation...',
   'update-error-message': 'Aktualisierungsfehler',
+  'update-error-dns':
+    'Die Adresse des Update-Servers konnte nicht aufgelöst werden. Prüfen Sie Internetverbindung und DNS-Einstellungen.',
+  'update-error-offline': 'Sie scheinen offline zu sein. Prüfen Sie Ihre Internetverbindung.',
+  'update-error-timeout':
+    'Die Verbindung zum Update-Server hat das Zeitlimit überschritten. Bitte später erneut versuchen.',
+  'update-error-connection':
+    'Verbindung zum Update-Server nicht möglich. Prüfen Sie Firewall- oder Proxy-Einstellungen.',
+  'update-error-ssl':
+    'Eine sichere Verbindung zum Update-Server konnte nicht hergestellt werden.',
+  'update-error-proxy':
+    'Der Update-Server war über den Proxy nicht erreichbar. Prüfen Sie die Proxy-Einstellungen der App.',
+  'update-error-generic':
+    'Updates konnten nicht geprüft werden. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.',
+  'update-error-unknown':
+    'Updates konnten nicht geprüft werden. Wenn das weiterhin passiert, prüfen Sie das Netzwerk oder versuchen Sie es später erneut.',
   'engine-damaged-message': 'Der Motor ist beschädigt, bitte neu installieren : (',
   'engine-missing-message': 'Der Motor fehlt, bitte neu installieren : (',
   'system-error-title': 'Systemfehler',

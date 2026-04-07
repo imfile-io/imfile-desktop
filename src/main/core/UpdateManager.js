@@ -172,14 +172,57 @@ export default class UpdateManager extends EventEmitter {
     this.isChecking = false
   }
 
+  /**
+   * 将 electron-updater / Chromium 网络错误转换为用户可读的 i18n key（app.*）。
+   * @param {Error | null | undefined} error
+   * @returns {string}
+   */
+  resolveUpdateErrorMessageKey (error) {
+    if (error == null) {
+      return 'app.update-error-message'
+    }
+    const raw = [error.message, error.code, error.stack].filter(Boolean).join('\n')
+    const s = String(raw).toLowerCase()
+
+    if (s.includes('err_name_not_resolved')) return 'app.update-error-dns'
+    if (s.includes('err_internet_disconnected')) return 'app.update-error-offline'
+    if (s.includes('err_connection_timed_out') || s.includes('err_timed_out')) {
+      return 'app.update-error-timeout'
+    }
+    if (
+      s.includes('err_connection_refused') ||
+      s.includes('err_connection_reset') ||
+      s.includes('err_connection_closed') ||
+      s.includes('err_connection_aborted')
+    ) {
+      return 'app.update-error-connection'
+    }
+    if (s.includes('err_cert_') || s.includes('err_ssl_') || s.includes('err_unsafe_redirect')) {
+      return 'app.update-error-ssl'
+    }
+    if (s.includes('err_proxy_connection_failed') || s.includes('err_tunnel_connection_failed')) {
+      return 'app.update-error-proxy'
+    }
+    if (s.includes('err_network_changed')) return 'app.update-error-generic'
+    if (s.includes('net::')) return 'app.update-error-generic'
+
+    return 'app.update-error-unknown'
+  }
+
   updateError (event, error) {
     this.isChecking = false
     this.emit('update-error', error)
-    const msg = (error == null)
-      ? this.i18n.t('app.update-error-message')
+    const rawForLog = (error == null)
+      ? '(null)'
       : (error.stack || error).toString()
+    this.updater.logger.warn(`[imFile] update-error: ${rawForLog}`)
 
-    this.updater.logger.warn(`[imFile] update-error: ${msg}`)
-    dialog.showErrorBox('Error', msg)
+    const messageKey = this.resolveUpdateErrorMessageKey(error)
+    const message = this.i18n.t(messageKey)
+    dialog.showMessageBox({
+      type: 'error',
+      title: this.i18n.t('app.check-for-updates-title'),
+      message
+    })
   }
 }

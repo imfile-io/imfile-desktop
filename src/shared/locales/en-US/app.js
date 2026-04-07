@@ -11,6 +11,21 @@ export default {
   'update-not-available-message': 'You are up-to-date!',
   'update-downloaded-message': 'Ready to install...',
   'update-error-message': 'Update Error',
+  'update-error-dns':
+    'Could not resolve the update server address. Check your internet connection and DNS settings.',
+  'update-error-offline': 'You appear to be offline. Check your internet connection.',
+  'update-error-timeout':
+    'The connection to the update server timed out. Please try again later.',
+  'update-error-connection':
+    'Could not connect to the update server. If you use a firewall or proxy, check that updates are allowed.',
+  'update-error-ssl':
+    'Could not establish a secure connection to the update server.',
+  'update-error-proxy':
+    'Could not reach the update server through the proxy. Check proxy settings for this app.',
+  'update-error-generic':
+    'Could not check for updates. Check your network connection and try again.',
+  'update-error-unknown':
+    'Could not check for updates. If this keeps happening, check your network or try again later.',
   'engine-damaged-message': 'The engine is damaged, please reinstall : (',
   'engine-missing-message': 'The engine is missing, please reinstall : (',
   'engine-upgrade-title': 'Upgrade download engine',

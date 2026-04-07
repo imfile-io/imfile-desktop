@@ -11,6 +11,21 @@ export default {
   'update-not-available-message': 'Du er oppdatert!',
   'update-downloaded-message': 'Klar til å installere...',
   'update-error-message': 'Oppdateringsfeil',
+  'update-error-dns':
+    'Kunne ikke slå opp adressen til oppdateringsserveren. Sjekk internettforbindelsen og DNS-innstillingene.',
+  'update-error-offline': 'Du ser ut til å være frakoblet. Sjekk internettforbindelsen.',
+  'update-error-timeout':
+    'Tilkoblingen til oppdateringsserveren ble tidsavbrutt. Prøv igjen senere.',
+  'update-error-connection':
+    'Kunne ikke koble til oppdateringsserveren. Hvis du bruker brannmur eller proxy, sjekk at oppdateringer er tillatt.',
+  'update-error-ssl':
+    'Kunne ikke opprette en sikker tilkobling til oppdateringsserveren.',
+  'update-error-proxy':
+    'Kunne ikke nå oppdateringsserveren via proxy. Sjekk proxy-innstillingene for appen.',
+  'update-error-generic':
+    'Kunne ikke søke etter oppdateringer. Sjekk nettverket og prøv igjen.',
+  'update-error-unknown':
+    'Kunne ikke søke etter oppdateringer. Hvis det fortsetter, sjekk nettverket eller prøv senere.',
   'engine-damaged-message': 'Motoren er skadet. Vennligst installer den på nytt :(',
   'engine-missing-message': 'Motoren mangler. Vennligst installer den på nytt :(',
   'system-error-title': 'Systemfeil',

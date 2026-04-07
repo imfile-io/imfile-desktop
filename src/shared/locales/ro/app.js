@@ -11,6 +11,21 @@ export default {
   'update-not-available-message': 'Versiunea este la zi!',
   'update-downloaded-message': 'Gata de instalare...',
   'update-error-message': 'Eroare actualizare',
+  'update-error-dns':
+    'Nu s-a putut rezolva adresa serverului de actualizări. Verificați conexiunea la internet și setările DNS.',
+  'update-error-offline': 'Pareți offline. Verificați conexiunea la internet.',
+  'update-error-timeout':
+    'Conexiunea la serverul de actualizări a expirat. Încercați din nou mai târziu.',
+  'update-error-connection':
+    'Nu s-a putut conecta la serverul de actualizări. Dacă folosiți firewall sau proxy, verificați permisiunile.',
+  'update-error-ssl':
+    'Nu s-a putut stabili o conexiune securizată cu serverul de actualizări.',
+  'update-error-proxy':
+    'Serverul de actualizări nu este accesibil prin proxy. Verificați setările proxy ale aplicației.',
+  'update-error-generic':
+    'Nu s-au putut verifica actualizările. Verificați rețeaua și încercați din nou.',
+  'update-error-unknown':
+    'Nu s-au putut verifica actualizările. Dacă problema persistă, verificați rețeaua sau încercați mai târziu.',
   'engine-damaged-message': 'Motorul este deteriorat, vă rugăm să reinstalați : (',
   'engine-missing-message': 'Motorul lipseşte, vă rugăm să reinstalați : (',
   'system-error-title': 'Eroare sistem',
