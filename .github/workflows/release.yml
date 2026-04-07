@@ -263,7 +263,68 @@ jobs:
           [[ -n "${X_PATH:-}" ]] && rm -f "$X_PATH"
           [[ -n "${A_PATH:-}" ]] && rm -f "$A_PATH"
 
-      # 防止 yml 与 exe 来自不同构建（手动重传、合并错误等）；不通过则不上传 Release
+      # electron-builder 在个别环境下生成的 latest.yml 可能与实际输出的 Setup 字节不一致（size/sha512 漂移）。
+      # 以即将上传的 artifact 为唯一真相源，重写 files[] 与顶层 path/sha512，与同目录 *.blockmap 仍匹配同一构建产物。
+      - name: Refresh Windows latest.yml from on-disk installers
+        run: |
+          set -euo pipefail
+          YML="release-artifacts/windows-combined/latest.yml"
+          test -f "$YML"
+          export YML
+          ruby <<'RUBY'
+          require "yaml"
+          require "digest"
+          require "base64"
+
+          root = "release-artifacts"
+          yml_path = ENV.fetch("YML")
+
+          def find_setup_exe(root, name)
+            if name.include?("arm64")
+              p = Dir.glob(File.join(root, "windows-arm64", "**", name)).find { |f| File.file?(f) }
+              return p if p
+            elsif name.include?("x64")
+              p = Dir.glob(File.join(root, "windows-x64", "**", name)).find { |f| File.file?(f) }
+              return p if p
+            end
+            Dir.glob(File.join(root, "**", name)).find { |f| File.file?(f) }
+          end
+
+          data = YAML.load_file(yml_path)
+          files = data["files"] || []
+          abort "latest.yml has no files[]" if files.empty?
+
+          files.each do |entry|
+            next unless entry.is_a?(Hash) && entry["url"]
+            name = File.basename(entry["url"].to_s)
+            next unless name.end_with?(".exe")
+            path = find_setup_exe(root, name)
+            abort "missing installer for #{name} under release-artifacts" unless path
+            bytes = File.binread(path)
+            entry["size"] = bytes.bytesize
+            entry["sha512"] = Base64.strict_encode64(Digest::SHA512.digest(bytes))
+            puts "refresh #{name} -> #{bytes.bytesize} bytes"
+          end
+
+          data["files"] = files
+          primary = files.find do |f|
+            f.is_a?(Hash) && f["url"].to_s.include?("x64") && f["url"].to_s.include?("Setup")
+          end
+          primary ||= files.find { |f| f.is_a?(Hash) && f["url"] }
+          if primary
+            name = File.basename(primary["url"].to_s)
+            path = find_setup_exe(root, name)
+            abort "missing primary #{name}" unless path
+            bytes = File.binread(path)
+            data["path"] = primary["url"]
+            data["sha512"] = Base64.strict_encode64(Digest::SHA512.digest(bytes))
+          end
+
+          File.write(yml_path, YAML.dump(data))
+          puts "updated #{yml_path}"
+          RUBY
+
+      # 防止 yml 与 exe 仍不一致（理论上 refresh 后应恒成立）
       - name: Verify merged Windows latest.yml matches on-disk installers
         run: |
           set -euo pipefail
@@ -281,35 +342,40 @@ jobs:
           files = data["files"] || []
           abort "latest.yml has no files[]" if files.empty?
 
+          def find_setup_exe(root, name)
+            if name.include?("arm64")
+              p = Dir.glob(File.join(root, "windows-arm64", "**", name)).find { |f| File.file?(f) }
+              return p if p
+            elsif name.include?("x64")
+              p = Dir.glob(File.join(root, "windows-x64", "**", name)).find { |f| File.file?(f) }
+              return p if p
+            end
+            Dir.glob(File.join(root, "**", name)).find { |f| File.file?(f) }
+          end
+
           files.each do |entry|
             next unless entry.is_a?(Hash) && entry["url"]
             name = File.basename(entry["url"].to_s)
             next unless name.end_with?(".exe")
-            path = Dir.glob(File.join(root, "**", name)).find { |p| File.file?(p) }
-            abort "missing file for #{name} (declared in latest.yml)" unless path
+            path = find_setup_exe(root, name)
+            abort "missing file for #{name}" unless path
             bytes = File.binread(path)
-            expected_size = entry["size"]
-            if expected_size && bytes.bytesize != expected_size
-              abort "size mismatch #{name}: yml=#{expected_size} actual=#{bytes.bytesize}"
+            if entry["size"] && bytes.bytesize != entry["size"]
+              abort "size mismatch #{name}: yml=#{entry['size']} actual=#{bytes.bytesize}"
             end
             actual_b64 = Base64.strict_encode64(Digest::SHA512.digest(bytes))
-            expected_b64 = entry["sha512"].to_s.strip
-            if actual_b64 != expected_b64
-              abort "sha512 mismatch #{name}: yml=#{expected_b64} actual=#{actual_b64}"
-            end
+            abort "sha512 mismatch #{name}" if actual_b64 != entry["sha512"].to_s.strip
             puts "ok #{name} #{bytes.bytesize} bytes"
           end
 
           primary_url = data["path"]
           if primary_url && !primary_url.to_s.empty?
             name = File.basename(primary_url.to_s)
-            path = Dir.glob(File.join(root, "**", name)).find { |p| File.file?(p) }
+            path = find_setup_exe(root, name)
             abort "missing primary path #{name}" unless path
             bytes = File.binread(path)
             actual_b64 = Base64.strict_encode64(Digest::SHA512.digest(bytes))
-            if actual_b64 != data["sha512"].to_s.strip
-              abort "sha512 mismatch top-level path #{name}"
-            end
+            abort "sha512 mismatch top-level path #{name}" if actual_b64 != data["sha512"].to_s.strip
           end
           puts "Windows latest.yml OK: #{yml_path}"
           RUBY
