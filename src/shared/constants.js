@@ -2,6 +2,9 @@ export const EMPTY_STRING = ''
 export const PORTABLE_EXECUTABLE_DIR = process.env.PORTABLE_EXECUTABLE_DIR
 export const IS_PORTABLE = PORTABLE_EXECUTABLE_DIR && PORTABLE_EXECUTABLE_DIR !== EMPTY_STRING
 
+/** 应用 GitHub Releases 页面（手动下载安装包） */
+export const APP_GITHUB_RELEASES_URL = 'https://github.com/imfile-io/imfile-desktop/releases'
+
 export const APP_THEME = {
   AUTO: 'auto',
   LIGHT: 'light',

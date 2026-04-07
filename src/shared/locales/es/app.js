@@ -28,6 +28,8 @@ export default {
     'El archivo de actualización no superó la verificación. La descarga puede estar incompleta o dañada. Vuelve a comprobar las actualizaciones más tarde.',
   'update-error-unknown':
     'No se pudieron comprobar las actualizaciones. Si sigue ocurriendo, comprueba la red o inténtalo más tarde.',
+  'update-error-dismiss': 'Cerrar',
+  'open-github-releases': 'Abrir releases en GitHub',
   'engine-damaged-message': 'El motor está dañado, por favor reinstalar :(',
   'engine-missing-message': 'No se encuentra el motor, por favor reinstalar :(',
   'system-error-title': 'Error del sistema',

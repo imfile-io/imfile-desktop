@@ -28,6 +28,8 @@ export default {
     'Le fichier de mise à jour n’a pas passé la vérification. Le téléchargement est peut-être incomplet ou corrompu. Réessayez de vérifier les mises à jour.',
   'update-error-unknown':
     'Impossible de vérifier les mises à jour. Si le problème persiste, vérifiez le réseau ou réessayez plus tard.',
+  'update-error-dismiss': 'Fermer',
+  'open-github-releases': 'Ouvrir les releases GitHub',
   'engine-damaged-message': 'Le moteur est endommagé, veuillez réinstaller : (',
   'engine-missing-message': 'Le moteur est manquant, veuillez réinstaller : (',
   'system-error-title': 'Erreur système',

@@ -28,6 +28,8 @@ export default {
     'A frissítési fájl nem felelt meg az ellenőrzésnek. A letöltés hiányos vagy sérült lehet. Próbálja később újra ellenőrizni a frissítéseket.',
   'update-error-unknown':
     'Nem sikerült ellenőrizni a frissítéseket. Ha továbbra is fennáll, ellenőrizze a hálózatot vagy próbálja később.',
+  'update-error-dismiss': 'Bezárás',
+  'open-github-releases': 'GitHub kiadások megnyitása',
   'engine-damaged-message': 'A motor meghibásodot, kérjük telepitse újra a imFile-ot : (',
   'engine-missing-message': 'A motor hiányzik, kérjük telepitse újra a imFile-ot : (',
   'system-error-title': 'Rendszer hiba',

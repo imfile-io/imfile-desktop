@@ -28,6 +28,8 @@ export default {
     'Oppdateringsfilen besto ikke verifiseringen. Nedlastingen kan være ufullstendig eller skadet. Prøv å søke etter oppdateringer igjen senere.',
   'update-error-unknown':
     'Kunne ikke søke etter oppdateringer. Hvis det fortsetter, sjekk nettverket eller prøv senere.',
+  'update-error-dismiss': 'Lukk',
+  'open-github-releases': 'Åpne GitHub-releases',
   'engine-damaged-message': 'Motoren er skadet. Vennligst installer den på nytt :(',
   'engine-missing-message': 'Motoren mangler. Vennligst installer den på nytt :(',
   'system-error-title': 'Systemfeil',

@@ -28,6 +28,8 @@ export default {
     'Güncelleme dosyası doğrulamayı geçemedi. İndirme eksik veya bozuk olabilir. Daha sonra güncellemeleri yeniden denetlemeyi deneyin.',
   'update-error-unknown':
     'Güncellemeler denetlenemedi. Sorun sürerse ağı kontrol edin veya daha sonra deneyin.',
+  'update-error-dismiss': 'Kapat',
+  'open-github-releases': 'GitHub sürümlerini aç',
   'engine-damaged-message': 'Motor hasarlı, lütfen tekrar takın : (',
   'engine-missing-message': 'Motor eksik, lütfen tekrar takın : (',
   'system-error-title': 'Sistem hatası',

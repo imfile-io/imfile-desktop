@@ -28,6 +28,8 @@ export default {
     'Het updatebestand heeft de verificatie niet doorstaan. De download is mogelijk onvolledig of beschadigd. Probeer later opnieuw op updates te controleren.',
   'update-error-unknown':
     'Kan niet op updates controleren. Blijft dit gebeuren, controleer het netwerk of probeer later opnieuw.',
+  'update-error-dismiss': 'Sluiten',
+  'open-github-releases': 'GitHub-releases openen',
   'engine-damaged-message': 'De engine is beschadigd, opnieuw installeren a.u.b. :(',
   'engine-missing-message': 'De engine mist, opnieuw installeren a.u.b. :(',
   'system-error-title': 'Systeemfout',

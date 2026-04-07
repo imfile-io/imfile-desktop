@@ -28,6 +28,8 @@ export default {
     '업데이트 파일 검증에 실패했습니다. 다운로드가 불완전하거나 손상되었을 수 있습니다. 나중에 업데이트 확인을 다시 시도하세요.',
   'update-error-unknown':
     '업데이트를 확인할 수 없습니다. 계속되면 네트워크를 확인하거나 나중에 다시 시도하세요.',
+  'update-error-dismiss': '닫기',
+  'open-github-releases': 'GitHub Releases 열기',
   'engine-damaged-message': '엔진이 손상되었으므로 다시 설치하십시오: (',
   'engine-missing-message': '엔진이 누락되었으므로 다시 설치하십시오: (',
   'system-error-title': '시스템 오류',

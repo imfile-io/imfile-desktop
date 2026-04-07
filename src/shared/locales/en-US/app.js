@@ -28,6 +28,8 @@ export default {
     'The update file did not pass verification. The download may be incomplete or corrupted. Please try checking for updates again.',
   'update-error-unknown':
     'Could not check for updates. If this keeps happening, check your network or try again later.',
+  'update-error-dismiss': 'Close',
+  'open-github-releases': 'Open GitHub Releases',
   'engine-damaged-message': 'The engine is damaged, please reinstall : (',
   'engine-missing-message': 'The engine is missing, please reinstall : (',
   'engine-upgrade-title': 'Upgrade download engine',

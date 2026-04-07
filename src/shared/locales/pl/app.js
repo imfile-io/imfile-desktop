@@ -28,6 +28,8 @@ export default {
     'Plik aktualizacji nie przeszedł weryfikacji. Pobranie mogło być niekompletne lub uszkodzone. Spróbuj ponownie sprawdzić aktualizacje.',
   'update-error-unknown':
     'Nie można sprawdzić aktualizacji. Jeśli problem się powtarza, sprawdź sieć lub spróbuj później.',
+  'update-error-dismiss': 'Zamknij',
+  'open-github-releases': 'Otwórz wydania na GitHubie',
   'engine-damaged-message': 'Silnik został uszkodzony, spróbuj zreinstalować program : (',
   'engine-missing-message': 'Nie można znaleźć silnika, spróbuj zreinstalować program : (',
   'system-error-title': 'Błąd systemu',

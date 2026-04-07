@@ -28,6 +28,8 @@ export default {
     'Fișierul de actualizare nu a trecut verificarea. Descărcarea poate fi incompletă sau deteriorată. Încercați din nou mai târziu să verificați actualizările.',
   'update-error-unknown':
     'Nu s-au putut verifica actualizările. Dacă problema persistă, verificați rețeaua sau încercați mai târziu.',
+  'update-error-dismiss': 'Închide',
+  'open-github-releases': 'Deschide versiunile pe GitHub',
   'engine-damaged-message': 'Motorul este deteriorat, vă rugăm să reinstalați : (',
   'engine-missing-message': 'Motorul lipseşte, vă rugăm să reinstalați : (',
   'system-error-title': 'Eroare sistem',

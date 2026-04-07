@@ -28,6 +28,8 @@ export default {
     'Gói cập nhật không vượt qua xác minh. Tệp tải xuống có thể chưa đầy đủ hoặc bị hỏng. Hãy thử kiểm tra cập nhật lại sau.',
   'update-error-unknown':
     'Không thể kiểm tra cập nhật. Nếu vẫn lỗi, hãy kiểm tra mạng hoặc thử lại sau.',
+  'update-error-dismiss': 'Đóng',
+  'open-github-releases': 'Mở trang phát hành GitHub',
   'engine-damaged-message': 'Ứng dụng bị lỗi, vui lòng cài đặt lại : (',
   'engine-missing-message': 'Ứng dụng bị thiếu tập tin, vui lòng cài đặt lại : (',
   'system-error-title': 'Lỗi hệ thống',

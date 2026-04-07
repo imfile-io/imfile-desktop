@@ -28,6 +28,8 @@ export default {
     '更新ファイルの検証に失敗しました。ダウンロードが不完全または破損している可能性があります。しばらくしてから更新の確認を再度お試しください。',
   'update-error-unknown':
     '更新を確認できませんでした。繰り返す場合はネットワークを確認するか、しばらくしてから再度お試しください。',
+  'update-error-dismiss': '閉じる',
+  'open-github-releases': 'GitHub Releases を開く',
   'engine-damaged-message': 'エンジンが破損しています、再インストールしてください : (',
   'engine-missing-message': 'エンジンが見つかりません。再インストールしてください : (',
   'system-error-title': 'システムエラー',

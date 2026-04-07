@@ -28,6 +28,8 @@ export default {
     'O arquivo de atualização não passou na verificação. O download pode estar incompleto ou corrompido. Tente verificar atualizações novamente mais tarde.',
   'update-error-unknown':
     'Não foi possível verificar atualizações. Se continuar, verifique a rede ou tente mais tarde.',
+  'update-error-dismiss': 'Fechar',
+  'open-github-releases': 'Abrir releases no GitHub',
   'engine-damaged-message': 'O motor está danificado, por favor, reinstale : (',
   'engine-missing-message': 'O motor está faltando, por favor, reinstale : (',
   'system-error-title': 'Erro do sistema',

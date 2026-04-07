@@ -1,10 +1,10 @@
 import { EventEmitter } from 'node:events'
 import { dirname, resolve } from 'node:path'
-import { app, dialog } from 'electron'
+import { app, dialog, shell } from 'electron'
 import is from 'electron-is'
 import { autoUpdater } from 'electron-updater'
 
-import { PROXY_SCOPES } from '@shared/constants'
+import { APP_GITHUB_RELEASES_URL, PROXY_SCOPES } from '@shared/constants'
 import logger from './Logger'
 import { getI18n } from '../ui/Locale'
 
@@ -223,7 +223,19 @@ export default class UpdateManager extends EventEmitter {
     dialog.showMessageBox({
       type: 'error',
       title: this.i18n.t('app.check-for-updates-title'),
-      message
+      message,
+      buttons: [
+        this.i18n.t('app.update-error-dismiss'),
+        this.i18n.t('app.open-github-releases')
+      ],
+      defaultId: 0,
+      cancelId: 0
+    }).then(({ response }) => {
+      if (response === 1) {
+        shell.openExternal(APP_GITHUB_RELEASES_URL).catch((e) => {
+          logger.warn('[imFile] openExternal GitHub releases:', e)
+        })
+      }
     })
   }
 }

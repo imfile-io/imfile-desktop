@@ -28,6 +28,8 @@ export default {
     'Die Aktualisierungsdatei hat die Prüfung nicht bestanden. Der Download war möglicherweise unvollständig oder beschädigt. Versuchen Sie erneut, nach Updates zu suchen.',
   'update-error-unknown':
     'Updates konnten nicht geprüft werden. Wenn das weiterhin passiert, prüfen Sie das Netzwerk oder versuchen Sie es später erneut.',
+  'update-error-dismiss': 'Schließen',
+  'open-github-releases': 'GitHub Releases öffnen',
   'engine-damaged-message': 'Der Motor ist beschädigt, bitte neu installieren : (',
   'engine-missing-message': 'Der Motor fehlt, bitte neu installieren : (',
   'system-error-title': 'Systemfehler',

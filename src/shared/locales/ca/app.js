@@ -28,6 +28,8 @@ export default {
     'El fitxer d\'actualització no ha superat la verificació. La baixada pot ser incompleta o corrupta. Torna a comprovar les actualitzacions més tard.',
   'update-error-unknown':
     'No s\'han pogut comprovar les actualitzacions. Si continua passant, comprova la xarxa o torna-ho a provar més tard.',
+  'update-error-dismiss': 'Tanca',
+  'open-github-releases': 'Obrir les publicacions a GitHub',
   'engine-damaged-message': 'El motor està danyat, per favor reinstal·la :(',
   'engine-missing-message': 'No es troba el motor, por favor reinstal·la :(',
   'system-error-title': 'Error del sistema',

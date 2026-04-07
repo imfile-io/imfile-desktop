@@ -28,6 +28,8 @@ export default {
     'Berkas pembaruan gagal verifikasi. Unduhan mungkin tidak lengkap atau rusak. Coba periksa pembaruan lagi nanti.',
   'update-error-unknown':
     'Tidak dapat memeriksa pembaruan. Jika berlanjut, periksa jaringan atau coba lagi nanti.',
+  'update-error-dismiss': 'Tutup',
+  'open-github-releases': 'Buka Rilis GitHub',
   'engine-damaged-message': 'Mesin rusak, silahkan install ulang : (',
   'engine-missing-message': 'Mesin hilang, silahkan install ulang : (',
   'system-error-title': 'System Error',
