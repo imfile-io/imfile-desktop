@@ -238,18 +238,27 @@ jobs:
           x_path, a_path, out_path = ENV.fetch("X_PATH", ""), ENV.fetch("A_PATH", ""), ENV.fetch("OUT_PATH")
           paths = [x_path, a_path].reject(&:empty?).select { |p| File.file?(p) }
           abort "No Windows latest.yml found under release-artifacts/windows-*" if paths.empty?
+          def keep_release_file?(entry)
+            return false unless entry.is_a?(Hash) && entry["url"]
+            name = File.basename(entry["url"].to_s)
+            return true unless name.end_with?(".exe")
+            name.include?("x64") || name.include?("arm64")
+          end
           loaded = paths.map { |p| YAML.load_file(p) }
           merged =
             if loaded.size == 1
-              loaded[0]
+              single = loaded[0]
+              single["files"] = (single["files"] || []).select { |f| keep_release_file?(f) }
+              single
             else
               wx, wa = loaded
               files = (wx["files"] || []) + (wa["files"] || [])
               by_url = {}
               files.each { |f| by_url[f["url"]] = f if f.is_a?(Hash) && f["url"] }
-              primary = by_url.values.find { |f| f["url"].to_s.include?("x64") } || by_url.values.first
+              merged_files = by_url.values.select { |f| keep_release_file?(f) }
+              primary = merged_files.find { |f| f["url"].to_s.include?("x64") } || merged_files.first
               m = wx.merge(
-                "files" => by_url.values,
+                "files" => merged_files,
                 "releaseDate" => [wx["releaseDate"], wa["releaseDate"]].compact.max
               )
               if primary
@@ -291,7 +300,12 @@ jobs:
           end
 
           data = YAML.load_file(yml_path)
-          files = data["files"] || []
+          files = (data["files"] || []).select do |entry|
+            next false unless entry.is_a?(Hash) && entry["url"]
+            name = File.basename(entry["url"].to_s)
+            next false unless name.end_with?(".exe")
+            name.include?("x64") || name.include?("arm64")
+          end
           abort "latest.yml has no files[]" if files.empty?
 
           files.each do |entry|
