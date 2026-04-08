@@ -185,7 +185,7 @@ const actions = {
       const downloading = downloadingList.filter((item) => item.completedLength !== item.totalLength).length
       const seeding = downloadingList.filter((item) => item.completedLength === item.totalLength).length
       const waiting = data[1][0].length
-      const stoped = data[2][0].length
+      const stoped = data[2][0].filter((item) => String(item?.status || '').toLowerCase() !== TASK_STATUS.REMOVED).length
 
       commit('UPDATE_COUNT', {
         downloading,
@@ -200,6 +200,7 @@ const actions = {
     return api.fetchTaskList({ type: listType })
       .then(async (aria2Data) => {
         let taskList = (aria2Data || []).map(adaptAria2Task)
+        taskList = taskList.filter((task) => task.status !== TASK_STATUS.REMOVED)
         if (['active', 'waiting', 'stopped', 'all'].includes(listType)) {
           try {
             const goed2kdStatus = await api.getGoed2kdStatus()
