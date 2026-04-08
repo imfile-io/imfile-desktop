@@ -176,6 +176,7 @@ export default {
     return {
       searchButtonLoading: false,
       pollTimer: null,
+      pollInFlight: false,
       downloadingByHash: {},
       searchHistory: []
     }
@@ -271,30 +272,49 @@ export default {
         clearInterval(this.pollTimer)
         this.pollTimer = null
       }
+      this.pollInFlight = false
+    },
+    async stopCurrentSearchAndSyncState () {
+      try {
+        await api.stopGoed2kSearch()
+      } catch (_) {}
+      this.setSearchLoading(false)
     },
     startPolling () {
       this.stopPolling()
       let polls = 0
       this.pollTimer = setInterval(async () => {
+        if (this.pollInFlight) return
+        this.pollInFlight = true
         polls += 1
-        const res = await api.getGoed2kCurrentSearch()
-        if (!res.ok) {
-          this.setSearchError(res.message || '')
-          this.setSearchLoading(false)
-          this.stopPolling()
-          return
-        }
-        const dto = res.data
-        this.applyDto(dto)
-        if (dto && dto.error) {
-          ElMessage.error(String(dto.error))
-          this.setSearchLoading(false)
-          this.stopPolling()
-          return
-        }
-        if (!isGoed2kSearchActive(dto) || polls >= MAX_POLLS) {
-          this.setSearchLoading(false)
-          this.stopPolling()
+        try {
+          const res = await api.getGoed2kCurrentSearch()
+          if (!res.ok) {
+            this.setSearchError(res.message || '')
+            this.setSearchLoading(false)
+            this.stopPolling()
+            return
+          }
+          const dto = res.data
+          this.applyDto(dto)
+          if (dto && dto.error) {
+            ElMessage.error(String(dto.error))
+            this.setSearchLoading(false)
+            this.stopPolling()
+            return
+          }
+          if (!isGoed2kSearchActive(dto)) {
+            this.setSearchLoading(false)
+            this.stopPolling()
+            return
+          }
+          if (polls >= MAX_POLLS) {
+            this.setSearchError(this.t('search.search-failed'))
+            await this.stopCurrentSearchAndSyncState()
+            this.stopPolling()
+          }
+        } finally {
+          this.pollInFlight = false
         }
       }, POLL_MS)
     },
@@ -309,7 +329,7 @@ export default {
       this.searchButtonLoading = false
       this.stopPolling()
       if (this.searchLoading) {
-        await api.stopGoed2kSearch().catch(() => {})
+        await this.stopCurrentSearchAndSyncState()
       }
       this.$store.commit('search/RESET_SEARCH_STATE')
       this.downloadingByHash = {}
@@ -362,8 +382,7 @@ export default {
     },
     async cancelSearch () {
       this.stopPolling()
-      this.setSearchLoading(false)
-      await api.stopGoed2kSearch().catch(() => {})
+      await this.stopCurrentSearchAndSyncState()
     },
     getEd2kUri (row) {
       return getSearchResultEd2kUri(row)
