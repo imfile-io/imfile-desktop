@@ -116,7 +116,7 @@
           >
             <el-input
               type="textarea"
-              rows="2"
+              :rows="2"
               auto-complete="off"
               @change="handleProxyBypassChange"
               :placeholder="`${$t('preferences.proxy-bypass-input-tips')}`"
@@ -218,7 +218,7 @@
             </el-row>
             <el-input
               type="textarea"
-              rows="3"
+              :rows="3"
               auto-complete="off"
               :placeholder="`${$t('preferences.bt-tracker-input-tips')}`"
               v-model="form.btTracker">
@@ -274,7 +274,7 @@
             >
               {{ $t('preferences.rpc-listen-port') }}
               <el-input
-                :placeholder="rpcDefaultPort"
+                :placeholder="String(rpcDefaultPort)"
                 :maxlength="8"
                 v-model="form.rpcListenPort"
                 @change="onRpcListenPortChange"
@@ -422,6 +422,22 @@
           </el-col>
         </el-form-item>
         <el-form-item
+          :label="`${$t('preferences.ssapi-search-base-url')}: `"
+          :label-width="formLabelWidth"
+        >
+          <el-col class="form-item-sub" :span="24">
+            <el-input
+              v-model="form.ssapiSearchBaseUrl"
+              clearable
+              :placeholder="$t('preferences.ssapi-search-base-url-placeholder')"
+              auto-complete="off"
+            />
+            <div class="el-form-item__info" style="margin-top: 8px;">
+              {{ $t('preferences.ssapi-search-base-url-hint') }}
+            </div>
+          </el-col>
+        </el-form-item>
+        <el-form-item
           :label="`${$t('preferences.user-agent')}: `"
           :label-width="formLabelWidth"
         >
@@ -429,7 +445,7 @@
             {{ $t('preferences.mock-user-agent') }}
             <el-input
               type="textarea"
-              rows="2"
+              :rows="2"
               auto-complete="off"
               placeholder="User-Agent"
               v-model="form.userAgent">
@@ -543,7 +559,9 @@ import {
   convertCommaToLine,
   convertLineToComma,
   diffConfig,
-  generateRandomInt
+  generateRandomInt,
+  isValidSsapiBaseUrlOptional,
+  normalizeSsapiBaseUrl
 } from '@shared/utils'
 import { convertTrackerDataToLine, reduceTrackerString } from '@shared/utils/tracker'
 import '@/components/Icons/dice'
@@ -571,6 +589,7 @@ const initForm = (config) => {
     proxy,
     rpcListenPort,
     rpcSecret,
+    ssapiSearchBaseUrl,
     trackerSource,
     useProxy,
     userAgent
@@ -597,6 +616,7 @@ const initForm = (config) => {
     },
     rpcListenPort,
     rpcSecret,
+    ssapiSearchBaseUrl: typeof ssapiSearchBaseUrl === 'string' ? ssapiSearchBaseUrl : '',
     trackerSource,
     useProxy,
     userAgent
@@ -853,6 +873,14 @@ export default {
           return false
         }
 
+        if (!isValidSsapiBaseUrlOptional(this.form.ssapiSearchBaseUrl)) {
+          this.$msg.error(this.t('preferences.ssapi-search-base-url-invalid'))
+          return false
+        }
+
+        this.form.ssapiSearchBaseUrl =
+          normalizeSsapiBaseUrl(this.form.ssapiSearchBaseUrl) || ''
+
         const data = {
           ...diffConfig(this.formOriginal, this.form),
           ...changedConfig.basic
@@ -960,29 +988,30 @@ export default {
       this.syncFormConfig()
     }
   },
-  beforeRouteLeave (to, from, next) {
+  beforeRouteLeave (to) {
     changedConfig.advanced = diffConfig(this.formOriginal, this.form)
     if (to.path === '/preference/basic') {
-      next()
-    } else {
-      if (isEmpty(changedConfig.basic) && isEmpty(changedConfig.advanced)) {
-        next()
-      } else {
-        dialog.showMessageBox({
-          type: 'warning',
-          title: this.t('preferences.not-saved'),
-          message: this.t('preferences.not-saved-confirm'),
-          buttons: [this.t('app.yes'), this.t('app.no')],
-          cancelId: 1
-        }).then(({ response }) => {
-          if (response === 0) {
-            changedConfig.basic = {}
-            changedConfig.advanced = {}
-            next()
-          }
-        })
-      }
+      return true
     }
+    if (isEmpty(changedConfig.basic) && isEmpty(changedConfig.advanced)) {
+      return true
+    }
+    return dialog
+      .showMessageBox({
+        type: 'warning',
+        title: this.t('preferences.not-saved'),
+        message: this.t('preferences.not-saved-confirm'),
+        buttons: [this.t('app.yes'), this.t('app.no')],
+        cancelId: 1
+      })
+      .then(({ response }) => {
+        if (response === 0) {
+          changedConfig.basic = {}
+          changedConfig.advanced = {}
+          return true
+        }
+        return false
+      })
   }
 }
 </script>

@@ -656,29 +656,30 @@ export default {
       this.syncFormConfig()
     }
   },
-  beforeRouteLeave (to, from, next) {
+  beforeRouteLeave (to) {
     changedConfig.basic = diffConfig(this.formOriginal, this.form)
     if (to.path === '/preference/advanced') {
-      next()
-    } else {
-      if (isEmpty(changedConfig.basic) && isEmpty(changedConfig.advanced)) {
-        next()
-      } else {
-        dialog.showMessageBox({
-          type: 'warning',
-          title: this.t('preferences.not-saved'),
-          message: this.t('preferences.not-saved-confirm'),
-          buttons: [this.t('app.yes'), this.t('app.no')],
-          cancelId: 1
-        }).then(({ response }) => {
-          if (response === 0) {
-            changedConfig.basic = {}
-            changedConfig.advanced = {}
-            next()
-          }
-        })
-      }
+      return true
     }
+    if (isEmpty(changedConfig.basic) && isEmpty(changedConfig.advanced)) {
+      return true
+    }
+    return dialog
+      .showMessageBox({
+        type: 'warning',
+        title: this.t('preferences.not-saved'),
+        message: this.t('preferences.not-saved-confirm'),
+        buttons: [this.t('app.yes'), this.t('app.no')],
+        cancelId: 1
+      })
+      .then(({ response }) => {
+        if (response === 0) {
+          changedConfig.basic = {}
+          changedConfig.advanced = {}
+          return true
+        }
+        return false
+      })
   }
 }
 </script>

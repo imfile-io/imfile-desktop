@@ -64,6 +64,11 @@ export const GOED2KD_HEALTH_RETRY_INTERVAL_MS = 300
 export const GOED2KD_HEALTH_MAX_RETRIES = 40
 /** goed2k 搜索结果在界面中保留的最大条数，避免过多 DOM 拖垮渲染 */
 export const GOED2K_SEARCH_MAX_RESULTS = 1000
+/**
+ * BT 搜索（SSAPI）单次请求条数上限，勿与服务端 MAX_LIMIT 冲突。
+ * 构建期默认基址由环境变量 SSAPI_BUILD_DEFAULT_BASE_URL 注入主进程（ConfigManager 方案 B），勿在源码中写死 URL。
+ */
+export const SSAPI_SEARCH_DEFAULT_LIMIT = 50
 
 export const UNKNOWN_PEERID = '%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00'
 export const UNKNOWN_PEERID_NAME = 'unknown'

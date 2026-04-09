@@ -25,6 +25,8 @@ const userKeys = [
   'proxy',
   'resume-all-when-app-launched',
   'run-mode',
+  'ssapi-search-base-url',
+  'ssapi-search-base-url-build-seeded',
   'show-progress-bar',
   'task-notification',
   'task-complete-sound',

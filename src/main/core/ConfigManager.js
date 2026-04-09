@@ -22,6 +22,7 @@ import {
 } from '@shared/constants'
 import { CHROME_UA } from '@shared/ua'
 import { separateConfig } from '@shared/utils'
+import { normalizeSsapiBaseUrl } from '@shared/utils/ssapiSearch'
 import { reduceTrackerString } from '@shared/utils/tracker'
 
 export default class ConfigManager {
@@ -130,6 +131,9 @@ export default class ConfigManager {
         },
         'resume-all-when-app-launched': true,
         'run-mode': APP_RUN_MODE.STANDARD,
+        'ssapi-search-base-url': EMPTY_STRING,
+        /** 方案 B：构建期默认仅首次写入；为 true 后不再根据编译值覆盖用户配置 */
+        'ssapi-search-base-url-build-seeded': false,
         'show-progress-bar': true,
         'task-notification': true,
         'task-complete-sound': true,
@@ -188,6 +192,35 @@ export default class ConfigManager {
     if (protocols && typeof protocols === 'object' && typeof protocols.ed2k === 'undefined') {
       this.setUserConfig('protocols', { ...protocols, ed2k: false })
     }
+
+    this.maybeSeedSsapiSearchBaseUrlFromBuild()
+  }
+
+  /**
+   * 方案 B：编译时可通过环境变量 SSAPI_BUILD_DEFAULT_BASE_URL 注入 https 根地址（Webpack 内联，不写死在仓库）。
+   * 仅在用户配置中 ssapi-search-base-url 仍为空且尚未完成「构建期种子」时写入一次；之后完全以用户文件为准。
+   */
+  maybeSeedSsapiSearchBaseUrlFromBuild () {
+    if (this.getUserConfig('ssapi-search-base-url-build-seeded')) {
+      return
+    }
+    const rawBuild =
+      typeof process.env.SSAPI_BUILD_DEFAULT_BASE_URL === 'string'
+        ? process.env.SSAPI_BUILD_DEFAULT_BASE_URL
+        : ''
+    const buildNorm = normalizeSsapiBaseUrl(rawBuild)
+    const current = this.getUserConfig('ssapi-search-base-url')
+    const currentStr = typeof current === 'string' ? current.trim() : ''
+
+    if (currentStr) {
+      this.setUserConfig('ssapi-search-base-url-build-seeded', true)
+      return
+    }
+
+    if (buildNorm) {
+      this.setUserConfig('ssapi-search-base-url', buildNorm)
+    }
+    this.setUserConfig('ssapi-search-base-url-build-seeded', true)
   }
 
   getSystemConfig (key, defaultValue) {

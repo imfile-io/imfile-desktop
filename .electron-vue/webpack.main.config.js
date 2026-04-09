@@ -9,6 +9,7 @@ const TerserPlugin = require('terser-webpack-plugin')
 const { dependencies } = require('../package.json')
 const { appId } = require('../electron-builder.json')
 const devMode = process.env.NODE_ENV !== 'production'
+const ssapiBuildDefaultDef = JSON.stringify(process.env.SSAPI_BUILD_DEFAULT_BASE_URL || '')
 
 /** 避免 require('punycode') 落到 Node 内置模块而触发 DEP0040（uri-js / ajv 等） */
 let punycodeUserland
@@ -21,7 +22,7 @@ try {
 /** 纯 ESM、exports 无 require，不能作 external 由主进程 CJS require */
 const BUNDLE_IN_MAIN = new Set(['@achingbrain/nat-port-mapper'])
 
-let mainConfig = {
+const mainConfig = {
   entry: {
     main: [
       path.join(__dirname, '../src/main/portable-userdata.js'),
@@ -76,9 +77,9 @@ let mainConfig = {
     minimize: !devMode,
     minimizer: [
       new TerserPlugin({
-        extractComments: false,
+        extractComments: false
       })
-    ],
+    ]
   },
   ignoreWarnings: [
     {
@@ -94,8 +95,9 @@ let mainConfig = {
 if (devMode) {
   mainConfig.plugins.push(
     new Webpack.DefinePlugin({
-      '__static': `"${path.join(__dirname, '../static').replace(/\\/g, '\\\\')}"`,
-      'appId': `"${appId}"`
+      __static: `"${path.join(__dirname, '../static').replace(/\\/g, '\\\\')}"`,
+      appId: `"${appId}"`,
+      'process.env.SSAPI_BUILD_DEFAULT_BASE_URL': ssapiBuildDefaultDef
     })
   )
 }
@@ -107,7 +109,8 @@ if (!devMode) {
   mainConfig.plugins.push(
     new Webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"',
-      'appId': `"${appId}"`
+      appId: `"${appId}"`,
+      'process.env.SSAPI_BUILD_DEFAULT_BASE_URL': ssapiBuildDefaultDef
     })
   )
 }
