@@ -121,15 +121,29 @@
                     </el-button>
                   </template>
                 </el-input>
-                <el-button
-                  class="search-reset-btn"
-                  plain
-                  size="default"
-                  :disabled="!canResetSsapiSearch"
-                  @click="onResetSsapiSearch"
-                >
-                  {{ $t('search.reset') }}
-                </el-button>
+                <div class="search-sort-controls">
+                  <el-dropdown
+                    trigger="click"
+                    :hide-on-click="true"
+                    :disabled="ssapiSearchLoading || !ssapiBaseUrlNormalized"
+                    @command="onSsapiSortCommand"
+                  >
+                    <el-button class="search-sort-trigger" plain size="default">
+                      {{ ssapiSortDisplayLabel }}
+                    </el-button>
+                    <template #dropdown>
+                      <el-dropdown-menu>
+                        <el-dropdown-item
+                          v-for="opt in ssapiSortOptions"
+                          :key="opt.value"
+                          :command="opt.value"
+                        >
+                          {{ opt.label }}
+                        </el-dropdown-item>
+                      </el-dropdown-menu>
+                    </template>
+                  </el-dropdown>
+                </div>
               </div>
               <div v-if="ssapiHistory.length" class="search-history">
                 <div class="search-history-head">
@@ -194,10 +208,10 @@
                 tooltip-effect="dark"
                 :empty-text="searchError ? searchError : $t('search.empty')"
               >
-                <el-table-column prop="name" :label="$t('search.name')" min-width="200" show-overflow-tooltip />
+                <el-table-column prop="name" :label="$t('search.name')" min-width="160" show-overflow-tooltip />
                 <el-table-column prop="sizeLabel" :label="$t('search.size')" width="120" />
                 <el-table-column prop="source" :label="$t('search.source')" width="140" show-overflow-tooltip />
-                <el-table-column min-width="220" align="right" class-name="search-actions-column">
+                <el-table-column min-width="180" align="right" class-name="search-actions-column">
                   <template #default="{ row }">
                     <div class="search-actions-cell">
                       <el-button
@@ -248,10 +262,22 @@
                 tooltip-effect="dark"
                 :empty-text="ssapiError ? ssapiError : $t('search.empty')"
               >
-                <el-table-column prop="name" :label="$t('search.name')" min-width="200" show-overflow-tooltip />
+                <el-table-column :label="$t('search.name')" min-width="160" show-overflow-tooltip>
+                  <template #default="{ row }">
+                    <el-button
+                      link
+                      type="primary"
+                      class="search-name-link"
+                      :disabled="!row.hash"
+                      @click="onOpenSsapiFiles(row)"
+                    >
+                      <span class="search-name-link-text">{{ row.name }}</span>
+                    </el-button>
+                  </template>
+                </el-table-column>
                 <el-table-column prop="sizeLabel" :label="$t('search.size')" width="120" />
                 <el-table-column prop="source" :label="$t('search.ssapi-source-seed-leech')" width="140" show-overflow-tooltip />
-                <el-table-column min-width="220" align="right" class-name="search-actions-column">
+                <el-table-column min-width="180" align="right" class-name="search-actions-column">
                   <template #default="{ row }">
                     <div class="search-actions-cell">
                       <el-button
@@ -280,6 +306,37 @@
         </template>
       </el-main>
     </el-container>
+    <el-drawer
+      v-model="ssapiFilesDrawerVisible"
+      :title="ssapiFilesDrawerTitle"
+      size="50%"
+      :append-to-body="true"
+      class="search-ssapi-files-drawer"
+    >
+      <div v-if="ssapiFilesLoading" class="search-searching-only">
+        {{ $t('search.loading-files') }}
+      </div>
+      <el-empty
+        v-else-if="ssapiFilesError"
+        :image-size="72"
+        :description="ssapiFilesError"
+      />
+      <div v-else class="mo-table-wrapper search-table-wrap">
+        <el-table
+          :data="ssapiFilesRows"
+          stripe
+          row-key="key"
+          class="search-table"
+          tooltip-effect="dark"
+          :empty-text="$t('search.empty')"
+        >
+          <el-table-column prop="index" :label="'#'" width="60" />
+          <el-table-column prop="path" :label="$t('search.file-path')" min-width="170" show-overflow-tooltip />
+          <el-table-column prop="extension" :label="$t('search.file-extension')" width="110" show-overflow-tooltip />
+          <el-table-column prop="sizeLabel" :label="$t('search.size')" width="120" />
+        </el-table>
+      </div>
+    </el-drawer>
   </el-container>
 </template>
 
@@ -312,6 +369,50 @@ import {
 
 const POLL_MS = 1000
 const MAX_POLLS = 120
+const SSAPI_SORT_FIELDS = [
+  { value: 'relevance', labelKey: 'search.sort-relevance' },
+  { value: 'seeders', labelKey: 'search.sort-seeders' },
+  { value: 'leechers', labelKey: 'search.sort-leechers' },
+  { value: 'size', labelKey: 'search.sort-size' },
+  { value: 'published_at', labelKey: 'search.sort-published-at' },
+  { value: 'updated_at', labelKey: 'search.sort-updated-at' },
+  { value: 'name', labelKey: 'search.sort-name' }
+]
+const SSAPI_FILES_LIMIT = 100
+
+function mapSsapiTorrentFiles (json) {
+  const payload = json && typeof json === 'object' ? json.data : null
+  const block =
+    payload && typeof payload === 'object' && Array.isArray(payload.items)
+      ? payload
+      : payload &&
+          typeof payload === 'object' &&
+          payload.torrent &&
+          payload.torrent.files &&
+          Array.isArray(payload.torrent.files.items)
+        ? payload.torrent.files
+        : null
+  const list = block && Array.isArray(block.items) ? block.items : []
+  return list
+    .map((item, idx) => {
+      if (!item || typeof item !== 'object') return null
+      const path = String(item.path ?? item.name ?? '').trim()
+      const extension = String(item.extension ?? '').trim()
+      const sizeRaw = Number(item.size ?? item.length ?? 0)
+      const size = Number.isFinite(sizeRaw) && sizeRaw >= 0 ? sizeRaw : 0
+      const indexRaw = Number(item.index ?? idx + 1)
+      const index = Number.isFinite(indexRaw) ? indexRaw : idx + 1
+      return {
+        key: `${index}-${path || idx}`,
+        index,
+        path: path || `#${idx + 1}`,
+        extension: extension.replace(/^\./, ''),
+        size,
+        sizeLabel: bytesToSize(size)
+      }
+    })
+    .filter(Boolean)
+}
 
 export default {
   name: 'mo-content-search',
@@ -335,10 +436,17 @@ export default {
       ssapiError: '',
       ssapiSearchLoading: false,
       ssapiSearchButtonLoading: false,
+      ssapiSortField: 'relevance',
+      ssapiSortDescending: false,
       ssapiHasSearched: false,
       ssapiHistory: [],
       ssapiDownloadingByHash: {},
-      ssapiAbortController: null
+      ssapiAbortController: null,
+      ssapiFilesDrawerVisible: false,
+      ssapiFilesDrawerTitle: '',
+      ssapiFilesLoading: false,
+      ssapiFilesError: '',
+      ssapiFilesRows: []
     }
   },
   computed: {
@@ -367,12 +475,17 @@ export default {
     hasSsapiResultRows () {
       return Array.isArray(this.ssapiRows) && this.ssapiRows.length > 0
     },
-    canResetSsapiSearch () {
-      return (
-        this.ssapiSearchLoading ||
-        this.ssapiHasSearched ||
-        Boolean((this.ssapiKeyword || '').trim())
-      )
+    ssapiSortOptions () {
+      return SSAPI_SORT_FIELDS.map((item) => ({
+        value: item.value,
+        label: this.t(item.labelKey)
+      }))
+    },
+    ssapiSortDisplayLabel () {
+      const current = this.ssapiSortOptions.find((i) => i.value === this.ssapiSortField)
+      const name = current ? current.label : this.t('search.sort-relevance')
+      const dirArrow = this.ssapiSortDescending ? '↓' : '↑'
+      return `${name} ${dirArrow}`
     },
     keyword: {
       get () {
@@ -647,20 +760,30 @@ export default {
         this.runSsapiSearch()
       }
     },
+    applySsapiSortImmediately () {
+      // 仅在已有搜索条件时即时刷新；避免仅切换控件就触发空搜索提示。
+      if (!this.ssapiHasSearched || !(this.ssapiKeyword || '').trim()) return
+      if (this.ssapiSearchLoading) {
+        this.abortSsapiRequest()
+        this.ssapiSearchLoading = false
+        this.ssapiSearchButtonLoading = false
+      }
+      this.runSsapiSearch()
+    },
+    onSsapiSortCommand (field) {
+      if (!field) return
+      // 重复点击同一项时切换升降；切换字段时默认升序。
+      if (this.ssapiSortField === field) {
+        this.ssapiSortDescending = !this.ssapiSortDescending
+      } else {
+        this.ssapiSortField = field
+        this.ssapiSortDescending = false
+      }
+      this.applySsapiSortImmediately()
+    },
     cancelSsapiSearch () {
       this.abortSsapiRequest()
       this.ssapiSearchLoading = false
-    },
-    async onResetSsapiSearch () {
-      this.ssapiSearchButtonLoading = false
-      this.abortSsapiRequest()
-      this.ssapiSearchLoading = false
-      this.ssapiHasSearched = false
-      this.ssapiKeyword = ''
-      this.ssapiRows = []
-      this.ssapiError = ''
-      this.ssapiDownloadingByHash = {}
-      ElMessage.success(this.t('search.reset-done'))
     },
     getSsapiMagnet (row) {
       return getSsapiRowMagnet(row)
@@ -741,6 +864,12 @@ export default {
             queryString: q,
             limit: SSAPI_SEARCH_DEFAULT_LIMIT,
             page: 1,
+            orderBy: [
+              {
+                field: this.ssapiSortField,
+                descending: this.ssapiSortDescending
+              }
+            ],
             totalCount: true,
             hasNextPage: true
           }),
@@ -831,6 +960,66 @@ export default {
         delete next[row.hash]
         this.ssapiDownloadingByHash = next
       }
+    },
+    async onOpenSsapiFiles (row) {
+      if (!row || !row.hash) return
+      const base = this.ssapiBaseUrlNormalized
+      if (!base) {
+        ElMessage.warning(this.t('search.ssapi-base-required-hint'))
+        return
+      }
+      const hash = String(row.hash || '').trim().toLowerCase()
+      if (!/^[a-f0-9]{40}$/.test(hash)) {
+        ElMessage.warning(this.t('search.invalid-info-hash'))
+        return
+      }
+      this.ssapiFilesDrawerVisible = true
+      this.ssapiFilesDrawerTitle = this.t('search.files-of', { name: row.name || hash })
+      this.ssapiFilesLoading = true
+      this.ssapiFilesError = ''
+      this.ssapiFilesRows = []
+      try {
+        const url = `${base}/v1/torrents/${encodeURIComponent(hash)}/files?limit=${SSAPI_FILES_LIMIT}&page=1&totalCount=1&hasNextPage=1`
+        const res = await fetch(url, { method: 'GET' })
+        const text = await res.text()
+        let json = null
+        try {
+          json = text ? JSON.parse(text) : null
+        } catch {
+          json = null
+        }
+        if (!res.ok) {
+          const msg =
+            (json && json.message) ||
+            (json && json.error) ||
+            text ||
+            this.t('search.load-files-failed')
+          this.ssapiFilesError = String(msg)
+          return
+        }
+        if (!json || typeof json !== 'object') {
+          this.ssapiFilesError = this.t('search.load-files-failed')
+          return
+        }
+        const errs = json.errors
+        if (errs != null) {
+          const arr = Array.isArray(errs) ? errs : [errs]
+          const msg = arr
+            .map((e) => (e && e.message) || (typeof e === 'string' ? e : ''))
+            .filter(Boolean)
+            .join('; ')
+          if (msg) {
+            this.ssapiFilesError = msg
+            return
+          }
+        }
+        this.ssapiFilesRows = mapSsapiTorrentFiles(json)
+      } catch (e) {
+        this.ssapiFilesError =
+          (e && e.message) ? String(e.message) : this.t('search.load-files-failed')
+      } finally {
+        this.ssapiFilesLoading = false
+      }
     }
   }
 }
@@ -910,6 +1099,23 @@ export default {
     padding-right: 0;
     flex: 1;
   }
+}
+
+.search-sort-controls {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.search-sort-trigger {
+  min-width: 128px;
+  height: 40px;
+  padding: 0 12px;
+  justify-content: space-between;
+}
+
+:deep(.search-ssapi-files-drawer .el-drawer__body) {
+  padding-top: 8px;
 }
 
 .search-reset-btn {
@@ -1014,14 +1220,40 @@ export default {
 
 .search-table {
   width: 100%;
+  table-layout: fixed;
+
+  :deep(.cell) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .search-actions-cell {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.search-name-link {
+  display: inline-flex;
+  width: 100%;
+  max-width: 100%;
+  text-align: left;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.search-name-link-text {
+  display: inline-block;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
 
