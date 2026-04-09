@@ -39,6 +39,7 @@ jobs:
       - run: pnpm run sync-go-aria2 && node .electron-vue/build.js && npx electron-builder --publish=never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}
 
       - name: Upload Linux build artifacts
         uses: actions/upload-artifact@v7
@@ -81,6 +82,7 @@ jobs:
       - run: pnpm run sync-go-aria2 && node .electron-vue/build.js && npx electron-builder --publish=never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}
 
       - name: Upload macOS build artifacts
         uses: actions/upload-artifact@v7
@@ -122,6 +124,7 @@ jobs:
       - run: pnpm run sync-go-aria2 && node .electron-vue/build.js && npx electron-builder --win --x64 --publish=never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}
 
       - name: Upload Windows x64 build artifacts
         uses: actions/upload-artifact@v7
@@ -166,6 +169,7 @@ jobs:
       - run: pnpm run sync-go-aria2 && node .electron-vue/build.js && npx electron-builder --win --arm64 --publish=never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}
 
       - name: Upload Windows ARM64 build artifacts
         uses: actions/upload-artifact@v7

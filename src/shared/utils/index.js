@@ -884,3 +884,18 @@ export {
   removeEd2kSearchHistoryItem,
   clearEd2kSearchHistory
 } from './ed2kSearchHistory'
+export {
+  normalizeSsapiBaseUrl,
+  buildSsapiSearchUrl,
+  buildMagnetFromInfoHash,
+  normalizeSsapiSearchItem,
+  mapSsapiSearchResponse,
+  getSsapiRowMagnet,
+  isValidSsapiBaseUrlOptional
+} from './ssapiSearch'
+export {
+  loadSsapiSearchHistory,
+  addSsapiSearchHistoryItem,
+  removeSsapiSearchHistoryItem,
+  clearSsapiSearchHistory
+} from './ssapiSearchHistory'

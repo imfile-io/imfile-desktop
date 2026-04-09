@@ -11,131 +11,273 @@
         <div class="search-title-wrap">
           <h4 class="search-page-title">{{ $t('search.title') }}</h4>
         </div>
-        <div class="search-toolbar">
-          <div class="search-toolbar-row">
-            <el-input
-              v-model="keyword"
-              class="search-input"
-              size="large"
-              :placeholder="$t('search.placeholder')"
-              clearable
-              :disabled="searchLoading"
-              @keyup.enter="runSearch"
-            >
-              <template #append>
-                <el-button
-                  type="primary"
-                  size="default"
-                  :loading="searchButtonLoading"
-                  @click="onSearchButtonClick"
+        <el-tabs v-model="activeSearchTab" class="search-mode-tabs">
+          <el-tab-pane :label="$t('search.tab-ed2k')" name="ed2k">
+            <div class="search-toolbar">
+              <div class="search-toolbar-row">
+                <el-input
+                  v-model="keyword"
+                  class="search-input"
+                  size="large"
+                  :placeholder="$t('search.placeholder')"
+                  clearable
+                  :disabled="searchLoading"
+                  @keyup.enter="runSearch"
                 >
-                  {{
-                    searchLoading && !searchButtonLoading
-                      ? $t('search.stop-search')
-                      : $t('search.search')
-                  }}
-                </el-button>
-              </template>
-            </el-input>
-            <el-button
-              class="search-reset-btn"
-              plain
-              size="default"
-              :disabled="!canResetSearch"
-              @click="onResetSearch"
-            >
-              {{ $t('search.reset') }}
-            </el-button>
-          </div>
-          <div v-if="searchHistory.length" class="search-history">
-            <div class="search-history-head">
-              <span class="search-history-label">{{ $t('search.history-label') }}</span>
-              <el-button
-                link
-                type="danger"
-                size="small"
-                @click="clearAllHistory"
-              >
-                {{ $t('search.clear-history') }}
-              </el-button>
-            </div>
-            <div class="search-history-tags">
-              <el-tag
-                v-for="(item, idx) in searchHistory"
-                :key="idx + '-' + item"
-                class="search-history-tag"
-                closable
-                @click="onHistoryTagClick(item, $event)"
-                @close="removeHistoryItem(item)"
-              >
-                {{ item }}
-              </el-tag>
-            </div>
-          </div>
-        </div>
-      </el-header>
-      <el-main class="panel-content search-panel-main">
-        <el-alert
-          v-if="hasSearched && resultsTruncated"
-          type="warning"
-          :closable="false"
-          show-icon
-          class="search-truncate-alert"
-        >
-          {{ $t('search.results-truncated', { max: maxSearchResults }) }}
-        </el-alert>
-        <div v-if="!hasSearched" class="search-empty-state">
-          <el-empty
-            class="search-el-empty"
-            :image-size="80"
-            :description="$t('search.initial-hint')"
-          />
-        </div>
-        <div
-          v-else-if="searchLoading && !hasResultRows"
-          class="search-searching-only"
-        >
-          {{ $t('search.searching') }}
-        </div>
-        <div v-else class="search-results">
-          <div class="mo-table-wrapper search-table-wrap">
-            <el-table
-              :data="displayedRows"
-              stripe
-              row-key="hash"
-              class="search-table"
-              tooltip-effect="dark"
-              :empty-text="searchError ? searchError : $t('search.empty')"
-            >
-              <el-table-column prop="name" :label="$t('search.name')" min-width="200" show-overflow-tooltip />
-              <el-table-column prop="sizeLabel" :label="$t('search.size')" width="120" />
-              <el-table-column prop="source" :label="$t('search.source')" width="140" show-overflow-tooltip />
-              <el-table-column min-width="220" align="right" class-name="search-actions-column">
-                <template #default="{ row }">
-                  <div class="search-actions-cell">
-                    <el-button
-                      plain
-                      size="small"
-                      :disabled="!getEd2kUri(row)"
-                      @click="onCopyLink(row)"
-                    >
-                      {{ $t('search.copy-link') }}
-                    </el-button>
+                  <template #append>
                     <el-button
                       type="primary"
-                      size="small"
-                      :loading="Boolean(downloadingByHash[row.hash])"
-                      :disabled="!row.hash"
-                      @click="onDownload(row)"
+                      size="default"
+                      :loading="searchButtonLoading"
+                      @click="onSearchButtonClick"
                     >
-                      {{ $t('search.download') }}
+                      {{
+                        searchLoading && !searchButtonLoading
+                          ? $t('search.stop-search')
+                          : $t('search.search')
+                      }}
                     </el-button>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
+                  </template>
+                </el-input>
+                <el-button
+                  class="search-reset-btn"
+                  plain
+                  size="default"
+                  :disabled="!canResetSearch"
+                  @click="onResetSearch"
+                >
+                  {{ $t('search.reset') }}
+                </el-button>
+              </div>
+              <div v-if="searchHistory.length" class="search-history">
+                <div class="search-history-head">
+                  <span class="search-history-label">{{ $t('search.history-label') }}</span>
+                  <el-button
+                    link
+                    type="danger"
+                    size="small"
+                    @click="clearAllHistory"
+                  >
+                    {{ $t('search.clear-history') }}
+                  </el-button>
+                </div>
+                <div class="search-history-tags">
+                  <el-tag
+                    v-for="(item, idx) in searchHistory"
+                    :key="idx + '-' + item"
+                    class="search-history-tag"
+                    closable
+                    @click="onHistoryTagClick(item, $event)"
+                    @close="removeHistoryItem(item)"
+                  >
+                    {{ item }}
+                  </el-tag>
+                </div>
+              </div>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane :label="$t('search.tab-bt')" name="ssapi">
+            <div class="search-toolbar">
+              <el-alert
+                v-if="!ssapiBaseUrlNormalized"
+                type="info"
+                :closable="false"
+                show-icon
+                class="search-ssapi-config-alert"
+              >
+                <span>{{ $t('search.ssapi-base-required-hint') }}</span>
+                <el-button
+                  link
+                  type="primary"
+                  class="search-ssapi-open-pref"
+                  @click="openSsapiPreference"
+                >
+                  {{ $t('search.open-preferences') }}
+                </el-button>
+              </el-alert>
+              <div class="search-toolbar-row">
+                <el-input
+                  v-model="ssapiKeyword"
+                  class="search-input"
+                  size="large"
+                  :placeholder="$t('search.ssapi-placeholder')"
+                  clearable
+                  :disabled="ssapiSearchLoading || !ssapiBaseUrlNormalized"
+                  @keyup.enter="runSsapiSearch"
+                >
+                  <template #append>
+                    <el-button
+                      type="primary"
+                      size="default"
+                      :loading="ssapiSearchButtonLoading"
+                      :disabled="!ssapiBaseUrlNormalized"
+                      @click="onSsapiSearchButtonClick"
+                    >
+                      {{
+                        ssapiSearchLoading && !ssapiSearchButtonLoading
+                          ? $t('search.stop-search')
+                          : $t('search.search')
+                      }}
+                    </el-button>
+                  </template>
+                </el-input>
+                <el-button
+                  class="search-reset-btn"
+                  plain
+                  size="default"
+                  :disabled="!canResetSsapiSearch"
+                  @click="onResetSsapiSearch"
+                >
+                  {{ $t('search.reset') }}
+                </el-button>
+              </div>
+              <div v-if="ssapiHistory.length" class="search-history">
+                <div class="search-history-head">
+                  <span class="search-history-label">{{ $t('search.history-label') }}</span>
+                  <el-button
+                    link
+                    type="danger"
+                    size="small"
+                    @click="clearAllSsapiHistory"
+                  >
+                    {{ $t('search.clear-history') }}
+                  </el-button>
+                </div>
+                <div class="search-history-tags">
+                  <el-tag
+                    v-for="(item, idx) in ssapiHistory"
+                    :key="'s-' + idx + '-' + item"
+                    class="search-history-tag"
+                    closable
+                    @click="onSsapiHistoryTagClick(item, $event)"
+                    @close="removeSsapiHistoryItem(item)"
+                  >
+                    {{ item }}
+                  </el-tag>
+                </div>
+              </div>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+      </el-header>
+      <el-main class="panel-content search-panel-main">
+        <template v-if="activeSearchTab === 'ed2k'">
+          <el-alert
+            v-if="hasSearched && resultsTruncated"
+            type="warning"
+            :closable="false"
+            show-icon
+            class="search-truncate-alert"
+          >
+            {{ $t('search.results-truncated', { max: maxSearchResults }) }}
+          </el-alert>
+          <div v-if="!hasSearched" class="search-empty-state">
+            <el-empty
+              class="search-el-empty"
+              :image-size="80"
+              :description="$t('search.initial-hint')"
+            />
           </div>
-        </div>
+          <div
+            v-else-if="searchLoading && !hasResultRows"
+            class="search-searching-only"
+          >
+            {{ $t('search.searching') }}
+          </div>
+          <div v-else class="search-results">
+            <div class="mo-table-wrapper search-table-wrap">
+              <el-table
+                :data="displayedRows"
+                stripe
+                row-key="hash"
+                class="search-table"
+                tooltip-effect="dark"
+                :empty-text="searchError ? searchError : $t('search.empty')"
+              >
+                <el-table-column prop="name" :label="$t('search.name')" min-width="200" show-overflow-tooltip />
+                <el-table-column prop="sizeLabel" :label="$t('search.size')" width="120" />
+                <el-table-column prop="source" :label="$t('search.source')" width="140" show-overflow-tooltip />
+                <el-table-column min-width="220" align="right" class-name="search-actions-column">
+                  <template #default="{ row }">
+                    <div class="search-actions-cell">
+                      <el-button
+                        plain
+                        size="small"
+                        :disabled="!getEd2kUri(row)"
+                        @click="onCopyLink(row)"
+                      >
+                        {{ $t('search.copy-link') }}
+                      </el-button>
+                      <el-button
+                        type="primary"
+                        size="small"
+                        :loading="Boolean(downloadingByHash[row.hash])"
+                        :disabled="!row.hash"
+                        @click="onDownload(row)"
+                      >
+                        {{ $t('search.download') }}
+                      </el-button>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <div v-if="!ssapiHasSearched" class="search-empty-state">
+            <el-empty
+              class="search-el-empty"
+              :image-size="80"
+              :description="ssapiEmptyDescription"
+            />
+          </div>
+          <div
+            v-else-if="ssapiSearchLoading && !hasSsapiResultRows"
+            class="search-searching-only"
+          >
+            {{ $t('search.searching') }}
+          </div>
+          <div v-else class="search-results">
+            <div class="mo-table-wrapper search-table-wrap">
+              <el-table
+                :data="displayedSsapiRows"
+                stripe
+                row-key="hash"
+                class="search-table"
+                tooltip-effect="dark"
+                :empty-text="ssapiError ? ssapiError : $t('search.empty')"
+              >
+                <el-table-column prop="name" :label="$t('search.name')" min-width="200" show-overflow-tooltip />
+                <el-table-column prop="sizeLabel" :label="$t('search.size')" width="120" />
+                <el-table-column prop="source" :label="$t('search.ssapi-source-seed-leech')" width="140" show-overflow-tooltip />
+                <el-table-column min-width="220" align="right" class-name="search-actions-column">
+                  <template #default="{ row }">
+                    <div class="search-actions-cell">
+                      <el-button
+                        plain
+                        size="small"
+                        :disabled="!getSsapiMagnet(row)"
+                        @click="onCopySsapiMagnet(row)"
+                      >
+                        {{ $t('search.copy-magnet') }}
+                      </el-button>
+                      <el-button
+                        type="primary"
+                        size="small"
+                        :loading="Boolean(ssapiDownloadingByHash[row.hash])"
+                        :disabled="!getSsapiMagnet(row)"
+                        @click="onDownloadSsapi(row)"
+                      >
+                        {{ $t('search.download') }}
+                      </el-button>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </div>
+        </template>
       </el-main>
     </el-container>
   </el-container>
@@ -147,7 +289,7 @@ import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import SubnavFooter from '@/components/Subnav/SubnavFooter.vue'
 import api from '@/api'
-import { GOED2K_SEARCH_MAX_RESULTS } from '@shared/constants'
+import { GOED2K_SEARCH_MAX_RESULTS, SSAPI_SEARCH_DEFAULT_LIMIT } from '@shared/constants'
 import {
   bytesToSize,
   mapSearchResultsFromDto,
@@ -157,7 +299,15 @@ import {
   loadEd2kSearchHistory,
   addEd2kSearchHistoryItem,
   removeEd2kSearchHistoryItem,
-  clearEd2kSearchHistory
+  clearEd2kSearchHistory,
+  normalizeSsapiBaseUrl,
+  buildSsapiSearchUrl,
+  mapSsapiSearchResponse,
+  getSsapiRowMagnet,
+  loadSsapiSearchHistory,
+  addSsapiSearchHistoryItem,
+  removeSsapiSearchHistoryItem,
+  clearSsapiSearchHistory
 } from '@shared/utils'
 
 const POLL_MS = 1000
@@ -174,14 +324,27 @@ export default {
   },
   data () {
     return {
+      activeSearchTab: 'ed2k',
       searchButtonLoading: false,
       pollTimer: null,
       pollInFlight: false,
       downloadingByHash: {},
-      searchHistory: []
+      searchHistory: [],
+      ssapiKeyword: '',
+      ssapiRows: [],
+      ssapiError: '',
+      ssapiSearchLoading: false,
+      ssapiSearchButtonLoading: false,
+      ssapiHasSearched: false,
+      ssapiHistory: [],
+      ssapiDownloadingByHash: {},
+      ssapiAbortController: null
     }
   },
   computed: {
+    ...mapState('preference', {
+      preferenceConfig: (state) => state.config
+    }),
     ...mapState('search', [
       'hasSearched',
       'searchRows',
@@ -189,6 +352,28 @@ export default {
       'searchLoading',
       'resultsTruncated'
     ]),
+    ssapiBaseUrlNormalized () {
+      const raw = this.preferenceConfig && this.preferenceConfig.ssapiSearchBaseUrl
+      return normalizeSsapiBaseUrl(raw)
+    },
+    ssapiEmptyDescription () {
+      return this.ssapiBaseUrlNormalized
+        ? this.t('search.ssapi-initial-hint')
+        : this.t('search.ssapi-base-required-hint')
+    },
+    displayedSsapiRows () {
+      return this.ssapiRows
+    },
+    hasSsapiResultRows () {
+      return Array.isArray(this.ssapiRows) && this.ssapiRows.length > 0
+    },
+    canResetSsapiSearch () {
+      return (
+        this.ssapiSearchLoading ||
+        this.ssapiHasSearched ||
+        Boolean((this.ssapiKeyword || '').trim())
+      )
+    },
     keyword: {
       get () {
         return this.$store.state.search.keyword
@@ -212,10 +397,12 @@ export default {
   },
   mounted () {
     this.searchHistory = loadEd2kSearchHistory()
+    this.ssapiHistory = loadSsapiSearchHistory()
     this.resumeSearchIfNeeded()
   },
   unmounted () {
     this.stopPolling()
+    this.abortSsapiRequest()
   },
   methods: {
     ...mapMutations('search', {
@@ -441,6 +628,209 @@ export default {
         delete next[row.hash]
         this.downloadingByHash = next
       }
+    },
+    openSsapiPreference () {
+      this.$router.push({ path: '/preference/advanced' }).catch(() => {})
+    },
+    abortSsapiRequest () {
+      if (this.ssapiAbortController) {
+        try {
+          this.ssapiAbortController.abort()
+        } catch (_) {}
+        this.ssapiAbortController = null
+      }
+    },
+    onSsapiSearchButtonClick () {
+      if (this.ssapiSearchLoading && !this.ssapiSearchButtonLoading) {
+        this.cancelSsapiSearch()
+      } else {
+        this.runSsapiSearch()
+      }
+    },
+    cancelSsapiSearch () {
+      this.abortSsapiRequest()
+      this.ssapiSearchLoading = false
+    },
+    async onResetSsapiSearch () {
+      this.ssapiSearchButtonLoading = false
+      this.abortSsapiRequest()
+      this.ssapiSearchLoading = false
+      this.ssapiHasSearched = false
+      this.ssapiKeyword = ''
+      this.ssapiRows = []
+      this.ssapiError = ''
+      this.ssapiDownloadingByHash = {}
+      ElMessage.success(this.t('search.reset-done'))
+    },
+    getSsapiMagnet (row) {
+      return getSsapiRowMagnet(row)
+    },
+    async onCopySsapiMagnet (row) {
+      const uri = getSsapiRowMagnet(row)
+      if (!uri) return
+      try {
+        await navigator.clipboard.writeText(uri)
+        ElMessage.success(this.t('search.copy-magnet-success'))
+      } catch {
+        ElMessage.error(this.t('search.copy-link-fail'))
+      }
+    },
+    onSsapiHistoryTagClick (item, e) {
+      if (e && e.target && e.target.closest && e.target.closest('.el-tag__close')) {
+        return
+      }
+      this.ssapiKeyword = item
+      this.runSsapiSearch()
+    },
+    removeSsapiHistoryItem (item) {
+      removeSsapiSearchHistoryItem(item)
+      this.ssapiHistory = loadSsapiSearchHistory()
+    },
+    async clearAllSsapiHistory () {
+      try {
+        await ElMessageBox.confirm(
+          this.t('search.clear-history-confirm'),
+          this.t('search.clear-history'),
+          {
+            type: 'warning',
+            confirmButtonText: this.t('app.yes'),
+            cancelButtonText: this.t('app.cancel')
+          }
+        )
+      } catch {
+        return
+      }
+      clearSsapiSearchHistory()
+      this.ssapiHistory = []
+    },
+    async runSsapiSearch () {
+      const q = (this.ssapiKeyword || '').trim()
+      if (!q) {
+        ElMessage.warning(this.t('search.query-required'))
+        return
+      }
+      const base = this.ssapiBaseUrlNormalized
+      if (!base) {
+        ElMessage.warning(this.t('search.ssapi-base-required-hint'))
+        return
+      }
+      if (this.ssapiSearchLoading) {
+        return
+      }
+      const url = buildSsapiSearchUrl(base)
+      if (!url) {
+        ElMessage.warning(this.t('search.ssapi-base-required-hint'))
+        return
+      }
+
+      this.abortSsapiRequest()
+      const controller = new AbortController()
+      this.ssapiAbortController = controller
+
+      this.ssapiHasSearched = true
+      this.ssapiSearchLoading = true
+      this.ssapiSearchButtonLoading = true
+      this.ssapiError = ''
+      this.ssapiRows = []
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            queryString: q,
+            limit: SSAPI_SEARCH_DEFAULT_LIMIT,
+            page: 1,
+            totalCount: true,
+            hasNextPage: true
+          }),
+          signal: controller.signal
+        })
+
+        const text = await res.text()
+        let json = null
+        try {
+          json = text ? JSON.parse(text) : null
+        } catch {
+          json = null
+        }
+
+        if (!res.ok) {
+          const msg =
+            (json && json.message) ||
+            (json && json.error) ||
+            text ||
+            this.t('search.search-failed')
+          this.ssapiError = String(msg)
+          ElMessage.error(this.ssapiError)
+          return
+        }
+
+        if (!json || typeof json !== 'object') {
+          this.ssapiError = this.t('search.search-failed')
+          ElMessage.error(this.ssapiError)
+          return
+        }
+
+        const gqlErrs = json.errors
+        if (gqlErrs != null) {
+          const arr = Array.isArray(gqlErrs) ? gqlErrs : [gqlErrs]
+          const msg = arr
+            .map((e) => (e && e.message) || (typeof e === 'string' ? e : ''))
+            .filter(Boolean)
+            .join('; ')
+          if (msg) {
+            this.ssapiError = msg
+            ElMessage.error(msg)
+            return
+          }
+        }
+
+        const mapped = mapSsapiSearchResponse(json)
+        this.ssapiRows = mapped.rows.map((r) => ({
+          ...r,
+          sizeLabel: bytesToSize(r.sizeBytes)
+        }))
+
+        addSsapiSearchHistoryItem(q)
+        this.ssapiHistory = loadSsapiSearchHistory()
+      } catch (e) {
+        if (e && e.name === 'AbortError') {
+          return
+        }
+        const msg =
+          (e && e.message) ? String(e.message) : this.t('search.search-failed')
+        this.ssapiError = msg
+        ElMessage.error(msg)
+      } finally {
+        this.ssapiAbortController = null
+        this.ssapiSearchLoading = false
+        this.ssapiSearchButtonLoading = false
+      }
+    },
+    async onDownloadSsapi (row) {
+      const magnet = getSsapiRowMagnet(row)
+      if (!magnet || !row || !row.hash) return
+      this.ssapiDownloadingByHash = {
+        ...this.ssapiDownloadingByHash,
+        [row.hash]: true
+      }
+      try {
+        await this.$store.dispatch('task/addUri', {
+          uris: [magnet],
+          options: {}
+        })
+        ElMessage.success(this.t('search.download-started'))
+        await this.$store.dispatch('task/fetchAllList')
+      } catch (e) {
+        ElMessage.error(
+          (e && e.message) || this.t('search.download-failed')
+        )
+      } finally {
+        const next = { ...this.ssapiDownloadingByHash }
+        delete next[row.hash]
+        this.ssapiDownloadingByHash = next
+      }
     }
   }
 }
@@ -476,6 +866,33 @@ export default {
   font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0.04em;
+}
+
+.search-mode-tabs {
+  margin: 12px auto 0;
+  max-width: 720px;
+  width: 100%;
+
+  :deep(.el-tabs__header) {
+    margin-bottom: 0;
+  }
+
+  :deep(.el-tabs__nav-wrap) {
+    justify-content: center;
+  }
+
+  :deep(.el-tabs__content) {
+    overflow: visible;
+  }
+}
+
+.search-ssapi-config-alert {
+  margin-bottom: 12px;
+}
+
+.search-ssapi-open-pref {
+  margin-left: 8px;
+  vertical-align: baseline;
 }
 
 .search-toolbar {
