@@ -464,7 +464,9 @@ export default {
       ssapiFilesDrawerTitle: '',
       ssapiFilesLoading: false,
       ssapiFilesError: '',
-      ssapiFilesRows: []
+      ssapiFilesRows: [],
+      /** 避免反复用 URL 的 tab 覆盖用户在界面上的 Tab 切换 */
+      routeSearchQuerySynced: false
     }
   },
   computed: {
@@ -551,10 +553,21 @@ export default {
       return this.searchLoading || this.hasSearched || Boolean((this.keyword || '').trim())
     }
   },
+  watch: {
+    '$route' (to, from) {
+      if (to.name !== 'search') return
+      if (from && from.name === to.name) {
+        this.applyRouteSearchQuery()
+      }
+    }
+  },
   mounted () {
     this.searchHistory = loadEd2kSearchHistory()
     this.ssapiHistory = loadSsapiSearchHistory()
     this.resumeSearchIfNeeded()
+    this.$nextTick(() => {
+      this.applyRouteSearchQuery()
+    })
   },
   unmounted () {
     this.stopPolling()
@@ -787,6 +800,56 @@ export default {
     },
     openSsapiPreference () {
       this.$router.push({ path: '/preference/advanced' }).catch(() => {})
+    },
+    /**
+     * 从任务页等通过 /search?tab=&q=&run=1 进入时同步关键词并可选自动搜索。
+     * 注意：不可在每次调用时都用 URL 的 tab 覆盖 activeSearchTab，否则用户无法切换到 BT。
+     */
+    async applyRouteSearchQuery () {
+      const q = this.$route.query
+      if (!q || typeof q !== 'object') return
+      const tab = q.tab === 'ssapi' ? 'ssapi' : 'ed2k'
+      const keyword = typeof q.q === 'string' ? q.q.trim() : ''
+      const shouldRun = q.run === '1' || q.run === 'true'
+
+      if (shouldRun && keyword) {
+        this.routeSearchQuerySynced = true
+        this.activeSearchTab = tab
+        if (tab === 'ed2k') {
+          this.$store.commit('search/UPDATE_SEARCH_KEYWORD', keyword)
+        } else {
+          this.ssapiKeyword = keyword
+        }
+        await this.$nextTick()
+        try {
+          if (tab === 'ed2k') {
+            await this.runSearch()
+          } else {
+            await this.runSsapiSearch()
+          }
+        } finally {
+          const nextQuery = { ...this.$route.query }
+          if (nextQuery.run != null) {
+            delete nextQuery.run
+            this.$router.replace({ query: nextQuery }).catch(() => {})
+          }
+        }
+        return
+      }
+
+      if (!this.routeSearchQuerySynced) {
+        this.routeSearchQuerySynced = true
+        if (q.tab === 'ssapi' || q.tab === 'ed2k') {
+          this.activeSearchTab = tab
+        }
+        if (keyword) {
+          if (tab === 'ed2k') {
+            this.$store.commit('search/UPDATE_SEARCH_KEYWORD', keyword)
+          } else {
+            this.ssapiKeyword = keyword
+          }
+        }
+      }
     },
     abortSsapiRequest () {
       if (this.ssapiAbortController) {

@@ -22,7 +22,74 @@
         <mo-subnav-switcher :title="title" :subnavs="subnavs" class="hidden-sm-and-up" />
         <mo-task-actions />
       </el-header> -->
-      <el-header class="panel-header task-panel-toolbar" height="auto">
+      <el-header class="panel-header task-panel-toolbar task-panel-header-stacked" height="auto">
+        <div class="task-page-search-entry non-draggable">
+          <el-tabs v-model="taskSearchEntryTab" class="search-mode-tabs task-search-entry-tabs">
+            <el-tab-pane :label="$t('search.tab-ed2k')" name="ed2k">
+              <div class="task-search-toolbar">
+                <div class="task-search-toolbar-row">
+                  <el-input
+                    v-model="taskEntryEd2k"
+                    class="task-search-input"
+                    size="large"
+                    :placeholder="$t('search.placeholder')"
+                    clearable
+                    @keyup.enter="goToSearchFromTask"
+                  >
+                    <template #append>
+                      <el-button type="primary" size="default" @click="goToSearchFromTask">
+                        {{ $t('search.search') }}
+                      </el-button>
+                    </template>
+                  </el-input>
+                </div>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane :label="$t('search.tab-bt')" name="ssapi">
+              <div class="task-search-toolbar">
+                <el-alert
+                  v-if="!taskSsapiBaseNormalized"
+                  type="info"
+                  :closable="false"
+                  show-icon
+                  class="task-search-ssapi-alert"
+                >
+                  <span>{{ $t('search.ssapi-base-required-hint') }}</span>
+                  <el-button
+                    link
+                    type="primary"
+                    class="task-search-open-pref"
+                    @click="openTaskSsapiPreference"
+                  >
+                    {{ $t('search.open-preferences') }}
+                  </el-button>
+                </el-alert>
+                <div class="task-search-toolbar-row">
+                  <el-input
+                    v-model="taskEntrySsapi"
+                    class="task-search-input"
+                    size="large"
+                    :placeholder="$t('search.ssapi-placeholder')"
+                    clearable
+                    :disabled="!taskSsapiBaseNormalized"
+                    @keyup.enter="goToSearchFromTask"
+                  >
+                    <template #append>
+                      <el-button
+                        type="primary"
+                        size="default"
+                        :disabled="!taskSsapiBaseNormalized"
+                        @click="goToSearchFromTask"
+                      >
+                        {{ $t('search.search') }}
+                      </el-button>
+                    </template>
+                  </el-input>
+                </div>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
         <div class="task-toolbar">
           <el-input
             v-if="taskList.length > 0"
@@ -53,6 +120,7 @@
 import { dialog } from '@electron/remote'
 import { mapState } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import { ElMessage } from 'element-plus'
 
 import { commands } from '@/components/CommandManager/instance'
 import { ADD_TASK_TYPE } from '@shared/constants'
@@ -64,7 +132,8 @@ import SubnavSwitcher from '@/components/Subnav/SubnavSwitcher'
 import {
   getTaskName,
   getTaskUri,
-  parseHeader
+  parseHeader,
+  normalizeSsapiBaseUrl
 } from '@shared/utils'
 import {
   delayDeleteTaskFiles,
@@ -93,7 +162,10 @@ export default {
   },
   data () {
     return {
-      taskSearchQuery: ''
+      taskSearchQuery: '',
+      taskSearchEntryTab: 'ed2k',
+      taskEntryEd2k: '',
+      taskEntrySsapi: ''
     }
   },
   computed: {
@@ -103,8 +175,13 @@ export default {
       selectedTaskKeyListCount: state => state.selectedTaskKeyList.length
     }),
     ...mapState('preference', {
+      preferenceConfig: state => state.config,
       noConfirmBeforeDelete: state => state.config.noConfirmBeforeDeleteTask
     }),
+    taskSsapiBaseNormalized () {
+      const raw = this.preferenceConfig && this.preferenceConfig.ssapiSearchBaseUrl
+      return normalizeSsapiBaseUrl(raw)
+    },
     subnavs () {
       return [
         {
@@ -160,6 +237,30 @@ export default {
     status: 'onStatusChange'
   },
   methods: {
+    openTaskSsapiPreference () {
+      this.$router.push({ path: '/preference/advanced' }).catch(() => {})
+    },
+    goToSearchFromTask () {
+      const tab = this.taskSearchEntryTab
+      const q =
+        tab === 'ed2k'
+          ? (this.taskEntryEd2k || '').trim()
+          : (this.taskEntrySsapi || '').trim()
+      if (!q) {
+        ElMessage.warning(this.t('search.query-required'))
+        return
+      }
+      if (tab === 'ssapi' && !this.taskSsapiBaseNormalized) {
+        ElMessage.warning(this.t('search.ssapi-base-required-hint'))
+        return
+      }
+      this.$router
+        .push({
+          name: 'search',
+          query: { tab, q, run: '1' }
+        })
+        .catch(() => {})
+    },
     nav (status = 'all') {
       this.$router.push({
         path: `/task/${status}`
@@ -509,12 +610,63 @@ export default {
 </script>
 
 <style lang="scss">
-/* 特异性需高于 .panel .panel-header，否则会沿用全局 padding 且与标题栏叠在一起 */
-.panel .panel-header.task-panel-toolbar {
-  padding-top: 56px;
+/* 勿将 padding-top 置 0：置顶 TitleBar（fixed + drag）会盖住首行，导致 el-tabs 无法点击 */
+.panel .panel-header.task-panel-toolbar.task-panel-header-stacked {
   padding-bottom: 10px;
   overflow: visible;
 }
+
+.task-page-search-entry {
+  width: 100%;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+  -webkit-app-region: no-drag;
+}
+
+.task-search-entry-tabs.search-mode-tabs {
+  margin: 0 auto;
+  max-width: 720px;
+  width: 100%;
+
+  :deep(.el-tabs__header) {
+    margin-bottom: 0;
+  }
+
+  :deep(.el-tabs__nav-wrap) {
+    justify-content: center;
+  }
+
+  :deep(.el-tabs__content) {
+    overflow: visible;
+  }
+}
+
+.task-search-toolbar {
+  margin: 12px auto 0;
+  max-width: 720px;
+  width: 100%;
+}
+
+.task-search-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .task-search-input {
+    flex: 1;
+    padding-right: 0;
+  }
+}
+
+.task-search-ssapi-alert {
+  margin-bottom: 12px;
+}
+
+.task-search-open-pref {
+  margin-left: 8px;
+  vertical-align: baseline;
+}
+
 .task-toolbar {
   display: flex;
   align-items: center;
