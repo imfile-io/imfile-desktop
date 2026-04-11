@@ -867,122 +867,130 @@ export default {
       }
     },
     submitForm (formName) {
-      this.$refs[formName].validate(async (valid) => {
+      const formRef = this.$refs[formName]
+      if (!formRef) {
+        return
+      }
+      // 勿使用 validate(async () => {})：Element Plus 对异步回调的校验链不完整时会导致
+      // 保存逻辑与提示不执行；改为同步回调并调用独立 async 方法。
+      formRef.validate((valid) => {
         if (!valid) {
           console.error('[imFile] preference form valid:', valid)
-          return false
-        }
-
-        if (!isValidSsapiBaseUrlOptional(this.form.ssapiSearchBaseUrl)) {
-          this.$msg.error(this.t('preferences.ssapi-search-base-url-invalid'))
-          return false
-        }
-
-        this.form.ssapiSearchBaseUrl =
-          normalizeSsapiBaseUrl(this.form.ssapiSearchBaseUrl) || ''
-
-        const data = {
-          ...diffConfig(this.formOriginal, this.form),
-          ...changedConfig.basic
-        }
-
-        const origTrackerNorm = reduceTrackerString(
-          convertLineToComma(String(this.formOriginal.btTracker ?? ''))
-        )
-        const nextTrackerNorm = reduceTrackerString(
-          convertLineToComma(String(this.form.btTracker ?? ''))
-        )
-        if (origTrackerNorm !== nextTrackerNorm) {
-          data.btTracker = this.form.btTracker
-        }
-
-        let engineSwitched = false
-        if (
-          Object.prototype.hasOwnProperty.call(data, 'downloadEngine') &&
-          data.downloadEngine !== this.formOriginal.downloadEngine
-        ) {
-          try {
-            const res = await this.$electron.ipcRenderer.invoke(
-              'application:switch-download-engine',
-              { backend: data.downloadEngine }
-            )
-            if (!res || !res.ok) {
-              this.$msg.error(
-                (res && res.error) ||
-                  this.t('preferences.download-engine-switch-failed')
-              )
-              return false
-            }
-            engineSwitched = true
-          } catch (e) {
-            console.error(e)
-            this.$msg.error(this.t('preferences.download-engine-switch-failed'))
-            return false
-          }
-          delete data.downloadEngine
-        }
-
-        const {
-          autoHideWindow,
-          btAutoDownloadContent,
-          btTracker,
-          rpcListenPort
-        } = data
-
-        if ('btAutoDownloadContent' in data) {
-          data.followTorrent = btAutoDownloadContent
-          data.followMetalink = btAutoDownloadContent
-          data.pauseMetadata = !btAutoDownloadContent
-        }
-
-        if (btTracker) {
-          data.btTracker = reduceTrackerString(convertLineToComma(btTracker))
-        }
-
-        if (rpcListenPort === EMPTY_STRING) {
-          data.rpcListenPort = this.rpcDefaultPort
-        }
-
-        console.log('[imFile] preference changed data:', data)
-
-        changedConfig.basic = {}
-        changedConfig.advanced = {}
-
-        if (isEmpty(data)) {
-          if (engineSwitched) {
-            await this.$store.dispatch('preference/fetchPreference')
-            this.syncFormConfig()
-            await this.loadDownloadEngineInfo()
-            await this.$store.dispatch('app/fetchEngineOptions')
-            this.$msg.success(this.t('preferences.save-success-message'))
-          } else {
-            this.$msg.info(this.t('preferences.no-changes-to-save'))
-          }
           return
         }
-
-        this.$store.dispatch('preference/save', data)
-          .then(() => {
-            this.$store.dispatch('app/fetchEngineOptions')
-            this.syncFormConfig()
-            this.loadDownloadEngineInfo()
-            this.$msg.success(this.t('preferences.save-success-message'))
-          })
-          .catch((e) => {
-            this.$msg.success(this.t('preferences.save-fail-message'))
-          })
-
-        if (this.isRenderer) {
-          if ('autoHideWindow' in data) {
-            this.$electron.ipcRenderer.send('command',
-              'application:auto-hide-window', autoHideWindow)
-          }
-
-          if (checkIsNeedRestart(data)) {
-            this.$electron.ipcRenderer.send('command', 'application:relaunch')
-          }
-        }
+        void this.runAdvancedPreferenceSubmit()
       })
+    },
+    async runAdvancedPreferenceSubmit () {
+      if (!isValidSsapiBaseUrlOptional(this.form.ssapiSearchBaseUrl)) {
+        this.$msg.error(this.t('preferences.ssapi-search-base-url-invalid'))
+        return
+      }
+
+      this.form.ssapiSearchBaseUrl =
+        normalizeSsapiBaseUrl(this.form.ssapiSearchBaseUrl) || ''
+
+      const data = {
+        ...diffConfig(this.formOriginal, this.form),
+        ...changedConfig.basic
+      }
+
+      const origTrackerNorm = reduceTrackerString(
+        convertLineToComma(String(this.formOriginal.btTracker ?? ''))
+      )
+      const nextTrackerNorm = reduceTrackerString(
+        convertLineToComma(String(this.form.btTracker ?? ''))
+      )
+      if (origTrackerNorm !== nextTrackerNorm) {
+        data.btTracker = this.form.btTracker
+      }
+
+      let engineSwitched = false
+      if (
+        Object.prototype.hasOwnProperty.call(data, 'downloadEngine') &&
+        data.downloadEngine !== this.formOriginal.downloadEngine
+      ) {
+        try {
+          const res = await this.$electron.ipcRenderer.invoke(
+            'application:switch-download-engine',
+            { backend: data.downloadEngine }
+          )
+          if (!res || !res.ok) {
+            this.$msg.error(
+              (res && res.error) ||
+                this.t('preferences.download-engine-switch-failed')
+            )
+            return
+          }
+          engineSwitched = true
+        } catch (e) {
+          console.error(e)
+          this.$msg.error(this.t('preferences.download-engine-switch-failed'))
+          return
+        }
+        delete data.downloadEngine
+      }
+
+      const {
+        autoHideWindow,
+        btAutoDownloadContent,
+        btTracker,
+        rpcListenPort
+      } = data
+
+      if ('btAutoDownloadContent' in data) {
+        data.followTorrent = btAutoDownloadContent
+        data.followMetalink = btAutoDownloadContent
+        data.pauseMetadata = !btAutoDownloadContent
+      }
+
+      if (btTracker) {
+        data.btTracker = reduceTrackerString(convertLineToComma(btTracker))
+      }
+
+      if (rpcListenPort === EMPTY_STRING) {
+        data.rpcListenPort = this.rpcDefaultPort
+      }
+
+      console.log('[imFile] preference changed data:', data)
+
+      changedConfig.basic = {}
+      changedConfig.advanced = {}
+
+      if (isEmpty(data)) {
+        if (engineSwitched) {
+          await this.$store.dispatch('preference/fetchPreference')
+          this.syncFormConfig()
+          await this.loadDownloadEngineInfo()
+          await this.$store.dispatch('app/fetchEngineOptions')
+          this.$msg.success(this.t('preferences.save-success-message'))
+        } else {
+          this.$msg.info(this.t('preferences.no-changes-to-save'))
+        }
+        return
+      }
+
+      try {
+        await this.$store.dispatch('preference/save', data)
+        await this.$store.dispatch('app/fetchEngineOptions')
+        this.syncFormConfig()
+        await this.loadDownloadEngineInfo()
+        this.$msg.success(this.t('preferences.save-success-message'))
+      } catch (e) {
+        console.error('[imFile] preference save failed:', e)
+        this.$msg.error(this.t('preferences.save-fail-message'))
+      }
+
+      if (this.isRenderer) {
+        if ('autoHideWindow' in data) {
+          this.$electron.ipcRenderer.send('command',
+            'application:auto-hide-window', autoHideWindow)
+        }
+
+        if (checkIsNeedRestart(data)) {
+          this.$electron.ipcRenderer.send('command', 'application:relaunch')
+        }
+      }
     },
     resetForm (formName) {
       this.syncFormConfig()
