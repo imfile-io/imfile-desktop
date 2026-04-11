@@ -878,7 +878,9 @@ export default {
           console.error('[imFile] preference form valid:', valid)
           return
         }
-        void this.runAdvancedPreferenceSubmit()
+        this.runAdvancedPreferenceSubmit().catch((e) => {
+          console.error('[imFile] runAdvancedPreferenceSubmit', e)
+        })
       })
     },
     async runAdvancedPreferenceSubmit () {
