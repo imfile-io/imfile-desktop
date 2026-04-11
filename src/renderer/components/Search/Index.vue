@@ -253,7 +253,10 @@
             {{ $t('search.searching') }}
           </div>
           <div v-else class="search-results">
-            <div class="mo-table-wrapper search-table-wrap">
+            <div
+              class="mo-table-wrapper search-table-wrap"
+              v-loading="ssapiTableBusy"
+            >
               <el-table
                 :data="displayedSsapiRows"
                 stripe
@@ -302,6 +305,18 @@
                 </el-table-column>
               </el-table>
             </div>
+            <el-pagination
+              v-if="ssapiShowPagination"
+              class="search-ssapi-pagination"
+              background
+              layout="total, prev, pager, next"
+              :disabled="ssapiSearchLoading"
+              :hide-on-single-page="true"
+              :page-size="ssapiPageSize"
+              :current-page="ssapiPage"
+              :total="ssapiPaginationTotal"
+              @current-change="onSsapiPageChange"
+            />
           </div>
         </template>
       </el-main>
@@ -439,6 +454,9 @@ export default {
       ssapiSortField: 'relevance',
       ssapiSortDescending: false,
       ssapiHasSearched: false,
+      ssapiPage: 1,
+      ssapiTotalCount: null,
+      ssapiHasNextPage: false,
       ssapiHistory: [],
       ssapiDownloadingByHash: {},
       ssapiAbortController: null,
@@ -471,6 +489,31 @@ export default {
     },
     displayedSsapiRows () {
       return this.ssapiRows
+    },
+    ssapiPageSize () {
+      return SSAPI_SEARCH_DEFAULT_LIMIT
+    },
+    ssapiPaginationTotal () {
+      if (
+        this.ssapiTotalCount != null &&
+        Number.isFinite(this.ssapiTotalCount) &&
+        this.ssapiTotalCount >= 0
+      ) {
+        return this.ssapiTotalCount
+      }
+      const prev = (this.ssapiPage - 1) * this.ssapiPageSize
+      const rowsLen = Array.isArray(this.ssapiRows) ? this.ssapiRows.length : 0
+      return prev + rowsLen + (this.ssapiHasNextPage ? this.ssapiPageSize : 0)
+    },
+    ssapiShowPagination () {
+      if (!this.ssapiHasSearched) return false
+      if (!this.ssapiSearchLoading && !this.hasSsapiResultRows && this.ssapiPage <= 1) {
+        return false
+      }
+      return this.ssapiPaginationTotal > this.ssapiPageSize || this.ssapiPage > 1
+    },
+    ssapiTableBusy () {
+      return this.ssapiSearchLoading && this.hasSsapiResultRows
     },
     hasSsapiResultRows () {
       return Array.isArray(this.ssapiRows) && this.ssapiRows.length > 0
@@ -826,25 +869,42 @@ export default {
       clearSsapiSearchHistory()
       this.ssapiHistory = []
     },
-    async runSsapiSearch () {
+    async onSsapiPageChange (page) {
+      if (this.ssapiSearchLoading) return
+      const prev = this.ssapiPage
+      if (page === prev) return
+      this.ssapiPage = page
+      const ok = await this.fetchSsapiSearchPage(page, { clearRows: false })
+      if (!ok && this.ssapiPage === page) {
+        this.ssapiPage = prev
+      }
+    },
+    /**
+     * @param {number} page
+     * @param {{ clearRows?: boolean, addHistory?: boolean }} [opts]
+     * @returns {Promise<boolean>}
+     */
+    async fetchSsapiSearchPage (page, { clearRows = false, addHistory = false } = {}) {
       const q = (this.ssapiKeyword || '').trim()
       if (!q) {
         ElMessage.warning(this.t('search.query-required'))
-        return
+        return false
       }
       const base = this.ssapiBaseUrlNormalized
       if (!base) {
         ElMessage.warning(this.t('search.ssapi-base-required-hint'))
-        return
+        return false
       }
       if (this.ssapiSearchLoading) {
-        return
+        return false
       }
       const url = buildSsapiSearchUrl(base)
       if (!url) {
         ElMessage.warning(this.t('search.ssapi-base-required-hint'))
-        return
+        return false
       }
+
+      const pageNum = Math.max(1, Math.floor(Number(page)) || 1)
 
       this.abortSsapiRequest()
       const controller = new AbortController()
@@ -852,9 +912,13 @@ export default {
 
       this.ssapiHasSearched = true
       this.ssapiSearchLoading = true
-      this.ssapiSearchButtonLoading = true
+      if (clearRows) {
+        this.ssapiSearchButtonLoading = true
+        this.ssapiRows = []
+        this.ssapiTotalCount = null
+        this.ssapiHasNextPage = false
+      }
       this.ssapiError = ''
-      this.ssapiRows = []
 
       try {
         const res = await fetch(url, {
@@ -863,7 +927,7 @@ export default {
           body: JSON.stringify({
             queryString: q,
             limit: SSAPI_SEARCH_DEFAULT_LIMIT,
-            page: 1,
+            page: pageNum,
             orderBy: [
               {
                 field: this.ssapiSortField,
@@ -892,13 +956,13 @@ export default {
             this.t('search.search-failed')
           this.ssapiError = String(msg)
           ElMessage.error(this.ssapiError)
-          return
+          return false
         }
 
         if (!json || typeof json !== 'object') {
           this.ssapiError = this.t('search.search-failed')
           ElMessage.error(this.ssapiError)
-          return
+          return false
         }
 
         const gqlErrs = json.errors
@@ -911,7 +975,7 @@ export default {
           if (msg) {
             this.ssapiError = msg
             ElMessage.error(msg)
-            return
+            return false
           }
         }
 
@@ -920,22 +984,50 @@ export default {
           ...r,
           sizeLabel: bytesToSize(r.sizeBytes)
         }))
+        this.ssapiTotalCount = mapped.totalCount
+        this.ssapiHasNextPage = mapped.hasNextPage
+        this.ssapiPage = pageNum
 
-        addSsapiSearchHistoryItem(q)
-        this.ssapiHistory = loadSsapiSearchHistory()
+        if (addHistory) {
+          addSsapiSearchHistoryItem(q)
+          this.ssapiHistory = loadSsapiSearchHistory()
+        }
+        return true
       } catch (e) {
         if (e && e.name === 'AbortError') {
-          return
+          return false
         }
         const msg =
           (e && e.message) ? String(e.message) : this.t('search.search-failed')
         this.ssapiError = msg
         ElMessage.error(msg)
+        return false
       } finally {
         this.ssapiAbortController = null
         this.ssapiSearchLoading = false
         this.ssapiSearchButtonLoading = false
       }
+    },
+    async runSsapiSearch () {
+      const q = (this.ssapiKeyword || '').trim()
+      if (!q) {
+        ElMessage.warning(this.t('search.query-required'))
+        return
+      }
+      const base = this.ssapiBaseUrlNormalized
+      if (!base) {
+        ElMessage.warning(this.t('search.ssapi-base-required-hint'))
+        return
+      }
+      if (this.ssapiSearchLoading) {
+        return
+      }
+      if (!buildSsapiSearchUrl(base)) {
+        ElMessage.warning(this.t('search.ssapi-base-required-hint'))
+        return
+      }
+      this.ssapiPage = 1
+      await this.fetchSsapiSearchPage(1, { clearRows: true, addHistory: true })
     },
     async onDownloadSsapi (row) {
       const magnet = getSsapiRowMagnet(row)
@@ -1216,6 +1308,13 @@ export default {
 
 .search-table-wrap {
   margin-top: 0;
+}
+
+.search-ssapi-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+  padding-bottom: 8px;
 }
 
 .search-table {
