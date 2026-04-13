@@ -617,7 +617,7 @@ const initForm = (config) => {
     rpcListenPort,
     rpcSecret,
     ssapiSearchBaseUrl: typeof ssapiSearchBaseUrl === 'string' ? ssapiSearchBaseUrl : '',
-    trackerSource,
+    trackerSource: cloneDeep(trackerSource),
     useProxy,
     userAgent
   }

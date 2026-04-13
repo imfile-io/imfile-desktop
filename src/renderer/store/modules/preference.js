@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash'
+import { cloneDeep, isEmpty } from 'lodash'
 
 import api from '@/api'
 import {
@@ -22,7 +22,7 @@ const getters = {
 
 const mutations = {
   UPDATE_PREFERENCE_DATA (state, config) {
-    state.config = { ...state.config, ...config }
+    state.config = { ...state.config, ...cloneDeep(config) }
   }
 }
 
@@ -46,8 +46,11 @@ const actions = {
       return
     }
 
-    dispatch('updatePreference', config)
-    return api.savePreference(config)
+    // Ensure payload is plain-serializable data (no Vue reactive proxies)
+    const plainConfig = JSON.parse(JSON.stringify(config))
+
+    dispatch('updatePreference', plainConfig)
+    return api.savePreference(plainConfig)
   },
   recordHistoryDirectory ({ state, dispatch }, directory) {
     const { historyDirectories = [], favoriteDirectories = [] } = state.config

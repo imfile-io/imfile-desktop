@@ -97,7 +97,8 @@ export default class Api {
   }
 
   savePreference (params = {}) {
-    const kebabParams = changeKeysToKebabCase(params)
+    const safeParams = JSON.parse(JSON.stringify(params))
+    const kebabParams = changeKeysToKebabCase(safeParams)
     if (is.renderer()) {
       return this.savePreferenceToNativeStore(kebabParams)
     } else {
