@@ -29,6 +29,9 @@ html.theme-light {
   --im-button-default-bg-hover: var(--el-fill-color-light);
   --im-button-default-text-hover: var(--el-color-primary);
 
+  /* 主色/强调底上的正文（如偏好顶栏 Tab 选中态） */
+  --im-text-on-primary: #ffffff;
+
   --im-dialog-bg: var(--el-bg-color-overlay);
   --im-dialog-title: var(--el-text-color-primary);
   --im-dialog-text: var(--el-text-color-regular);
@@ -63,6 +66,8 @@ html.dark {
   --im-button-default-border: var(--el-border-color-darker);
   --im-button-default-bg-hover: var(--el-fill-color-dark);
   --im-button-default-text-hover: var(--el-color-primary-light-3);
+
+  --im-text-on-primary: #ffffff;
 
   --im-dialog-bg: var(--el-bg-color-overlay);
   --im-dialog-title: var(--el-text-color-primary);

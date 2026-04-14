@@ -1,5 +1,10 @@
 <template>
-  <ul :key="task.taskKey" class="w-max task-item-actions" v-on:dblclick.stop="() => null">
+  <ul
+    :key="task.taskKey"
+    class="task-item-actions"
+    :class="{ 'task-item-actions--list': mode === 'LIST' }"
+    v-on:dblclick.stop="() => null"
+  >
     <li v-for="action in taskActions" :key="action" class="task-item-action">
       <i v-if="action === 'PAUSE'" @click.stop="onPauseClick">
         <mo-icon name="task-pause-line" width="15" height="15" />
@@ -190,6 +195,8 @@ export default {
 
 <style lang="scss">
 .task-item-actions {
+  display: inline-flex;
+  align-items: center;
   height: 24px;
   padding: 0 10px;
   margin: 0;
@@ -198,7 +205,7 @@ export default {
   cursor: default;
   text-align: right;
   direction: rtl;
-  color: #fff;
+  color: var(--im-text-on-primary);
   background-color: $--task-item-action-color;
   border-radius: 14px;
   transition: $--all-transition;
@@ -213,10 +220,21 @@ export default {
     }
   }
 }
-.theme-dark{
+
+.task-item-actions--list {
+  width: 100%;
+  max-width: 100%;
+  justify-content: flex-end;
+  box-sizing: border-box;
+}
+
+.task-item-actions--list > .task-item-action {
+  margin: 0 2px;
+  padding: 5px 3px;
+}
+.theme-dark {
   .task-item-actions {
-    color: #cbcbcb;
-    background-color: $--task-item-background;
+    color: var(--el-text-color-regular);
   }
 }
 </style>
