@@ -229,7 +229,7 @@ export default {
             display: inline-flex;
             padding: 10px;
             margin: 0 10px;
-            color: #fff;
+            color: var(--im-text-on-primary);
             align-items: center;
             justify-content: center;
             .task-action {
@@ -241,7 +241,7 @@ export default {
         .task-action-stop {
             display: inline-flex;
             padding: 10px;
-            color: #fff;
+            color: var(--im-text-on-primary);
             align-items: center;
             justify-content: center;
             .task-action {
@@ -253,28 +253,28 @@ export default {
     }
 }
 .theme-dark {
-  .refresh_btn svg{
+  .refresh_btn svg {
     &:hover {
-      color: $--color-primary-light-4;
+      color: var(--el-color-primary-light-3);
     }
   }
   /* 与 .theme-dark .el-button 一致（见 Theme/Dark.scss） */
   .task-state-actions .post-download-action-group {
-    border: 1px solid #333;
-    background-color: $--dk--background-color-gray;
+    border: 1px solid var(--el-border-color-darker);
+    background-color: var(--el-fill-color-darker);
   }
   .task-state-actions .post-download-action-title {
-    color: #aaa;
-    border-right-color: #333;
-    background-color: $--dk--background-color-gray;
+    color: var(--el-text-color-secondary);
+    border-right-color: var(--el-border-color-darker);
+    background-color: var(--el-fill-color-darker);
   }
   .task-state-actions .post-download-action-dropdown .post-download-action-trigger {
-    color: #aaa;
+    color: var(--el-text-color-secondary);
     background-color: transparent;
     &:hover,
     &:focus {
-      color: $--color-primary-light-4;
-      background-color: #333;
+      color: var(--el-color-primary-light-3);
+      background-color: var(--el-fill-color-dark);
       border: none;
     }
     .post-download-action-caret {
@@ -283,7 +283,7 @@ export default {
   }
   .task-state-actions .post-download-action-dropdown .post-download-action-trigger:hover .post-download-action-caret,
   .task-state-actions .post-download-action-dropdown .post-download-action-trigger:focus .post-download-action-caret {
-    color: $--color-primary-light-4;
+    color: var(--el-color-primary-light-3);
   }
 }
 </style>

@@ -205,7 +205,7 @@ export default {
   cursor: default;
   text-align: right;
   direction: rtl;
-  color: #fff;
+  color: var(--im-text-on-primary);
   background-color: $--task-item-action-color;
   border-radius: 14px;
   transition: $--all-transition;
@@ -232,10 +232,9 @@ export default {
   margin: 0 2px;
   padding: 5px 3px;
 }
-.theme-dark{
+.theme-dark {
   .task-item-actions {
-    color: #cbcbcb;
-    background-color: $--task-item-background;
+    color: var(--el-text-color-regular);
   }
 }
 </style>

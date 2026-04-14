@@ -375,8 +375,11 @@ iframe {
         h4 {
           font-size: 13px;
           font-weight: normal;
-          color: $--app-text-select-color;
+          color: var(--im-text-on-primary);
         }
+      }
+      .el-col-4:hover h4 {
+        color: var(--im-text-on-primary);
       }
     }
   }

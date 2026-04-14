@@ -106,10 +106,10 @@ html.theme-light .form-preference {
   width: -webkit-fill-available;
   box-sizing: border-box;
   padding-left: 300px !important;
-  .btn_discard{
-    background: #282828;
-    color: #cbcbcb;
-    border-color: #282828;
+  .btn_discard {
+    background: var(--el-fill-color-dark);
+    color: var(--el-text-color-regular);
+    border-color: var(--el-border-color-darker);
   }
 }
 .action-link {
