@@ -240,6 +240,7 @@ export default {
 /* 任务列表卡片：白底圆角容器 + 表格列 + 行内进度条式背景（见设计稿） */
 .task-list-root {
   --task-table-cols: 40px minmax(120px, 1fr) 80px 128px 108px minmax(140px, auto);
+  --task-table-col-gap: 10px;
 
   background: #ffffff;
   border-radius: 14px;
@@ -258,7 +259,7 @@ export default {
 .task-list-head {
   display: grid;
   grid-template-columns: var(--task-table-cols);
-  column-gap: 10px;
+  column-gap: var(--task-table-col-gap);
   align-items: center;
   padding: 0 0 10px;
   margin-bottom: 2px;
@@ -266,6 +267,14 @@ export default {
   font-size: 13px;
   color: #888;
   user-select: none;
+  white-space: nowrap;
+}
+
+.task-list-head-cell {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .task-list-head-cell--check {
@@ -285,6 +294,9 @@ export default {
   border-radius: 6px;
   cursor: pointer;
   text-align: left;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
 
   &:hover,
   &.is-active {
@@ -307,6 +319,13 @@ export default {
   flex-direction: column;
   gap: 1px;
   flex-shrink: 0;
+}
+
+.task-list-head-sort > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .task-list-sort-carets .caret-up,
@@ -338,7 +357,7 @@ export default {
 .task-list-root .task-item--table {
   display: grid;
   grid-template-columns: var(--task-table-cols);
-  column-gap: 10px;
+  column-gap: var(--task-table-col-gap);
   align-items: center;
   margin-bottom: 0;
   border-width: 1px;
@@ -385,10 +404,19 @@ export default {
   color: #555;
   text-align: right;
   white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .task-list-root .task-item-cell--actions {
   justify-self: end;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.task-list-root .task-item-cell--actions .task-item-actions {
+  max-width: 100%;
 }
 
 .task-list-root .task-name {
@@ -397,6 +425,7 @@ export default {
 
   & > span {
     -webkit-line-clamp: 1;
+    line-clamp: 1;
   }
 }
 
@@ -436,5 +465,45 @@ export default {
 .theme-dark .task-list-root .selected .task-item--table {
   border-color: $--task-item-hover-border-color;
   box-shadow: 0 0 0 1px $--task-item-hover-border-color;
+}
+
+@media (max-width: 1280px) {
+  .task-list-root {
+    --task-table-cols: 36px minmax(96px, 1fr) 64px 108px 96px minmax(120px, auto);
+    --task-table-col-gap: 8px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .task-list-root {
+    --task-table-cols: 32px minmax(84px, 1fr) 56px 96px 84px minmax(100px, auto);
+    --task-table-col-gap: 6px;
+  }
+}
+
+@media (max-width: 920px) {
+  .task-list-root {
+    --task-table-cols: 30px minmax(80px, 1fr) 88px 76px minmax(92px, auto);
+    --task-table-col-gap: 5px;
+  }
+
+  .task-list-head > :nth-child(3),
+  .task-list-root .task-item--table > :nth-child(3) {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .task-list-root {
+    --task-table-cols: 28px minmax(72px, 1fr) 72px minmax(84px, auto);
+    --task-table-col-gap: 4px;
+  }
+
+  .task-list-head > :nth-child(3),
+  .task-list-root .task-item--table > :nth-child(3),
+  .task-list-head > :nth-child(4),
+  .task-list-root .task-item--table > :nth-child(4) {
+    display: none;
+  }
 }
 </style>
