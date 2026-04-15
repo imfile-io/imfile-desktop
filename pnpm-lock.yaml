@@ -161,7 +161,7 @@ importers:
         version: 5.6.6(webpack@5.106.1)
       i18next:
         specifier: ^26.0.0
-        version: 26.0.4(typescript@6.0.2)
+        version: 26.0.5(typescript@6.0.2)
       lodash:
         specifier: ^4.17.21
         version: 4.18.1
@@ -3421,8 +3421,8 @@ packages:
     resolution: {integrity: sha512-Y93lCzHYgGWdrJ66yIktxiaGULYc6oGiABxhcO5AufBeOyoIdZF7bIfLaOrbM0iGIOXQQgxxRrFEnb+Y6w1n4A==}
     engines: {node: '>=10.18'}
 
-  i18next@26.0.4:
-    resolution: {integrity: sha512-gXF7U9bfioXPLv7mw8Qt2nfO7vij5MyINvPgVv99pX3fL1Y01pw2mKBFrlYpRxRCl2wz3ISenj6VsMJT2isfuA==}
+  i18next@26.0.5:
+    resolution: {integrity: sha512-9uHb4T27TdV36phJXcbpnRPt5yzAfqHXVrdASvmHZyPuZJtrLythd+GyXhiaHV5LlpuuskbAqhwPjmfTbKbi8w==}
     peerDependencies:
       typescript: ^5 || ^6
     peerDependenciesMeta:
@@ -9497,7 +9497,7 @@ snapshots:
 
   hyperdyperid@1.2.0: {}
 
-  i18next@26.0.4(typescript@6.0.2):
+  i18next@26.0.5(typescript@6.0.2):
     dependencies:
       '@babel/runtime': 7.29.2
     optionalDependencies:
