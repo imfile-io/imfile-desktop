@@ -80,7 +80,7 @@ function migrateLegacyUserDataIfNeeded (legacyDir, portableRoot) {
   if (!legacyDir || legacyDir === portableRoot) {
     return
   }
-  if (existsSync(join(portableRoot, 'user.json'))) {
+  if (existsSync(join(portableRoot, 'user.json')) || existsSync(join(portableRoot, 'system.json'))) {
     return
   }
   const hasLegacyData =

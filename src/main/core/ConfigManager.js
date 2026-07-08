@@ -1,6 +1,7 @@
 import { app } from 'electron'
 import is from 'electron-is'
 import Store from 'electron-store'
+import { resolve } from 'node:path'
 
 import {
   // getConfigBasePath,
@@ -14,6 +15,7 @@ import {
   EMPTY_STRING,
   ENGINE_RPC_PORT,
   IP_VERSION,
+  getPortableExecutableDir,
   isPortableMode,
   LOGIN_SETTING_OPTIONS,
   NGOSANG_TRACKERS_BEST_IP_URL_CDN,
@@ -172,6 +174,46 @@ export default class ConfigManager {
     // Fix spawn ENAMETOOLONG on Windows
     const tracker = reduceTrackerString(this.systemConfig.get('bt-tracker'))
     this.setSystemConfig('bt-tracker', tracker)
+
+    if (isPortableMode()) {
+      this.fixPortableDownloadDir()
+    }
+  }
+
+  /**
+   * 便携模式下将仍指向系统「下载」或 AppData 的默认目录改到程序目录下 Downloads。
+   * 用户自定义的其他路径（如 D:\\MyDownloads）保持不变。
+   */
+  fixPortableDownloadDir () {
+    const portableRoot = getPortableExecutableDir()
+    if (!portableRoot) {
+      return
+    }
+
+    const portableDownloads = resolve(portableRoot, 'Downloads')
+    const currentDir = this.systemConfig.get('dir')
+    if (!currentDir) {
+      this.setSystemConfig('dir', portableDownloads)
+      return
+    }
+
+    try {
+      const normalizedDir = resolve(String(currentDir))
+      const normalizedRoot = resolve(portableRoot)
+      if (normalizedDir.toLowerCase().startsWith(normalizedRoot.toLowerCase())) {
+        return
+      }
+      const systemDownloads = resolve(app.getPath('downloads'))
+      const appDataDir = resolve(app.getPath('appData'))
+      if (
+        normalizedDir.toLowerCase() === systemDownloads.toLowerCase() ||
+        normalizedDir.toLowerCase().startsWith(appDataDir.toLowerCase())
+      ) {
+        this.setSystemConfig('dir', portableDownloads)
+      }
+    } catch {
+      // 保留用户原设置
+    }
   }
 
   fixUserConfig () {
