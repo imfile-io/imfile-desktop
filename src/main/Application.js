@@ -1419,6 +1419,16 @@ export default class Application extends EventEmitter {
     }
   }
 
+  async savePreferenceViaIpc (config = {}) {
+    try {
+      this.savePreference(config)
+      return { ok: true }
+    } catch (err) {
+      logger.warn('[imFile] save preference failed:', err.message)
+      return { ok: false, message: err.message }
+    }
+  }
+
   handleCommands () {
     this.on('application:save-preference', this.savePreference)
 
@@ -1662,6 +1672,10 @@ export default class Application extends EventEmitter {
   handleIpcInvokes () {
     ipcMain.handle('application:post-download-action', async (event, action) => {
       return this.handlePostDownloadAction(action)
+    })
+
+    ipcMain.handle('application:save-preference', async (event, config = {}) => {
+      return this.savePreferenceViaIpc(config)
     })
 
     ipcMain.handle('get-app-config', async () => {

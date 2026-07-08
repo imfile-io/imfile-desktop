@@ -43,14 +43,21 @@ const actions = {
   save ({ dispatch }, config) {
     dispatch('task/saveSession', null, { root: true })
     if (isEmpty(config)) {
-      return
+      return Promise.resolve()
     }
 
     // Ensure payload is plain-serializable data (no Vue reactive proxies)
     const plainConfig = JSON.parse(JSON.stringify(config))
 
     dispatch('updatePreference', plainConfig)
-    return api.savePreference(plainConfig)
+    return api.savePreference(plainConfig).then((result) => {
+      if (result && result.ok === false) {
+        const err = new Error(result.message || 'save preference failed')
+        err.code = 1
+        throw err
+      }
+      return result
+    })
   },
   recordHistoryDirectory ({ state, dispatch }, directory) {
     const { historyDirectories = [], favoriteDirectories = [] } = state.config
