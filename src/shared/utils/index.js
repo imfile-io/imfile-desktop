@@ -132,6 +132,52 @@ export const calcRatio = (totalLength, uploadLength) => {
   return result
 }
 
+/** 统一 aria2 / goed2kd 等引擎返回的任务状态字符串 */
+export const normalizeTaskStatus = (status = '') => {
+  const value = String(status || '').toLowerCase()
+  switch (value) {
+    case 'active':
+    case 'downloading':
+    case 'running':
+      return TASK_STATUS.ACTIVE
+    case 'waiting':
+    case 'queued':
+      return TASK_STATUS.WAITING
+    case 'paused':
+    case 'pause':
+      return TASK_STATUS.PAUSED
+    case 'complete':
+    case 'completed':
+    case 'finished':
+      return TASK_STATUS.COMPLETE
+    case 'error':
+    case 'failed':
+      return TASK_STATUS.ERROR
+    case 'removed':
+      return TASK_STATUS.REMOVED
+    default:
+      return value || TASK_STATUS.WAITING
+  }
+}
+
+/**
+ * 判断任务是否应出现在「下载中」列表。
+ * totalLength 为 0（元数据未就绪等）时不能仅用 completedLength !== totalLength，否则会被误过滤。
+ */
+export const isTaskDownloading = (task = {}) => {
+  const status = normalizeTaskStatus(task.status)
+  const { ACTIVE, WAITING, PAUSED, COMPLETE, ERROR, REMOVED } = TASK_STATUS
+  if ([COMPLETE, ERROR, REMOVED].includes(status)) {
+    return false
+  }
+  const totalLength = Number(task.totalLength) || 0
+  const completedLength = Number(task.completedLength) || 0
+  if (totalLength > 0) {
+    return completedLength < totalLength
+  }
+  return status === ACTIVE || status === WAITING || status === PAUSED
+}
+
 export const timeRemaining = (totalLength, completedLength, downloadSpeed) => {
   const remainingLength = totalLength - completedLength
   return Math.ceil(remainingLength / downloadSpeed)

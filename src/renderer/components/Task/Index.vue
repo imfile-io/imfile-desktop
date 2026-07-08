@@ -356,8 +356,13 @@ export default {
         this.$msg.success(this.t('task.remove-record-success', {
           taskName
         }))
-      } catch ({ code }) {
-        if (code === 1) {
+      } catch (err) {
+        if (err && err.code === 1) {
+          this.$msg.error(this.t('task.remove-record-fail', {
+            taskName
+          }))
+        } else {
+          console.warn('[imFile] remove task record fail:', err)
           this.$msg.error(this.t('task.remove-record-fail', {
             taskName
           }))
