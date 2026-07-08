@@ -59,7 +59,7 @@ importers:
         version: 2.5.0
       '@electron/remote':
         specifier: ^2.1.3
-        version: 2.1.3(electron@41.10.0)
+        version: 2.1.3(electron@41.10.1)
       '@element-plus/icons-vue':
         specifier: ^2.3.2
         version: 2.3.2(vue@3.5.39(typescript@6.0.3))
@@ -112,8 +112,8 @@ importers:
         specifier: ^8.0.1
         version: 8.0.1
       electron:
-        specifier: 41.10.0
-        version: 41.10.0
+        specifier: 41.10.1
+        version: 41.10.1
       electron-builder:
         specifier: ^26.15.3
         version: 26.15.3(electron-builder-squirrel-windows@26.15.3)
@@ -2746,8 +2746,8 @@ packages:
     resolution: {integrity: sha512-bO3y10YikuUwUuDUQRM4KfwNkKhnpVO7IPdbsrejwN9/AABJzzTQ4GeHwyzNSrVO+tEH3/Np255a3sVZpZDjvg==}
     engines: {node: '>=8.0.0'}
 
-  electron@41.10.0:
-    resolution: {integrity: sha512-KuPcYnZXtmUv89YbNyZoU+Hud8s/X724zrhUZ4RjUg1b0pE0ax0FzTCiM1Lo4Nmxf2vX25u8w055to8IxVWxsQ==}
+  electron@41.10.1:
+    resolution: {integrity: sha512-8BGbTyMWNCXZ2nErXqchO31CJsHlzD5joOiWbNerBi1EnGLXkiMEF3yUUN+T16duz3XYwLTcxOq38MMcWf0sQA==}
     engines: {node: '>= 22.12.0'}
     hasBin: true
 
@@ -6534,9 +6534,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@electron/remote@2.1.3(electron@41.10.0)':
+  '@electron/remote@2.1.3(electron@41.10.1)':
     dependencies:
-      electron: 41.10.0
+      electron: 41.10.1
 
   '@electron/universal@2.0.3':
     dependencies:
@@ -8658,7 +8658,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  electron@41.10.0:
+  electron@41.10.1:
     dependencies:
       '@electron-internal/extract-zip': 1.0.4
       '@electron/get': 5.0.0
@@ -9232,7 +9232,7 @@ snapshots:
       es6-error: 4.1.1
       matcher: 3.0.0
       roarr: 2.15.4
-      semver: 7.7.4
+      semver: 7.8.5
       serialize-error: 7.0.1
     optional: true
 
@@ -9983,14 +9983,14 @@ snapshots:
 
   node-abi@4.33.0:
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.5
 
   node-addon-api@7.1.1:
     optional: true
 
   node-api-version@0.2.1:
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.5
 
   node-domexception@1.0.0: {}
 
@@ -10011,7 +10011,7 @@ snapshots:
       graceful-fs: 4.2.11
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.5
       tar: 7.5.19
       tinyglobby: 0.2.17
       undici: 6.27.0
