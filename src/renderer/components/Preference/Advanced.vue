@@ -560,6 +560,7 @@ import {
   convertLineToComma,
   diffConfig,
   generateRandomInt,
+  isTrackerSourceListChanged,
   isValidSsapiBaseUrlOptional,
   normalizeSsapiBaseUrl
 } from '@shared/utils'
@@ -871,17 +872,14 @@ export default {
       if (!formRef) {
         return
       }
-      // 勿使用 validate(async () => {})：Element Plus 对异步回调的校验链不完整时会导致
-      // 保存逻辑与提示不执行；改为同步回调并调用独立 async 方法。
-      formRef.validate((valid) => {
-        if (!valid) {
-          console.error('[imFile] preference form valid:', valid)
-          return
-        }
-        this.runAdvancedPreferenceSubmit().catch((e) => {
-          console.error('[imFile] runAdvancedPreferenceSubmit', e)
+      // Element Plus validate 返回 Promise；勿在 validate 回调中使用 async，避免校验链异常导致保存逻辑不执行。
+      Promise.resolve(formRef.validate())
+        .then(() => this.runAdvancedPreferenceSubmit())
+        .catch((e) => {
+          if (e !== false) {
+            console.error('[imFile] preference form validate/submit failed:', e)
+          }
         })
-      })
     },
     async runAdvancedPreferenceSubmit () {
       if (!isValidSsapiBaseUrlOptional(this.form.ssapiSearchBaseUrl)) {
@@ -905,6 +903,10 @@ export default {
       )
       if (origTrackerNorm !== nextTrackerNorm) {
         data.btTracker = this.form.btTracker
+      }
+
+      if (isTrackerSourceListChanged(this.formOriginal.trackerSource, this.form.trackerSource)) {
+        data.trackerSource = [...this.form.trackerSource]
       }
 
       let engineSwitched = false

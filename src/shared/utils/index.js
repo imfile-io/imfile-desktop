@@ -780,6 +780,16 @@ export const diffConfig = (current = {}, next = {}) => {
   return result
 }
 
+/** 比较 Tracker 源列表（忽略顺序与类型差异） */
+export const normalizeTrackerSourceList = (list = []) => {
+  return [...(list || [])].map((item) => String(item).trim()).filter(Boolean).sort()
+}
+
+export const isTrackerSourceListChanged = (current = [], next = []) => {
+  return JSON.stringify(normalizeTrackerSourceList(current)) !==
+    JSON.stringify(normalizeTrackerSourceList(next))
+}
+
 export const calcFormLabelWidth = (locale) => {
   return locale.startsWith('de') ? '28%' : '25%'
 }

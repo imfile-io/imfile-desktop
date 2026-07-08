@@ -593,64 +593,75 @@ export default {
         })
     },
     submitForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (!valid) {
-          console.error('[imFile] preference form valid:', valid)
-          return false
-        }
-
-        const data = {
-          ...diffConfig(this.formOriginal, this.form),
-          ...changedConfig.advanced
-        }
-
-        const {
-          autoHideWindow,
-          btAutoDownloadContent,
-          btTracker,
-          rpcListenPort
-        } = data
-
-        if ('btAutoDownloadContent' in data) {
-          data.followTorrent = btAutoDownloadContent
-          data.followMetalink = btAutoDownloadContent
-          data.pauseMetadata = !btAutoDownloadContent
-        }
-
-        if (btTracker) {
-          data.btTracker = reduceTrackerString(convertLineToComma(btTracker))
-        }
-
-        if (rpcListenPort === EMPTY_STRING) {
-          data.rpcListenPort = this.rpcDefaultPort
-        }
-
-        console.log('[imFile] preference changed data:', data)
-
-        this.$store.dispatch('preference/save', data)
-          .then(() => {
-            this.$store.dispatch('app/fetchEngineOptions')
-            this.syncFormConfig()
-            this.$msg.success(this.t('preferences.save-success-message'))
-          })
-          .catch(() => {
-            this.$msg.success(this.t('preferences.save-fail-message'))
-          })
-
-        changedConfig.basic = {}
-        changedConfig.advanced = {}
-
-        if (this.isRenderer) {
-          if ('autoHideWindow' in data) {
-            this.$electron.ipcRenderer.send('command',
-              'application:auto-hide-window', autoHideWindow)
+      const formRef = this.$refs[formName]
+      if (!formRef) {
+        return
+      }
+      Promise.resolve(formRef.validate())
+        .then(() => this.runBasicPreferenceSubmit())
+        .catch((e) => {
+          if (e !== false) {
+            console.error('[imFile] preference form validate/submit failed:', e)
           }
+        })
+    },
+    async runBasicPreferenceSubmit () {
+      const data = {
+        ...diffConfig(this.formOriginal, this.form),
+        ...changedConfig.advanced
+      }
 
-          if (checkIsNeedRestart(data)) {
-            this.$electron.ipcRenderer.send('command', 'application:relaunch')
-          }
+      const {
+        autoHideWindow,
+        btAutoDownloadContent,
+        btTracker,
+        rpcListenPort
+      } = data
+
+      if ('btAutoDownloadContent' in data) {
+        data.followTorrent = btAutoDownloadContent
+        data.followMetalink = btAutoDownloadContent
+        data.pauseMetadata = !btAutoDownloadContent
+      }
+
+      if (btTracker) {
+        data.btTracker = reduceTrackerString(convertLineToComma(btTracker))
+      }
+
+      if (rpcListenPort === EMPTY_STRING) {
+        data.rpcListenPort = this.rpcDefaultPort
+      }
+
+      console.log('[imFile] preference changed data:', data)
+
+      changedConfig.basic = {}
+      changedConfig.advanced = {}
+
+      if (isEmpty(data)) {
+        this.$msg.info(this.t('preferences.no-changes-to-save'))
+        return
+      }
+
+      try {
+        await this.$store.dispatch('preference/save', data)
+        await this.$store.dispatch('app/fetchEngineOptions')
+        this.syncFormConfig()
+        this.$msg.success(this.t('preferences.save-success-message'))
+      } catch (e) {
+        console.error('[imFile] preference save failed:', e)
+        this.$msg.error(this.t('preferences.save-fail-message'))
+      }
+
+      if (this.isRenderer) {
+        if ('autoHideWindow' in data) {
+          this.$electron.ipcRenderer.send('command',
+            'application:auto-hide-window', autoHideWindow)
         }
-      })
+
+        if (checkIsNeedRestart(data)) {
+          this.$electron.ipcRenderer.send('command', 'application:relaunch')
+        }
+      }
     },
     resetForm (formName) {
       this.syncFormConfig()

@@ -139,7 +139,11 @@ export default class Api {
       console.info('[imFile] save config found illegal key: ', others)
     }
 
-    ipcRenderer.send('command', 'application:save-preference', config)
+    if (isEmpty(config)) {
+      return Promise.resolve({ ok: true })
+    }
+
+    return ipcRenderer.invoke('application:save-preference', config)
   }
 
   async addEd2kTask (ed2k) {
