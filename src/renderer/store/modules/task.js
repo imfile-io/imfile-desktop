@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron'
 import api from '@/api'
 import { EMPTY_STRING, POST_DOWNLOAD_ACTION, TASK_STATUS } from '@shared/constants'
-import { checkTaskIsBT, intersection } from '@shared/utils'
+import { checkTaskIsBT, intersection, isTaskDownloading } from '@shared/utils'
 import { adaptAria2Task, adaptGoed2kdTask } from '../taskAdapter'
 
 const resolveGoed2kdList = (resp) => {
@@ -17,6 +17,16 @@ const resolveGoed2kdList = (resp) => {
     if (Array.isArray(resp.data.transfers)) return resp.data.transfers
   }
   return []
+}
+
+const resolveCountKey = (listType) => {
+  if (listType === 'active') {
+    return 'downloading'
+  }
+  if (listType === 'stopped') {
+    return 'stoped'
+  }
+  return listType
 }
 
 const matchGoed2kdListByCurrentTab = (status, currentList) => {
@@ -182,8 +192,12 @@ const actions = {
   fetchAllList ({ commit }) {
     return api.fetchAllTaskList().then(data => {
       const downloadingList = data[0][0].concat(data[1][0])
-      const downloading = downloadingList.filter((item) => item.completedLength !== item.totalLength).length
-      const seeding = downloadingList.filter((item) => item.completedLength === item.totalLength).length
+      const downloading = downloadingList.filter((item) => isTaskDownloading(item)).length
+      const seeding = downloadingList.filter((item) => {
+        const totalLength = Number(item.totalLength) || 0
+        const completedLength = Number(item.completedLength) || 0
+        return totalLength > 0 && completedLength >= totalLength
+      }).length
       const waiting = data[1][0].length
       const stoped = data[2][0].filter((item) => String(item?.status || '').toLowerCase() !== TASK_STATUS.REMOVED).length
 
@@ -209,7 +223,7 @@ const actions = {
               if (listType !== 'all') {
                 commit('UPDATE_COUNT', {
                   ...state.count,
-                  [listType === 'active' ? 'downloading' : listType]: taskList.length
+                  [resolveCountKey(listType)]: taskList.length
                 })
               } else {
                 dispatch('fetchAllList')
@@ -239,7 +253,7 @@ const actions = {
         if (listType !== 'all') {
           commit('UPDATE_COUNT', {
             ...state.count,
-            [listType === 'active' ? 'downloading' : listType]: taskList.length
+            [resolveCountKey(listType)]: taskList.length
           })
         } else {
           dispatch('fetchAllList')
@@ -469,7 +483,9 @@ const actions = {
 
     const { ERROR, COMPLETE, REMOVED } = TASK_STATUS
     if ([ERROR, COMPLETE, REMOVED].indexOf(status) === -1) {
-      return
+      const err = new Error('task status is not removable')
+      err.code = 1
+      return Promise.reject(err)
     }
     const request = task.engine === 'goed2kd'
       ? api.removeTaskByEngine(task)

@@ -7,6 +7,7 @@ import {
   compactUndefined,
   formatOptionsForEngine,
   mergeTaskResult,
+  isTaskDownloading,
   changeKeysToCamelCase,
   changeKeysToKebabCase
 } from '@shared/utils'
@@ -22,6 +23,15 @@ function isRpcMethodNotFound (err) {
   if (Number(err.code) === -32601) return true
   const msg = String(err.message || '').toLowerCase()
   return msg.includes('method not found')
+}
+
+function assertGoed2kdResponse (result) {
+  if (result && result.ok === false) {
+    const err = new Error(result.message || 'goed2kd request failed')
+    err.code = 1
+    throw err
+  }
+  return result
 }
 
 export default class Api {
@@ -141,15 +151,18 @@ export default class Api {
   }
 
   async pauseGoed2kdTask (hash) {
-    return ipcRenderer.invoke('goed2kd:pause-download', { hash })
+    const result = await ipcRenderer.invoke('goed2kd:pause-download', { hash })
+    return assertGoed2kdResponse(result)
   }
 
   async resumeGoed2kdTask (hash) {
-    return ipcRenderer.invoke('goed2kd:resume-download', { hash })
+    const result = await ipcRenderer.invoke('goed2kd:resume-download', { hash })
+    return assertGoed2kdResponse(result)
   }
 
   async removeGoed2kdTask (hash) {
-    return ipcRenderer.invoke('goed2kd:remove-download', { hash })
+    const result = await ipcRenderer.invoke('goed2kd:remove-download', { hash })
+    return assertGoed2kdResponse(result)
   }
 
   async startGoed2kSearch (params = {}) {
@@ -293,9 +306,7 @@ export default class Api {
           console.log('[imFile] fetch downloading task list data:', data)
           const result = mergeTaskResult(data)
           resolve(
-            result.filter(
-              (list) => list.completedLength !== list.totalLength
-            )
+            result.filter((list) => isTaskDownloading(list))
           )
         })
         .catch((err) => {
@@ -339,7 +350,11 @@ export default class Api {
           console.log('[imFile] fetch seeding task list data:', data)
           if (data.length > 0) {
             resolve(
-              data.filter((list) => list.completedLength === list.totalLength)
+              data.filter((list) => {
+                const totalLength = Number(list.totalLength) || 0
+                const completedLength = Number(list.completedLength) || 0
+                return totalLength > 0 && completedLength >= totalLength
+              })
             )
           } else {
             resolve([])
@@ -512,7 +527,13 @@ export default class Api {
   removeTaskRecord (params = {}) {
     const { gid } = params
     const args = compactUndefined([gid])
-    return this.client.call('removeDownloadResult', ...args)
+    return this.client.call('removeDownloadResult', ...args).catch((err) => {
+      // go-aria2 等精简内核可能未实现 removeDownloadResult
+      if (isRpcMethodNotFound(err)) {
+        return this.client.call('forceRemove', ...args)
+      }
+      throw err
+    })
   }
 
   multicall (method, params = {}) {

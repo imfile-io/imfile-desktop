@@ -1,41 +1,23 @@
-import { getTaskName } from '@shared/utils'
+import { getTaskName, normalizeTaskStatus } from '@shared/utils'
 
 const toNumber = (value, defaultValue = 0) => {
   const result = Number(value)
   return Number.isFinite(result) ? result : defaultValue
 }
 
-const normalizeGoed2kdStatus = (status = '') => {
-  const value = String(status || '').toLowerCase()
-  switch (value) {
-    case 'downloading':
-    case 'active':
-    case 'running':
-      return 'active'
-    case 'paused':
-    case 'pause':
-      return 'paused'
-    case 'finished':
-    case 'complete':
-    case 'completed':
-      return 'complete'
-    case 'error':
-    case 'failed':
-      return 'error'
-    default:
-      return 'waiting'
-  }
-}
+const normalizeGoed2kdStatus = (status = '') => normalizeTaskStatus(status)
 
 export const buildTaskKey = (engine, id) => `${engine}:${id}`
 
 export const adaptAria2Task = (task = {}) => {
   const id = task.gid || ''
+  const status = normalizeTaskStatus(task.status)
   return {
     ...task,
     engine: 'aria2',
     id,
     gid: id,
+    status,
     taskKey: buildTaskKey('aria2', id),
     raw: task
   }
