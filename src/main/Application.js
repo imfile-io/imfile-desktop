@@ -154,10 +154,10 @@ export default class Application extends EventEmitter {
   }
 
   adjustMenu () {
-    if (is.mas()) {
+    if (is.mas() || IS_PORTABLE) {
       const visibleStates = {
         'app.check-for-updates': false,
-        'task.new-bt-task': false
+        ...(is.mas() ? { 'task.new-bt-task': false } : {})
       }
       this.menuManager.updateMenuStates(visibleStates, null, null)
       this.trayManager.updateMenuStates(visibleStates, null, null)
