@@ -10,7 +10,7 @@ import {
   APP_RUN_MODE,
   AUTO_SYNC_TRACKER_INTERVAL,
   AUTO_CHECK_UPDATE_INTERVAL,
-  IS_PORTABLE,
+  isPortableMode,
   POST_DOWNLOAD_ACTION,
   PROXY_SCOPES
 } from '@shared/constants'
@@ -154,7 +154,7 @@ export default class Application extends EventEmitter {
   }
 
   adjustMenu () {
-    if (is.mas() || IS_PORTABLE) {
+    if (is.mas() || isPortableMode()) {
       const visibleStates = {
         'app.check-for-updates': false,
         ...(is.mas() ? { 'task.new-bt-task': false } : {})
@@ -1320,7 +1320,7 @@ export default class Application extends EventEmitter {
   }
 
   initUpdaterManager () {
-    if (is.mas() || IS_PORTABLE) {
+    if (is.mas() || isPortableMode()) {
       return
     }
     const enabled = this.configManager.getUserConfig('auto-check-update')

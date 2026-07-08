@@ -10,6 +10,22 @@ import { cpSync, existsSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { app } from 'electron'
 
+const PORTABLE_DATA_FILES = new Set([
+  'user.json',
+  'system.json',
+  'download.session',
+  'session.json',
+  'dht.dat',
+  'dht6.dat',
+  'engine.pid',
+  '.go-aria2-migration.conf'
+])
+
+const PORTABLE_DATA_DIRS = new Set([
+  '.go-aria2',
+  'goed2kd'
+])
+
 function isTruthyPortableFlag (value) {
   if (value === undefined || value === null || value === '') {
     return false
@@ -52,8 +68,13 @@ function isWindowsZipDistribution (exeDir) {
   return !hasNsisUninstaller(exeDir)
 }
 
+function shouldMigratePortableEntry (name) {
+  return PORTABLE_DATA_FILES.has(name) || PORTABLE_DATA_DIRS.has(name)
+}
+
 /**
  * ZIP 版旧用户可能已在 %APPDATA%\\imFile 产生配置；首次便携启动时迁入程序目录。
+ * 仅迁移配置与引擎数据，不复制 AppData 下的 logs/Cache 等目录。
  */
 function migrateLegacyUserDataIfNeeded (legacyDir, portableRoot) {
   if (!legacyDir || legacyDir === portableRoot) {
@@ -70,6 +91,9 @@ function migrateLegacyUserDataIfNeeded (legacyDir, portableRoot) {
   }
   try {
     for (const name of readdirSync(legacyDir)) {
+      if (!shouldMigratePortableEntry(name)) {
+        continue
+      }
       const src = join(legacyDir, name)
       const dest = join(portableRoot, name)
       if (existsSync(dest)) {
@@ -100,6 +124,11 @@ function resolvePortableRoot () {
   return null
 }
 
+function getPortableCacheDir (portableRoot) {
+  // 与 Electron 默认目录名一致（Windows 下为 userData/Cache）
+  return join(portableRoot, 'Cache')
+}
+
 const defaultUserData = app.getPath('userData')
 const portableRoot = resolvePortableRoot()
 if (portableRoot) {
@@ -107,5 +136,5 @@ if (portableRoot) {
   process.env.PORTABLE_EXECUTABLE_DIR = portableRoot
   app.setPath('userData', portableRoot)
   app.setPath('logs', join(portableRoot, 'logs'))
-  app.setPath('cache', join(portableRoot, 'cache'))
+  app.setPath('cache', getPortableCacheDir(portableRoot))
 }

@@ -1,5 +1,18 @@
 export const EMPTY_STRING = ''
+
+/** 运行时读取，避免模块加载顺序导致便携标志失效 */
+export function getPortableExecutableDir () {
+  return process.env.PORTABLE_EXECUTABLE_DIR || EMPTY_STRING
+}
+
+export function isPortableMode () {
+  const dir = process.env.PORTABLE_EXECUTABLE_DIR
+  return typeof dir === 'string' && dir.length > 0
+}
+
+/** @deprecated 请使用 isPortableMode()；保留以兼容旧引用 */
 export const PORTABLE_EXECUTABLE_DIR = process.env.PORTABLE_EXECUTABLE_DIR
+/** @deprecated 请使用 isPortableMode() */
 export const IS_PORTABLE = PORTABLE_EXECUTABLE_DIR && PORTABLE_EXECUTABLE_DIR !== EMPTY_STRING
 
 /** 应用 GitHub Releases 页面（手动下载安装包） */

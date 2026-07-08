@@ -1,4 +1,5 @@
 import logger from './Logger'
+import { isPortableMode } from '@shared/constants'
 import {
   getEnginePath,
   getAria2ConfPath,
@@ -38,6 +39,7 @@ export default class Context {
     this.context = {
       platform,
       arch,
+      'is-portable': isPortableMode(),
       'log-path': this.getLogPath(),
       'session-path': getSessionPath(),
       'go-aria2-session-path': getGoAria2SessionJsonPath(),

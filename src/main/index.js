@@ -3,7 +3,7 @@ import path from 'node:path'
 import is from 'electron-is'
 import { initialize } from '@electron/remote/main'
 
-import { IS_PORTABLE } from '@shared/constants'
+import { isPortableMode } from '@shared/constants'
 import Launcher from './Launcher'
 
 /**
@@ -25,7 +25,7 @@ function shouldUseCustomWindowsAppId () {
   const execPath = process.execPath.toLowerCase()
   // 直接运行 win-unpacked / portable / ZIP 便携版时没有安装后的壳层快捷方式，
   // 自定义 AppUserModelId 可能导致任务栏图标关联不到 exe 资源而退回默认图标。
-  return !IS_PORTABLE &&
+  return !isPortableMode() &&
     !execPath.includes('\\win-unpacked\\') &&
     !execPath.includes('portable')
 }

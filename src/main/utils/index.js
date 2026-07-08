@@ -7,8 +7,8 @@ import {
   APP_THEME,
   ENGINE_MAX_CONNECTION_PER_SERVER,
   IP_VERSION,
-  IS_PORTABLE,
-  PORTABLE_EXECUTABLE_DIR
+  getPortableExecutableDir,
+  isPortableMode
 } from '@shared/constants'
 import {
   engineGoAria2BinMap,
@@ -28,8 +28,8 @@ export const getSystemLogPath = () => {
 }
 
 export const getUserDownloadsPath = () => {
-  if (IS_PORTABLE && PORTABLE_EXECUTABLE_DIR) {
-    return resolve(PORTABLE_EXECUTABLE_DIR, 'Downloads')
+  if (isPortableMode()) {
+    return resolve(getPortableExecutableDir(), 'Downloads')
   }
   return app.getPath('downloads')
 }
