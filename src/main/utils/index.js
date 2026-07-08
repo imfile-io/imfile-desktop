@@ -20,7 +20,7 @@ import {
 import logger from '../core/Logger'
 
 export const getUserDataPath = () => {
-  return IS_PORTABLE ? PORTABLE_EXECUTABLE_DIR : app.getPath('userData')
+  return app.getPath('userData')
 }
 
 export const getSystemLogPath = () => {
@@ -28,6 +28,9 @@ export const getSystemLogPath = () => {
 }
 
 export const getUserDownloadsPath = () => {
+  if (IS_PORTABLE && PORTABLE_EXECUTABLE_DIR) {
+    return resolve(PORTABLE_EXECUTABLE_DIR, 'Downloads')
+  }
   return app.getPath('downloads')
 }
 

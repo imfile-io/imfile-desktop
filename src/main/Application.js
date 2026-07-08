@@ -10,6 +10,7 @@ import {
   APP_RUN_MODE,
   AUTO_SYNC_TRACKER_INTERVAL,
   AUTO_CHECK_UPDATE_INTERVAL,
+  IS_PORTABLE,
   POST_DOWNLOAD_ACTION,
   PROXY_SCOPES
 } from '@shared/constants'
@@ -1319,7 +1320,7 @@ export default class Application extends EventEmitter {
   }
 
   initUpdaterManager () {
-    if (is.mas()) {
+    if (is.mas() || IS_PORTABLE) {
       return
     }
     const enabled = this.configManager.getUserConfig('auto-check-update')
