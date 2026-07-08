@@ -25,6 +25,7 @@
         :rules="rules"
       >
         <el-form-item
+          v-if="!isPortable"
           :label="`${$t('preferences.auto-update')}: `"
           :label-width="formLabelWidth"
         >
@@ -685,6 +686,9 @@ export default {
     },
     logLevels () {
       return LOG_LEVELS
+    },
+    isPortable () {
+      return Boolean(this.config?.isPortable)
     },
     ...mapState('preference', {
       config: state => state.config,
