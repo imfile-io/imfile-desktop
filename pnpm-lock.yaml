@@ -59,7 +59,7 @@ importers:
         version: 2.5.0
       '@electron/remote':
         specifier: ^2.1.3
-        version: 2.1.3(electron@42.6.1)
+        version: 2.1.3(electron@43.2.0)
       '@element-plus/icons-vue':
         specifier: ^2.3.2
         version: 2.3.2(vue@3.5.39(typescript@6.0.3))
@@ -112,8 +112,8 @@ importers:
         specifier: ^8.0.1
         version: 8.0.1
       electron:
-        specifier: 42.6.1
-        version: 42.6.1
+        specifier: 43.2.0
+        version: 43.2.0
       electron-builder:
         specifier: ^26.15.3
         version: 26.15.3(electron-builder-squirrel-windows@26.15.3)
@@ -2718,8 +2718,8 @@ packages:
     resolution: {integrity: sha512-bO3y10YikuUwUuDUQRM4KfwNkKhnpVO7IPdbsrejwN9/AABJzzTQ4GeHwyzNSrVO+tEH3/Np255a3sVZpZDjvg==}
     engines: {node: '>=8.0.0'}
 
-  electron@42.6.1:
-    resolution: {integrity: sha512-HR9yiOyl+kZpSAugjOpBNvKpoh1wNpTK4wl6geD9W9Xmo6L6IgEzVB/JKlbEUDdXYeqRaaEhTUSSfyQ/g9iXvQ==}
+  electron@43.2.0:
+    resolution: {integrity: sha512-80zvrgG7ZRXD+tD0IyLvrnN9n+veSxadMRsMaC9wKKP3iUbtC7rGM8+dVuCmOb0Rrwwv8ESW4awnUZh9Hbp1fA==}
     engines: {node: '>= 22.12.0'}
     hasBin: true
 
@@ -6422,9 +6422,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@electron/remote@2.1.3(electron@42.6.1)':
+  '@electron/remote@2.1.3(electron@43.2.0)':
     dependencies:
-      electron: 42.6.1
+      electron: 43.2.0
 
   '@electron/universal@2.0.3':
     dependencies:
@@ -8505,7 +8505,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  electron@42.6.1:
+  electron@43.2.0:
     dependencies:
       '@electron-internal/extract-zip': 1.0.4
       '@electron/get': 5.0.0
