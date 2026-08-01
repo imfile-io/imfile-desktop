@@ -6,7 +6,7 @@
  * 2. 环境变量 IMFILE_PORTABLE=1 或命令行 --portable
  * 3. Windows ZIP 解压版：exe 旁有 resources/app.asar 且无 NSIS 卸载程序
  */
-import { cpSync, existsSync, readdirSync } from 'node:fs'
+import { cpSync, existsSync, readdirSync, rmdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { app } from 'electron'
 
@@ -106,6 +106,23 @@ function migrateLegacyUserDataIfNeeded (legacyDir, portableRoot) {
   }
 }
 
+/**
+ * 便携模式会先调用 app.getPath('userData') 解析默认路径，Electron 会创建该目录。
+ * 重定向到程序目录后，若 AppData 下仅剩空目录则删除，避免残留空的 %APPDATA%\\imFile。
+ */
+function removeEmptyLegacyUserDataDir (legacyDir) {
+  if (!legacyDir) {
+    return
+  }
+  try {
+    if (existsSync(legacyDir) && readdirSync(legacyDir).length === 0) {
+      rmdirSync(legacyDir)
+    }
+  } catch (err) {
+    console.warn('[imFile] 便携模式：清理 AppData 空目录失败', err)
+  }
+}
+
 function resolvePortableRoot () {
   const envDir = process.env.PORTABLE_EXECUTABLE_DIR
   if (typeof envDir === 'string' && envDir.length > 0) {
@@ -137,4 +154,5 @@ if (portableRoot) {
   app.setPath('userData', portableRoot)
   app.setPath('logs', join(portableRoot, 'logs'))
   app.setPath('cache', getPortableCacheDir(portableRoot))
+  removeEmptyLegacyUserDataDir(defaultUserData)
 }
