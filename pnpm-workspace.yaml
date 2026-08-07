@@ -24,7 +24,7 @@ overrides:
   svgo: ^4.0.2
   # CVE GHSA-mh99-v99m-4gvg: brace-expansion DoS
   brace-expansion@1.1.16: 1.1.18
-  brace-expansion@2.1.2: 2.1.4
+  brace-expansion@2.1.2: 5.0.9
   brace-expansion@4.0.1: 5.0.9
   # CVE GHSA-r292-9mhp-454m: tar 递归 DoS
   tar: '>=7.5.21'
