@@ -146,7 +146,7 @@ importers:
         version: 6.8.9(supports-color@10.2.2)
       element-plus:
         specifier: ^2.14.3
-        version: 2.14.3(vue@3.5.41(typescript@6.0.3))
+        version: 2.14.4(vue@3.5.41(typescript@6.0.3))
       eslint:
         specifier: ^10.8.0
         version: 10.8.0(jiti@2.7.0)(supports-color@10.2.2)
@@ -3128,8 +3128,8 @@ packages:
     engines: {node: '>= 22.12.0'}
     hasBin: true
 
-  element-plus@2.14.3:
-    resolution: {integrity: sha512-pJcvxcpZjYruNzuJhAeVwnbYjfNgzBKnWHwSVEhwzM2/kcLI3brzmtIBxtPqd4hQWJfD1PRnjoc1WipLw2eBGg==}
+  element-plus@2.14.4:
+    resolution: {integrity: sha512-vMKR9tFcLeNrJgFXA3zhUn6YuRKUQW9d0btakBR8U1Iq8MfzkjMOGcgs5de2VgiLldHt69brmuBHpxc3bK4ZgQ==}
     peerDependencies:
       vue: ^3.3.7
 
@@ -9314,7 +9314,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  element-plus@2.14.3(vue@3.5.41(typescript@6.0.3)):
+  element-plus@2.14.4(vue@3.5.41(typescript@6.0.3)):
     dependencies:
       '@ctrl/tinycolor': 4.2.0
       '@element-plus/icons-vue': 2.3.2(vue@3.5.41(typescript@6.0.3))
@@ -12028,7 +12028,7 @@ snapshots:
       esbuild: 0.28.1
       fdir: 6.5.0(picomatch@4.0.5)
       picomatch: 4.0.5
-      postcss: 8.5.25
+      postcss: 8.5.26
       rollup: 4.62.3
       tinyglobby: 0.2.17
     optionalDependencies:
