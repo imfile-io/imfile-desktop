@@ -5,6 +5,9 @@ allowBuilds:
   esbuild: true
   unrs-resolver: true
 
+# pnpm 11 默认 1440 分钟（1 天）；显式声明以便与 Renovate minimumReleaseAge 对齐
+minimumReleaseAge: 1440
+
 minimumReleaseAgeExclude:
   - postcss
   - axios@1.19.0
