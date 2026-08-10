@@ -8,6 +8,7 @@ import {
   updateStates
 } from '../utils/menu'
 import { getI18n } from '../ui/Locale'
+import { platformMenus } from '../menus/platformMenus'
 
 export default class MenuManager extends EventEmitter {
   constructor (options) {
@@ -24,8 +25,8 @@ export default class MenuManager extends EventEmitter {
   }
 
   load () {
-    const template = require(`../menus/${process.platform}.json`)
-    this.template = template.menu
+    const menu = platformMenus[process.platform] ?? platformMenus.linux
+    this.template = menu.menu
   }
 
   build () {

@@ -84,5 +84,6 @@ jobs:
         run: |
           set -e
           test -f dist/electron/main.js
-          test -f dist/electron/index.js
-          echo "OK: dist/electron/main.js 与 index.js 已生成。"
+          test -f dist/electron/index.html
+          test -f dist/electron/package.json
+          echo "OK: dist/electron/main.js、index.html 与 package.json 已生成。"

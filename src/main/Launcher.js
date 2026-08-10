@@ -2,6 +2,8 @@ import { EventEmitter } from 'node:events'
 import { app } from 'electron'
 import is from 'electron-is'
 
+import { enable } from '@electron/remote/main'
+
 import ExceptionHandler from './core/ExceptionHandler'
 import logger from './core/Logger'
 import Application from './Application'
@@ -59,7 +61,22 @@ export default class Launcher extends EventEmitter {
 
     logger.info('[imFile] openedAtLogin:', this.openedAtLogin)
 
+    this.installDevToolsIfNeeded()
     this.handleAppEvents()
+  }
+
+  installDevToolsIfNeeded () {
+    if (!process.env.ELECTRON_RENDERER_URL) {
+      return
+    }
+    app.whenReady().then(async () => {
+      try {
+        const { default: installExtension, VUEJS_DEVTOOLS } = await import('electron-devtools-installer')
+        await installExtension(VUEJS_DEVTOOLS)
+      } catch (err) {
+        logger.warn('[imFile] vue-devtools install failed:', err)
+      }
+    })
   }
 
   handleAppEvents () {
@@ -73,7 +90,7 @@ export default class Launcher extends EventEmitter {
 
   handleRendererRemote () {
     app.on('browser-window-created', (_, window) => {
-      require('@electron/remote/main').enable(window.webContents)
+      enable(window.webContents)
     })
   }
 

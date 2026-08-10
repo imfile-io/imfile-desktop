@@ -40,6 +40,9 @@ let rendererConfig = {
   entry: {
     index: path.join(__dirname, '../src/renderer/pages/index/main.js')
   },
+  experiments: {
+    outputModule: !devMode
+  },
   externals: [
     ...Object.keys(dependencies || {}).filter(d => !whiteListedModules.includes(d))
   ],
@@ -183,16 +186,9 @@ let rendererConfig = {
       filename: 'index.html',
       chunks: ['index'],
       template: path.resolve(__dirname, '../src/index.ejs'),
-      // minify: {
-      //   collapseWhitespace: true,
-      //   removeAttributeQuotes: true,
-      //   removeComments: true
-      // },
       isBrowser: false,
       isDev: process.env.NODE_ENV !== 'production',
-      nodeModules: devMode
-        ? path.resolve(__dirname, '../node_modules')
-        : false
+      scriptLoading: devMode ? 'defer' : 'module'
     }),
     new Webpack.HotModuleReplacementPlugin(),
     new ESLintPlugin({
@@ -204,9 +200,14 @@ let rendererConfig = {
   ],
   output: {
     filename: '[name].js',
-    libraryTarget: 'commonjs2',
     path: path.join(__dirname, '../dist/electron'),
-    globalObject: 'this',
+    ...(devMode
+      ? { libraryTarget: 'commonjs2', globalObject: 'this' }
+      : {
+          module: true,
+          chunkFormat: 'module',
+          environment: { module: true, dynamicImport: true }
+        }),
     /** 生产 file:// 用相对路径；开发保持 / 以免 dev server / HMR 异常 */
     publicPath: devMode ? '/' : './'
   },

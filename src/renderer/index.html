@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>imFile</title>
+    <style>
+      .skeleton-aside {
+        background-color: rgba(0, 0, 0, 0.8);
+        width: 78px;
+      }
+      .skeleton-subnav {
+        background-color: #f4f5f7;
+        width: 200px;
+      }
+      .skeleton-main {
+        background-color: #fff;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .skeleton-aside {
+          background-color: rgba(0, 0, 0, 0.9);
+        }
+        .skeleton-subnav {
+          background-color: #2d2d2d;
+        }
+        .skeleton-main {
+          background-color: #343434;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="title-bar"></div>
+      <section class="el-container" id="container">
+        <aside class="el-aside skeleton-aside hidden-sm-and-down"></aside>
+        <aside class="el-aside skeleton-subnav hidden-xs-only"></aside>
+        <section class="el-container skeleton-main"></section>
+      </section>
+    </div>
+    <script>
+      (function () {
+        try {
+          var staticUrl = new URL('static/', window.location.href)
+          var p = staticUrl.pathname
+          if (staticUrl.protocol === 'file:') {
+            p = decodeURIComponent(p)
+          }
+          window.__static = p.replace(/\\/g, '\\\\')
+        } catch (e) {
+          window.__static = ''
+        }
+      })()
+    </script>
+    <script type="module" src="/pages/index/main.js"></script>
+  </body>
+</html>

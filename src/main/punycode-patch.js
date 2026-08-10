@@ -2,8 +2,12 @@
  * Node 21+ 对 require('punycode') 会发 DEP0040；依赖仍用裸模块名时，
  * 在主进程最早将 punycode 指到 npm 包内的 punycode.js（非内置模块）。
  */
-const path = require('path')
-const Module = require('module')
+import path from 'node:path'
+import { createRequire, Module } from 'node:module'
+import { fileURLToPath } from 'node:url'
+
+const require = createRequire(import.meta.url)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const projectRoot = path.join(__dirname, '..', '..')
 let punyResolved

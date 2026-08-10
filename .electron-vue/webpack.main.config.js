@@ -1,15 +1,13 @@
 'use strict'
 
-process.env.BABEL_ENV = 'main'
+process.env.BABEL_ENV = 'renderer'
 
 const path = require('node:path')
 const Webpack = require('webpack')
 const ESLintPlugin = require('eslint-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const { dependencies } = require('../package.json')
-const { appId } = require('../electron-builder.json')
 const devMode = process.env.NODE_ENV !== 'production'
-const ssapiBuildDefaultDef = JSON.stringify(process.env.SSAPI_BUILD_DEFAULT_BASE_URL || '')
 
 /** 避免 require('punycode') 落到 Node 内置模块而触发 DEP0040（uri-js / ajv 等） */
 let punycodeUserland
@@ -19,20 +17,29 @@ try {
   punycodeUserland = null
 }
 
-/** 纯 ESM、exports 无 require，不能作 external 由主进程 CJS require */
-const BUNDLE_IN_MAIN = new Set(['@achingbrain/nat-port-mapper'])
+/** 标记 dist/electron 为 ESM，与主进程 outputModule 产物一致 */
+class EmitModulePackageJsonPlugin {
+  apply (compiler) {
+    compiler.hooks.emit.tap('EmitModulePackageJsonPlugin', (compilation) => {
+      const source = new Webpack.sources.RawSource(
+        JSON.stringify({ type: 'module' }, null, 2) + '\n'
+      )
+      compilation.emitAsset('package.json', source)
+    })
+  }
+}
 
 const mainConfig = {
   entry: {
-    main: [
-      path.join(__dirname, '../src/main/portable-userdata.js'),
-      path.join(__dirname, '../src/main/punycode-patch.js'),
-      path.join(__dirname, '../src/main/index.js')
-    ]
+    main: path.join(__dirname, '../src/main/index.js')
   },
-  externals: [
-    ...Object.keys(dependencies || {}).filter((name) => !BUNDLE_IN_MAIN.has(name))
-  ],
+  experiments: {
+    outputModule: true
+  },
+  externals: {
+    electron: 'electron'
+  },
+  externalsType: 'module-import',
   module: {
     rules: [
       {
@@ -46,18 +53,23 @@ const mainConfig = {
       }
     ]
   },
-  /* 主进程需真实 __dirname，供 punycode-patch 等解析 node_modules；勿在 prod 中置 false */
   node: {
     __dirname: true,
     __filename: true
   },
   output: {
     filename: '[name].js',
-    libraryTarget: 'commonjs2',
-    path: path.join(__dirname, '../dist/electron')
+    path: path.join(__dirname, '../dist/electron'),
+    module: true,
+    chunkFormat: 'module',
+    environment: {
+      module: true,
+      dynamicImport: true
+    }
   },
   plugins: [
     new Webpack.NoEmitOnErrorsPlugin(),
+    new EmitModulePackageJsonPlugin(),
     new ESLintPlugin({
       configType: 'flat',
       context: path.join(__dirname, '..'),
@@ -89,9 +101,9 @@ const mainConfig = {
   ]
 }
 
-/**
- * Adjust mainConfig for development settings
- */
+const { appId } = require('../electron-builder.json')
+const ssapiBuildDefaultDef = JSON.stringify(process.env.SSAPI_BUILD_DEFAULT_BASE_URL || '')
+
 if (devMode) {
   mainConfig.plugins.push(
     new Webpack.DefinePlugin({
@@ -102,9 +114,6 @@ if (devMode) {
   )
 }
 
-/**
- * Adjust mainConfig for production settings
- */
 if (!devMode) {
   mainConfig.plugins.push(
     new Webpack.DefinePlugin({
