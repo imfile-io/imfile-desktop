@@ -94,15 +94,15 @@ export default {
       }
     }
     &.theme-item-auto .theme-thumb {
-      background: url('~@/assets/theme-auto@2x.png') center center no-repeat;
+      background: url('@/assets/theme-auto@2x.png') center center no-repeat;
       background-size: 68px 44px;
     }
     &.theme-item-light .theme-thumb {
-      background: url('~@/assets/theme-light@2x.png') center center no-repeat;
+      background: url('@/assets/theme-light@2x.png') center center no-repeat;
       background-size: 68px 44px;
     }
     &.theme-item-dark .theme-thumb {
-      background: url('~@/assets/theme-dark@2x.png') center center no-repeat;
+      background: url('@/assets/theme-dark@2x.png') center center no-repeat;
       background-size: 68px 44px;
     }
   }

@@ -1,8 +1,6 @@
-'use strict'
+import { inspect } from 'node:util'
 
-import { inspect } from 'util'
-
-module.exports = (aria2) => {
+export default function debug (aria2) {
   aria2.on('open', () => {
     console.log('aria2', 'OPEN')
   })

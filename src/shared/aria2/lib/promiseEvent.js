@@ -1,6 +1,4 @@
-'use strict'
-
-module.exports = function promiseEvent (target, event) {
+export default function promiseEvent (target, event) {
   return new Promise((resolve, reject) => {
     function cleanup () {
       target.removeListener(event, onEvent)

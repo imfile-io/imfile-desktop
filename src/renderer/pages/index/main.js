@@ -11,13 +11,14 @@ import router from '@/router'
 import store from '@/store'
 import { createAppI18n } from '@/i18n'
 import { setRendererI18n } from '@/components/Locale'
-import Icon from '@/components/Icons/Icon'
+import Icon from '@/components/Icons/Icon.vue'
 import Msg from '@/components/Msg'
 import { commands } from '@/components/CommandManager/instance'
-import TrayWorker from '@/workers/tray.worker'
+import TrayWorker from '@/workers/tray.worker?worker'
 
 import '@/components/Theme/tailwind.css'
 import '@/components/Theme/Index.scss'
+import './commands'
 
 const updateTray = is.renderer()
   ? async (payload) => {
@@ -79,8 +80,6 @@ function init (config) {
   global.app = app.mount('#app')
 
   global.app.commands = commands
-  require('./commands')
-
   global.app.trayWorker = initTrayWorker()
 
   setTimeout(() => {

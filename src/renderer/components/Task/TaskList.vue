@@ -234,7 +234,7 @@ export default {
 .no-task-inner {
   width: 100%;
   padding-top: 160px;
-  background: transparent url('~@/assets/no-task.svg') center no-repeat;
+  background: transparent url('@/assets/no-task.svg') center no-repeat;
 }
 
 /* 任务列表卡片：白底圆角容器 + 表格列 + 行内进度条式背景（见设计稿） */

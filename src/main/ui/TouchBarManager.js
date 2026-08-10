@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { TouchBar, nativeImage } from 'electron'
 
 import { handleCommand } from '../utils/menu'
+import touchBarMenu from '../menus/touchBar.json'
 import logger from '../core/Logger'
 
 const { TouchBarButton, TouchBarLabel, TouchBarSpacer, TouchBarGroup } = TouchBar
@@ -16,7 +17,7 @@ export default class TouchBarManager extends EventEmitter {
   }
 
   load () {
-    this.template = require('../menus/touchBar.json')
+    this.template = touchBarMenu
   }
 
   getClickFn (item) {

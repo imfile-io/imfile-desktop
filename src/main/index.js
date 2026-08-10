@@ -1,3 +1,6 @@
+import './portable-userdata'
+import './punycode-patch'
+
 import { app } from 'electron'
 import path from 'node:path'
 import is from 'electron-is'
