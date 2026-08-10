@@ -2,41 +2,41 @@
 
 process.env.NODE_ENV = 'production'
 
-const { say } = require('cfonts')
-const chalk = require('chalk')
-const Webpack = require('webpack')
-const Multispinner = require('@motrix/multispinner')
-
-const mainConfig = require('./webpack.main.config')
-const rendererConfig = require('./webpack.renderer.config')
-const webConfig = require('./webpack.web.config')
+import chalk from 'chalk'
+import Webpack from 'webpack'
+import Multispinner from '@motrix/multispinner'
+import cfonts from 'cfonts'
+const { say } = cfonts
+import { deleteSync } from 'del'
+import mainConfig from './webpack.main.config.mjs'
+import rendererConfig from './webpack.renderer.config.mjs'
+import webConfig from './webpack.web.config.mjs'
 
 const doneLog = chalk.bgGreen.white(' DONE ') + ' '
 const errorLog = chalk.bgRed.white(' ERROR ') + ' '
 const okayLog = chalk.bgBlue.white(' OKAY ') + ' '
 const isCI = process.env.CI || false
 
-;(async () => {
-  const { deleteSync } = await import('del')
+try {
   if (process.env.BUILD_TARGET === 'clean') {
-    clean(deleteSync)
+    clean()
   } else if (process.env.BUILD_TARGET === 'web') {
-    web(deleteSync)
+    web()
   } else {
-    build(deleteSync)
+    build()
   }
-})().catch((err) => {
+} catch (err) {
   console.error(err)
   process.exit(1)
-})
+}
 
-function clean (deleteSync) {
+function clean () {
   deleteSync(['release/*', '!.gitkeep'])
   console.log(`\n${doneLog}\n`)
   process.exit()
 }
 
-function build (deleteSync) {
+function build () {
   greeting()
 
   deleteSync(['dist/electron/*', '!.gitkeep'])
@@ -88,8 +88,8 @@ function pack (config) {
           chunks: false,
           colors: true
         })
-        .split(/\r?\n/)
-        .reduce((acc, line) => acc + `    ${line}\n`, '')
+          .split(/\r?\n/)
+          .reduce((acc, line) => acc + `    ${line}\n`, '')
 
         reject(err)
       } else {
@@ -102,7 +102,7 @@ function pack (config) {
   })
 }
 
-function web (deleteSync) {
+function web () {
   deleteSync(['dist/web/*', '!.gitkeep'])
   webConfig.mode = 'production'
   Webpack(webConfig, (err, stats) => {

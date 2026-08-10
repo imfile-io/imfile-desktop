@@ -35,7 +35,7 @@ function shouldUseCustomWindowsAppId () {
 
 /**
  * Fix Windows notification func
- * appId defined in .electron-vue/webpack.main.config.js
+ * appId defined in .electron-vue/webpack.main.config.mjs
  */
 if (is.windows()) {
   if (shouldUseCustomWindowsAppId()) {

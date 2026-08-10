@@ -36,7 +36,7 @@ jobs:
           sudo apt install --install-recommends rpm -y 1>&2
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run sync-go-aria2 && node .electron-vue/build.js && npx electron-builder --publish=never
+      - run: pnpm run sync-go-aria2 && node .electron-vue/build.mjs && npx electron-builder --publish=never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}
@@ -79,7 +79,7 @@ jobs:
           npm version "$VERSION" --no-git-tag-version --allow-same-version
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run sync-go-aria2 && node .electron-vue/build.js && npx electron-builder --publish=never
+      - run: pnpm run sync-go-aria2 && node .electron-vue/build.mjs && npx electron-builder --publish=never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}
@@ -121,7 +121,7 @@ jobs:
           npm version $version --no-git-tag-version --allow-same-version
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run sync-go-aria2 && node .electron-vue/build.js && npx electron-builder --win --x64 --publish=never
+      - run: pnpm run sync-go-aria2 && node .electron-vue/build.mjs && npx electron-builder --win --x64 --publish=never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}
@@ -166,7 +166,7 @@ jobs:
           npm version $version --no-git-tag-version --allow-same-version
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run sync-go-aria2 && node .electron-vue/build.js && npx electron-builder --win --arm64 --publish=never
+      - run: pnpm run sync-go-aria2 && node .electron-vue/build.mjs && npx electron-builder --win --arm64 --publish=never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}

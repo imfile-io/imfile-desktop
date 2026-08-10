@@ -1,20 +1,24 @@
 'use strict'
 
-process.env.BABEL_ENV = 'renderer'
+process.env.BABEL_ENV = 'web'
 
-const path = require('node:path')
-const Webpack = require('webpack')
-const { VueLoaderPlugin } = require('vue-loader')
-const Components = require('unplugin-vue-components/webpack')
-const AutoImport = require('unplugin-auto-import/webpack')
-const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
-const ESLintPlugin = require('eslint-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const TerserPlugin = require('terser-webpack-plugin')
+import path from 'node:path'
+import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
+import Webpack from 'webpack'
+import { VueLoaderPlugin } from 'vue-loader'
+import CopyWebpackPlugin from 'copy-webpack-plugin'
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
+import ESLintPlugin from 'eslint-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import TerserPlugin from 'terser-webpack-plugin'
+import sass from 'sass'
+
+const require = createRequire(import.meta.url)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const { dependencies } = require('../package.json')
+const eslintFriendlyFormatter = require('eslint-friendly-formatter/index.js')
 const devMode = process.env.NODE_ENV !== 'production'
 
 /** 避免 require('punycode') 落到 Node 内置模块而触发 DEP0040（uri-js / ajv 等） */
@@ -34,14 +38,11 @@ const tailwindEntryCss = path.resolve(__dirname, '../src/renderer/components/The
  * that provide pure *.vue files that need compiling
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/webpack-configurations.html#white-listing-externals
  */
-let whiteListedModules = ['vue']
+const whiteListedModules = ['vue']
 
-let rendererConfig = {
+const webConfig = {
   entry: {
     index: path.join(__dirname, '../src/renderer/pages/index/main.js')
-  },
-  experiments: {
-    outputModule: !devMode
   },
   externals: [
     ...Object.keys(dependencies || {}).filter(d => !whiteListedModules.includes(d))
@@ -64,14 +65,14 @@ let rendererConfig = {
             loader: 'sass-loader',
             options: {
               api: 'modern',
-              implementation: require('sass'),
-              additionalData: '@import "@/components/Theme/Variables.scss";',
+              implementation: sass,
+              additionalData: '@import "@/components/Theme/Variables.scss"',
               sassOptions: {
                 includePaths: [__dirname, 'src'],
                 quietDeps: true,
                 silenceDeprecations: ['import']
               }
-            },
+            }
           }
         ]
       },
@@ -84,15 +85,15 @@ let rendererConfig = {
             loader: 'sass-loader',
             options: {
               api: 'modern',
-              implementation: require('sass'),
+              implementation: sass,
               indentedSyntax: true,
-              additionalData: '@import "@/components/Theme/Variables.scss";',
+              additionalData: '@import "@/components/Theme/Variables.scss"',
               sassOptions: {
                 includePaths: [__dirname, 'src'],
                 quietDeps: true,
                 silenceDeprecations: ['import']
               }
-            },
+            }
           }
         ]
       },
@@ -124,23 +125,26 @@ let rendererConfig = {
       {
         test: /\.js$/,
         use: 'babel-loader',
+        include: [path.resolve(__dirname, '../src/renderer')],
         exclude: /node_modules/
       },
       {
-        test: /\.node$/,
-        use: 'node-loader'
-      },
-      {
         test: /\.vue$/,
-        use: 'vue-loader'
+        use: {
+          loader: 'vue-loader',
+          options: {
+            extractCSS: true,
+            loaders: {
+              sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1&api=modern',
+              scss: 'vue-style-loader!css-loader!sass-loader?api=modern',
+              less: 'vue-style-loader!css-loader!less-loader'
+            }
+          }
+        }
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         type: 'asset/inline'
-      },
-      {
-        test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-        type: 'asset/resource'
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
@@ -148,35 +152,8 @@ let rendererConfig = {
       }
     ]
   },
-  node: {
-    __dirname: devMode,
-    __filename: devMode
-  },
   plugins: [
-    AutoImport({
-      resolvers: [
-        ElementPlusResolver({
-          importStyle: 'css'
-        })
-      ],
-      dts: false
-    }),
-    Components({
-      resolvers: [
-        ElementPlusResolver({
-          importStyle: 'css'
-        })
-      ],
-      dts: false
-    }),
     new VueLoaderPlugin(),
-    // vue.esm-bundler 需在构建期注入特性开关，否则运行时报 __VUE_PROD_DEVTOOLS__ 等未定义
-    // https://vuejs.org/api/compile-time-flags.html
-    new Webpack.DefinePlugin({
-      __VUE_OPTIONS_API__: JSON.stringify(true),
-      __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
-      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false)
-    }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css'
@@ -186,85 +163,77 @@ let rendererConfig = {
       filename: 'index.html',
       chunks: ['index'],
       template: path.resolve(__dirname, '../src/index.ejs'),
-      isBrowser: false,
+      isBrowser: true,
       isDev: process.env.NODE_ENV !== 'production',
-      scriptLoading: devMode ? 'defer' : 'module'
+      nodeModules: devMode
+        ? path.resolve(__dirname, '../node_modules')
+        : false
+    }),
+    new Webpack.DefinePlugin({
+      'process.env.IS_WEB': 'true'
     }),
     new Webpack.HotModuleReplacementPlugin(),
+    new Webpack.NoEmitOnErrorsPlugin(),
     new ESLintPlugin({
       configType: 'flat',
       context: path.join(__dirname, '..'),
       extensions: ['js', 'vue'],
-      formatter: require('eslint-friendly-formatter/index.js')
+      formatter: eslintFriendlyFormatter
     })
   ],
   output: {
     filename: '[name].js',
-    path: path.join(__dirname, '../dist/electron'),
-    ...(devMode
-      ? { libraryTarget: 'commonjs2', globalObject: 'this' }
-      : {
-          module: true,
-          chunkFormat: 'module',
-          environment: { module: true, dynamicImport: true }
-        }),
-    /** 生产 file:// 用相对路径；开发保持 / 以免 dev server / HMR 异常 */
-    publicPath: devMode ? '/' : './'
+    path: path.join(__dirname, '../dist/web'),
+    globalObject: 'this',
+    publicPath: ''
   },
   resolve: {
     alias: {
       '@': path.join(__dirname, '../src/renderer'),
       '@shared': path.join(__dirname, '../src/shared'),
-      'vue$': 'vue/dist/vue.esm-bundler.js',
+      vue$: 'vue/dist/vue.esm.js',
       ...(punycodeUserland ? { punycode: punycodeUserland } : {})
     },
-    extensions: ['.js', '.vue', '.json', '.css', '.node']
+    extensions: ['.js', '.vue', '.json', '.css']
   },
-  target: 'electron-renderer',
+  target: 'web',
   optimization: {
-    emitOnErrors: false,
     minimize: !devMode,
     minimizer: [
       new TerserPlugin({
-        extractComments: false,
+        extractComments: false
       }),
-      new CssMinimizerPlugin(),
-    ],
-  },
+      new CssMinimizerPlugin()
+    ]
+  }
 }
 
 /**
- * Adjust rendererConfig for development settings
+ * Adjust webConfig for development settings
  */
 if (devMode) {
-  rendererConfig.devtool = 'eval-cheap-module-source-map'
-
-  rendererConfig.plugins.push(
-    new Webpack.DefinePlugin({
-      '__static': `"${path.join(__dirname, '../static').replace(/\\/g, '\\\\')}"`
-    })
-  )
+  webConfig.devtool = 'eval-cheap-module-source-map'
 }
 
 /**
- * Adjust rendererConfig for production settings
+ * Adjust webConfig for production settings
  */
 if (!devMode) {
-  rendererConfig.plugins.push(
+  webConfig.plugins.push(
     new CopyWebpackPlugin({
       patterns: [{
         from: path.join(__dirname, '../static'),
         to: path.join(__dirname, '../dist/electron/static'),
-        globOptions: { ignore: [ '.*' ] }
+        globOptions: { ignore: ['.*'] }
       }]
     }),
     new Webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"'
     }),
     new Webpack.LoaderOptionsPlugin({
-      minimize: false
+      minimize: true
     })
   )
 }
 
-module.exports = rendererConfig
+export default webConfig

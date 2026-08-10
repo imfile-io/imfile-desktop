@@ -27,7 +27,7 @@ imFile 是一个基于 Electron + Vue 3 的全功能桌面下载管理器（Motr
 ### 运行注意事项
 
 1. **PATH 优先级**：Cloud Agent VM 中 `/exec-daemon/node` 可能指向旧版 Node。启动 dev 时需确保 nvm 的 Node 24 在 PATH 前面：`export PATH="$HOME/.nvm/versions/node/v24.*/bin:$PATH"`（update script 已处理）。
-2. **`pnpm run dev` 启动流程**：dev-runner.js 同时编译 renderer（端口 9080）和 main 进程，编译完成后自动启动 Electron（带 `--inspect=5858` 调试端口）。
+2. **`pnpm run dev` 启动流程**：当前默认走 electron-vite；备用 Webpack 路径为 `dev:webpack`（`.electron-vue/dev-runner.mjs`），会同时编译 renderer（端口 9080）和 main 进程，编译完成后自动启动 Electron（带 `--inspect=5858` 调试端口）。
 3. **aria2c 引擎**：Electron 主进程启动时会自动从 `extra/linux/x64/engine/aria2c` 生成子进程，通过 JSON-RPC（127.0.0.1:16800）通信。
 4. **goed2kd 引擎**：ED2K 下载引擎从 `extra/linux/x64/goed2kd` 启动，HTTP RPC 监听 127.0.0.1:18080。
 5. **D-Bus 错误**：容器环境中会出现 `Failed to connect to the bus` 错误，这是预期行为，不影响应用功能。

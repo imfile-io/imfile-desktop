@@ -1,15 +1,18 @@
 'use strict'
 
-const path = require('node:path')
-const { spawn } = require('node:child_process')
-const { say } = require('cfonts')
-const electron = require('electron')
-const chalk = require('chalk')
-const Webpack = require('webpack')
-const WebpackDevServer = require('webpack-dev-server')
+import path from 'node:path'
+import { spawn } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+import cfonts from 'cfonts'
+const { say } = cfonts
+import electron from 'electron'
+import chalk from 'chalk'
+import Webpack from 'webpack'
+import WebpackDevServer from 'webpack-dev-server'
+import mainConfig from './webpack.main.config.mjs'
+import rendererConfig from './webpack.renderer.config.mjs'
 
-const mainConfig = require('./webpack.main.config')
-const rendererConfig = require('./webpack.renderer.config')
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 let electronProcess = null
 let manualRestart = false
@@ -68,7 +71,6 @@ function startMain () {
 
     compiler.hooks.watchRun.tapAsync('watch-run', (compilation, done) => {
       logStats('Main', chalk.white.bold('compiling...'))
-      // hotMiddleware.publish({ action: 'compiling' })
       done()
     })
 
