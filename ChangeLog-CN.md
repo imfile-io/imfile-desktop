@@ -1,3 +1,9 @@
+- 构建体系迁移至 electron-vite，源码与备用 Webpack 链路统一为 ESM
+- 修复打包后主界面只显示骨架、无内容的问题（渲染进程 Node/electron 垫片与图标注册）
+- 修复 Windows 下 static 资源复制失败导致构建中断的问题
+- 修复侧栏 logo/任务/搜索图标与右上角窗口按钮空白不可见（iconRegistry globalThis 单例）
+- 升级依赖（pnpm、vue、element-plus、eslint、electron/ws 等）并加固 brace-expansion 等安全覆盖
+- 更新 README 下载内核链接为 go-aria2 与 goed2kd
 - 升级 go-aria2 下载内核至 v0.3.0（aria2 选项语义兼容、aria2-compat-mode 与 session 双写、bt-request-peer-speed-limit、file:// 本地文件下载、BT 校验进度、session FTP/SFTP 互换等）
 - 升级 go-aria2 下载内核至 v0.2.1（FTP/SFTP 限速与热更新、ED2K 迁移至 goed2k/core、补齐 saveSession/removeDownloadResult 等 RPC、修复 bt-max-peers 热更新等）
 - 升级 go-aria2 下载内核至 v0.1.1（addUri/addTorrent 支持 position 入队、getGlobalStat 增加 numStoppedTotal、新增 forceShutdown 别名等）
