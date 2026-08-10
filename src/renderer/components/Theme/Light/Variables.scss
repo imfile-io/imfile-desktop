@@ -3,8 +3,9 @@ $--action-color-base: #1f1f1f;
 /* App
 -------------------------- */
 $--app-background: #1f1f1f !default;
-$--titlebar-actions-color: #eee !default;
-$--titlebar-actions-active-background: #eee !default;
+/* 窗口按钮在右侧浅色内容区上方，需用深色保证对比度 */
+$--titlebar-actions-color: #4D515A !default;
+$--titlebar-actions-active-background: #EAECF0 !default;
 $--titlebar-close-active-color: #fff !default;
 $--titlebar-close-active-background: #fd0007 !default;
 $--app-logo-color: #4D515A !default;

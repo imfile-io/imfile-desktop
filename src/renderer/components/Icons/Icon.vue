@@ -213,6 +213,7 @@ function getId () {
 .mo-icon {
   display: inline-block;
   fill: currentColor;
+  stroke: currentColor;
 }
 
 .mo-flip-horizontal {

@@ -69,20 +69,21 @@ export default {
     -webkit-user-select: none;
   }
   .window-actions {
-    opacity: 0.4;
+    opacity: 0.85;
     transition: $--fade-transition;
     list-style: none;
     padding: 0;
     margin: 0;
     z-index: 5100;
     font-size: 0;
-    color: #fff;
+    color: $--titlebar-actions-color;
+    -webkit-app-region: no-drag;
     > li {
       display: inline-block;
       padding: 5px 18px;
       font-size: 16px;
       margin: 0;
-      color: #fff;
+      color: inherit;
       &:hover {
         background-color: $--titlebar-actions-active-background;
       }
