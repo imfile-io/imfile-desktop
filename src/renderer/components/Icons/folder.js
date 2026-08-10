@@ -1,6 +1,6 @@
-import Icon from '@/components/Icons/Icon'
+import { registerIcons } from '@/components/Icons/iconRegistry'
 
-Icon.register({
+registerIcons({
   'folder': {
     'width': 22,
     'height': 22,

@@ -24,7 +24,40 @@
 </template>
 
 <script>
-const icons = {}
+import { getCurrentInstance } from 'vue'
+import { icons, registerIcons, getIcon, hasIcon } from './iconRegistry'
+
+function getIconChildComponents (instance) {
+  const result = []
+  const root = instance && instance.subTree
+  if (!root) {
+    return result
+  }
+
+  const visit = (vnode) => {
+    if (!vnode) {
+      return
+    }
+    if (vnode.component && vnode.component.proxy) {
+      result.push(vnode.component.proxy)
+    }
+    const children = vnode.children
+    if (Array.isArray(children)) {
+      children.forEach(visit)
+    } else if (children && typeof children === 'object') {
+      Object.values(children).forEach((child) => {
+        if (Array.isArray(child)) {
+          child.forEach(visit)
+        } else {
+          visit(child)
+        }
+      })
+    }
+  }
+
+  visit(root)
+  return result
+}
 
 export default {
   name: 'mo-icon',
@@ -32,7 +65,7 @@ export default {
     name: {
       type: String,
       validator (val) {
-        if (val && !(val in icons)) {
+        if (val && !hasIcon(val)) {
           console.warn(`Invalid prop: prop "name" is referring to an unregistered icon "${val}".` +
               '\nPlease make sure you have imported this icon before using it.')
           return false
@@ -83,7 +116,7 @@ export default {
     },
     icon () {
       if (this.name) {
-        return icons[this.name]
+        return getIcon(this.name)
       }
       return null
     },
@@ -139,7 +172,9 @@ export default {
     }
   },
   mounted () {
-    if (!this.name && this.$children.length === 0) {
+    // Vue 3 已移除 $children，改从 subTree 收集子组件实例
+    const children = getIconChildComponents(getCurrentInstance())
+    if (!this.name && children.length === 0) {
       console.warn('Invalid prop: prop "name" is required.')
       return
     }
@@ -150,7 +185,7 @@ export default {
 
     let width = 0
     let height = 0
-    this.$children.forEach((child) => {
+    children.forEach((child) => {
       child.outerScale = this.normalizedScale
 
       width = Math.max(width, child.width)
@@ -158,32 +193,13 @@ export default {
     })
     this.childrenWidth = width
     this.childrenHeight = height
-    this.$children.forEach((child) => {
+    children.forEach((child) => {
       child.x = (width - child.width) / 2
       child.y = (height - child.height) / 2
     })
   },
-  register (data) {
-    for (const name in data) {
-      const icon = data[name]
-
-      if (!icon.paths) {
-        icon.paths = []
-      }
-      if (icon.d) {
-        icon.paths.push({ d: icon.d })
-      }
-
-      if (!icon.polygons) {
-        icon.polygons = []
-      }
-      if (icon.points) {
-        icon.polygons.push({ points: icon.points })
-      }
-
-      icons[name] = icon
-    }
-  },
+  // 兼容现有 Icon.register(...) 侧效导入
+  register: registerIcons,
   icons
 }
 

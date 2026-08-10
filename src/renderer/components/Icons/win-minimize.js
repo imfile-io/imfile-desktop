@@ -1,6 +1,6 @@
-import Icon from '@/components/Icons/Icon'
+import { registerIcons } from '@/components/Icons/iconRegistry'
 
-Icon.register({
+registerIcons({
   'win-minimize': {
     'width': 12,
     'height': 12,

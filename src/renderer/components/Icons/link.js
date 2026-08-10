@@ -1,6 +1,6 @@
-import Icon from '@/components/Icons/Icon'
+import { registerIcons } from '@/components/Icons/iconRegistry'
 
-Icon.register({
+registerIcons({
   'link': {
     'width': 15,
     'height': 15,

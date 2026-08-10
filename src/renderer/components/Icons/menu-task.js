@@ -1,6 +1,6 @@
-import Icon from '@/components/Icons/Icon'
+import { registerIcons } from '@/components/Icons/iconRegistry'
 
-Icon.register({
+registerIcons({
   'menu-task': {
     'width': 24,
     'height': 24,

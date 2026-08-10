@@ -1,6 +1,6 @@
-import Icon from '@/components/Icons/Icon'
+import { registerIcons } from '@/components/Icons/iconRegistry'
 
-Icon.register({
+registerIcons({
   'task-start-line': {
     'width': 15,
     'height': 15,

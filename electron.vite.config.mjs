@@ -6,6 +6,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import electronRenderer from 'vite-plugin-electron-renderer'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
@@ -24,24 +25,6 @@ try {
 } catch {
   punycodeUserland = null
 }
-
-const nodeBuiltins = [
-  'electron',
-  'ws',
-  'events',
-  'node:events',
-  'node:fs',
-  'node:path',
-  'node:os',
-  'node:url',
-  'node:util',
-  'node:stream',
-  'node:buffer',
-  'node:crypto',
-  'path',
-  'fs',
-  'os'
-]
 
 const ssapiBuildDefault = process.env.SSAPI_BUILD_DEFAULT_BASE_URL || ''
 
@@ -140,6 +123,13 @@ export default defineConfig({
         resolvers: [ElementPlusResolver({ importStyle: 'css' })],
         dts: false
       }),
+      // 渲染进程开了 nodeIntegration：把 electron / Node 内置模块转成 require 垫片，
+      // 避免打包后 <script type="module"> 在 file:// 下无法解析裸 ESM import。
+      electronRenderer({
+        resolve: {
+          ws: { type: 'cjs' }
+        }
+      }),
       // Windows 下 tinyglobby 会把 `\` 当转义符，需用 `/`；dest 用 '.'，
       // 避免相对路径 ../../static/... 再拼 dest:'static' 变成 static/static。
       viteStaticCopy({
@@ -172,11 +162,9 @@ export default defineConfig({
       __static: JSON.stringify(staticDir.replace(/\\/g, '\\\\'))
     },
     build: {
-      target: 'node22',
       outDir: distElectron,
       emptyOutDir: false,
       rollupOptions: {
-        external: nodeBuiltins,
         input: path.resolve(rootDir, 'src/renderer/index.html'),
         output: {
           entryFileNames: 'assets/[name].js',
