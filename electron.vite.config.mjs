@@ -140,11 +140,13 @@ export default defineConfig({
         resolvers: [ElementPlusResolver({ importStyle: 'css' })],
         dts: false
       }),
+      // Windows 下 tinyglobby 会把 `\` 当转义符，需用 `/`；dest 用 '.'，
+      // 避免相对路径 ../../static/... 再拼 dest:'static' 变成 static/static。
       viteStaticCopy({
         targets: [
           {
-            src: path.join(staticDir, '**/*'),
-            dest: 'static'
+            src: `${staticDir.replace(/\\/g, '/')}/**/*`,
+            dest: '.'
           }
         ]
       })
