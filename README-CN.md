@@ -106,8 +106,9 @@ pnpm run build:applesilicon
 ## 🛠 技术栈
 
 - [Electron](https://electronjs.org/)
-- [Vue](https://vuejs.org/) + [VueX](https://vuex.vuejs.org/) + [Element](https://element.eleme.io)
-- [Aria2](https://aria2.github.io/)
+- [Vue](https://vuejs.org/) + [VueX](https://vuex.vuejs.org/) + [Element Plus](https://element-plus.org/)
+- [go-aria2](https://github.com/chenjia404/go-aria2)（HTTP / FTP / BitTorrent / Magnet 下载内核）
+- [goed2kd](https://github.com/chenjia404/goed2kd)（eD2k 下载内核）
 
 ## 🌍 国际化
 
