@@ -1,3 +1,4 @@
+- 修复 brace-expansion@1.x 被错误强制到 5.x 导致 minimatch@3（asar 打包链）expand is not a function，CI 单元测试失败
 - 构建体系迁移至 electron-vite，源码与备用 Webpack 链路统一为 ESM
 - 修复打包后主界面只显示骨架、无内容的问题（渲染进程 Node/electron 垫片与图标注册）
 - 修复 Windows 下 static 资源复制失败导致构建中断的问题
