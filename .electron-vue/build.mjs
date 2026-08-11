@@ -1,17 +1,17 @@
 'use strict'
 
-process.env.NODE_ENV = 'production'
-
+// 必须置于所有其他 import 之前，见 set-production-env.mjs / #439
+import './set-production-env.mjs'
 import chalk from 'chalk'
 import Webpack from 'webpack'
 import Multispinner from '@motrix/multispinner'
 import cfonts from 'cfonts'
-const { say } = cfonts
 import { deleteSync } from 'del'
 import mainConfig from './webpack.main.config.mjs'
 import rendererConfig from './webpack.renderer.config.mjs'
 import webConfig from './webpack.web.config.mjs'
 
+const { say } = cfonts
 const doneLog = chalk.bgGreen.white(' DONE ') + ' '
 const errorLog = chalk.bgRed.white(' ERROR ') + ' '
 const okayLog = chalk.bgBlue.white(' OKAY ') + ' '

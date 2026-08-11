@@ -38,6 +38,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run sync-go-aria2 && node .electron-vue/build.mjs && npx electron-builder --publish=never
         env:
+          NODE_ENV: production
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}
 
@@ -81,6 +82,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run sync-go-aria2 && node .electron-vue/build.mjs && npx electron-builder --publish=never
         env:
+          NODE_ENV: production
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}
 
@@ -123,6 +125,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run sync-go-aria2 && node .electron-vue/build.mjs && npx electron-builder --win --x64 --publish=never
         env:
+          NODE_ENV: production
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}
 
@@ -168,6 +171,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run sync-go-aria2 && node .electron-vue/build.mjs && npx electron-builder --win --arm64 --publish=never
         env:
+          NODE_ENV: production
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}
 
