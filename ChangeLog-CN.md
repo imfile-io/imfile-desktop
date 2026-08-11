@@ -1,3 +1,5 @@
+- 修复 v2.3.0/v2.3.1 Windows 版启动白屏（仅骨架屏）：ESM import 提升使 NODE_ENV 过晚设置，生产构建误用 publicPath '/'，Electron file:// 下脚本 404（#439）
+- 覆盖 undici@6.27.0 至 6.28.0，修复 CRLF 注入（CVE-2026-15157 / GHSA-m8rv-5g2x-5cg5）
 - 修复 brace-expansion@1.x 被错误强制到 5.x 导致 minimatch@3（asar 打包链）expand is not a function，CI 单元测试失败
 - 构建体系迁移至 electron-vite，源码与备用 Webpack 链路统一为 ESM
 - 修复打包后主界面只显示骨架、无内容的问题（渲染进程 Node/electron 垫片与图标注册）
