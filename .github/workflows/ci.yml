@@ -79,11 +79,19 @@ jobs:
       - name: Build application (webpack)
         run: pnpm run build:github
 
-      # 构建失败时上面一步已非零退出；此处再断言关键产物，避免「空目录也通过」的误判。
       - name: 验证构建产物
         run: |
           set -e
           test -f dist/electron/main.js
           test -f dist/electron/index.html
           test -f dist/electron/package.json
-          echo "OK: dist/electron/main.js、index.html 与 package.json 已生成。"
+          # electron-vite：index.html 须为相对路径；webpack：bundle 须为 publicPath:auto
+          if grep -qE 'src="\./assets/' dist/electron/index.html; then
+            echo "OK: electron-vite 渲染产物使用相对路径 ./assets/"
+          elif grep -q 'Automatic publicPath' dist/electron/index.js; then
+            echo "OK: webpack 渲染 bundle 使用 publicPath:auto"
+          else
+            echo "ERROR: 渲染产物路径异常，Electron file:// 下可能无法加载脚本或懒加载 chunk"
+            exit 1
+          fi
+          echo "OK: dist/electron 关键产物已生成。"
