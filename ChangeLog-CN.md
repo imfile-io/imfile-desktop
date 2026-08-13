@@ -1,3 +1,5 @@
+- 修复 Windows 安装包（含 v2.3.2）启动后主区域无文字：webpack 生产构建 publicPath './' 导致路由懒加载 chunk 在 file:// 下失败（#444）
+- 修复 Windows 下 pnpm run dev 只显示骨架无界面：主进程应使用 ELECTRON_RENDERER_URL 而非硬编码 9080（#444）
 - 修复 v2.3.0/v2.3.1 Windows 版启动白屏（仅骨架屏）：ESM import 提升使 NODE_ENV 过晚设置，生产构建误用 publicPath '/'，Electron file:// 下脚本 404（#439）
 - 覆盖 undici@6.27.0 至 6.28.0，修复 CRLF 注入（CVE-2026-15157 / GHSA-m8rv-5g2x-5cg5）
 - 修复 brace-expansion@1.x 被错误强制到 5.x 导致 minimatch@3（asar 打包链）expand is not a function，CI 单元测试失败
