@@ -10,6 +10,7 @@ body {
     'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-variant: tabular-nums;
   font-size: $--font-size-medium;
+  color: $--color-text-primary;
 }
 
 ::-webkit-scrollbar {
@@ -303,6 +304,7 @@ iframe {
         display: inline-block;
         vertical-align: middle;
         font-size: 14px;
+        color: $--subnav-text-color;
       }
 
       &:hover,

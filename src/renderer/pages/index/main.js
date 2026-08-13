@@ -93,5 +93,6 @@ store.dispatch('preference/fetchPreference')
     init(config)
   })
   .catch((err) => {
-    alert(err)
+    console.error('[imFile] load preference failed, fallback to defaults:', err)
+    init({})
   })

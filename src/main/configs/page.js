@@ -12,13 +12,31 @@ function useRendererDevServer () {
   return !app.isPackaged && process.env.NODE_ENV !== 'production' && is.dev()
 }
 
-const indexLoad = useRendererDevServer()
-  ? { url: 'http://localhost:9080/index.html' }
-  : {
-      // 打包后 app.getAppPath() 指向 app.asar 根目录；开发时指向仓库根目录。
-      // 渲染产物始终位于 dist/electron/index.html，不能依赖当前源码模块的 __dirname。
-      htmlFile: path.join(app.getAppPath(), 'dist', 'electron', 'index.html')
-    }
+/**
+ * electron-vite dev 会注入 ELECTRON_RENDERER_URL（如 http://localhost:5173）；
+ * 勿硬编码 webpack dev-server 的 9080，否则默认 pnpm run dev 在 Windows 等环境只显示骨架屏、无界面文字。
+ */
+export function getRendererDevServerUrl () {
+  const fromElectronVite = process.env.ELECTRON_RENDERER_URL
+  if (fromElectronVite) {
+    const base = fromElectronVite.replace(/\/$/, '')
+    return `${base}/`
+  }
+  return 'http://localhost:9080/index.html'
+}
+
+export function resolveIndexLoad () {
+  if (useRendererDevServer()) {
+    return { url: getRendererDevServerUrl() }
+  }
+  // 打包后 app.getAppPath() 指向 app.asar 根目录；开发时指向仓库根目录。
+  // 渲染产物始终位于 dist/electron/index.html，不能依赖当前源码模块的 __dirname。
+  return {
+    htmlFile: path.join(app.getAppPath(), 'dist', 'electron', 'index.html')
+  }
+}
+
+const indexLoad = resolveIndexLoad()
 
 export default {
   index: {
