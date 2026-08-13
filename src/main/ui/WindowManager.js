@@ -1,4 +1,3 @@
-import { join } from 'node:path'
 import { EventEmitter } from 'node:events'
 import { debounce } from 'lodash'
 import { app, shell, screen, BrowserWindow, nativeImage } from 'electron'
@@ -6,6 +5,7 @@ import is from 'electron-is'
 
 import pageConfig from '../configs/page'
 import logger from '../core/Logger'
+import { resolveStaticFile } from '../utils/staticPath'
 
 const baseBrowserOptions = {
   titleBarStyle: 'hiddenInset',
@@ -63,21 +63,25 @@ export default class WindowManager extends EventEmitter {
 
     // Windows 任务栏需使用 .ico（PNG 常仍显示为 Electron 图标）；Linux 继续用 PNG
     if (is.windows()) {
-      result.attrs.icon = this.createWindowIcon('icon.ico')
+      result.attrs.icon = this.createWindowIcon(['icon.ico', '512x512.png'])
     } else if (is.linux()) {
-      result.attrs.icon = this.createWindowIcon('512x512.png')
+      result.attrs.icon = this.createWindowIcon(['512x512.png', 'icon.ico'])
     }
 
     return result
   }
 
-  createWindowIcon (name) {
-    const filePath = join(__static, name)
-    const icon = nativeImage.createFromPath(filePath)
-    if (icon.isEmpty()) {
+  createWindowIcon (names) {
+    const list = Array.isArray(names) ? names : [names]
+    for (const name of list) {
+      const filePath = resolveStaticFile(name)
+      const icon = nativeImage.createFromPath(filePath)
+      if (!icon.isEmpty()) {
+        return icon
+      }
       logger.warn('[imFile] window icon is empty:', filePath)
     }
-    return icon
+    return nativeImage.createEmpty()
   }
 
   getPageBounds (page) {

@@ -37,7 +37,7 @@ export default defineConfig({
         test: {
           name: 'node',
           environment: 'node',
-          include: ['tests/{main,shared}/**/*.test.js']
+          include: ['tests/{main,shared,build}/**/*.test.js']
         }
       },
       {

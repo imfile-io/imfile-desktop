@@ -2,11 +2,11 @@ import './portable-userdata'
 import './punycode-patch'
 
 import { app } from 'electron'
-import path from 'node:path'
 import is from 'electron-is'
 import { initialize } from '@electron/remote/main'
 
 import { isPortableMode } from '@shared/constants'
+import { resolveStaticDir } from './utils/staticPath'
 import Launcher from './Launcher'
 
 /**
@@ -17,7 +17,7 @@ initialize()
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 
 if (process.env.NODE_ENV !== 'development') {
-  global.__static = path.join(app.getAppPath(), 'dist', 'electron', 'static').replace(/\\/g, '\\\\')
+  global.__static = resolveStaticDir()
 }
 
 function shouldUseCustomWindowsAppId () {

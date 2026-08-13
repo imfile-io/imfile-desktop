@@ -87,8 +87,7 @@ export default defineConfig({
     },
     define: {
       appId: JSON.stringify(appId),
-      'process.env.SSAPI_BUILD_DEFAULT_BASE_URL': JSON.stringify(ssapiBuildDefault),
-      __static: JSON.stringify(staticDir.replace(/\\/g, '\\\\'))
+      'process.env.SSAPI_BUILD_DEFAULT_BASE_URL': JSON.stringify(ssapiBuildDefault)
     },
     build: {
       outDir: distElectron,
@@ -104,6 +103,8 @@ export default defineConfig({
   },
   renderer: {
     root: path.resolve(rootDir, 'src/renderer'),
+    // file:// 协议必须用相对路径，否则安装包脚本变成 /assets/... 导致只显示骨架
+    base: './',
     resolve: {
       alias: {
         '@': path.resolve(rootDir, 'src/renderer'),
@@ -125,17 +126,14 @@ export default defineConfig({
       }),
       // 渲染进程开了 nodeIntegration：把 electron / Node 内置模块转成 require 垫片，
       // 避免打包后 <script type="module"> 在 file:// 下无法解析裸 ESM import。
-      electronRenderer({
-        resolve: {
-          ws: { type: 'cjs' }
-        }
-      }),
-      // Windows 下 tinyglobby 会把 `\` 当转义符，需用 `/`；dest 用 '.'，
-      // 避免相对路径 ../../static/... 再拼 dest:'static' 变成 static/static。
+      // 勿把 npm 包标为 type:cjs：asar 不含 node_modules，运行时 require 会失败导致骨架屏。
+      electronRenderer(),
+      // Windows 下 tinyglobby 会把 `\` 当转义符，需用 `/`。
+      // src 指向 static 目录本身、dest 为 '.'，得到 dist/electron/static/（与 window.__static 一致）。
       viteStaticCopy({
         targets: [
           {
-            src: `${staticDir.replace(/\\/g, '/')}/**/*`,
+            src: staticDir.replace(/\\/g, '/'),
             dest: '.'
           }
         ]
@@ -158,8 +156,7 @@ export default defineConfig({
     define: {
       __VUE_OPTIONS_API__: JSON.stringify(true),
       __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
-      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false),
-      __static: JSON.stringify(staticDir.replace(/\\/g, '\\\\'))
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false)
     },
     build: {
       outDir: distElectron,

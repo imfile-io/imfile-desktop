@@ -1,13 +1,17 @@
 'use strict'
 
 import { EventEmitter } from 'node:events'
-import _WebSocket from 'ws'
 import { JSONRPCError } from './JSONRPCError'
 
 import Deferred from './Deferred'
 import promiseEvent from './promiseEvent'
 
-const WebSocket = global.WebSocket || _WebSocket
+/**
+ * 使用运行时全局 WebSocket（Chromium 渲染进程 / Node 22+ 主进程均有）。
+ * 勿静态 import 'ws'：webpack 会把它标为 external，安装包 asar 不含 node_modules，
+ * require('ws') 在入口阶段失败，Vue 无法挂载，只剩 index.html 骨架。
+ */
+const WebSocket = globalThis.WebSocket
 const fetch = globalThis.fetch.bind(globalThis)
 
 export class JSONRPCClient extends EventEmitter {
@@ -42,7 +46,7 @@ export class JSONRPCClient extends EventEmitter {
         else resolve()
       }
       this.socket.send(JSON.stringify(message), cb)
-      if (global.WebSocket && this.socket instanceof global.WebSocket) cb()
+      if (WebSocket && this.socket instanceof WebSocket) cb()
     })
   }
 

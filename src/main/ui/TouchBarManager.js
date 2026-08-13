@@ -1,10 +1,10 @@
 import { EventEmitter } from 'node:events'
-import { join } from 'node:path'
 import { TouchBar, nativeImage } from 'electron'
 
 import { handleCommand } from '../utils/menu'
 import touchBarMenu from '../menus/touchBar.json'
 import logger from '../core/Logger'
+import { resolveStaticFile } from '../utils/staticPath'
 
 const { TouchBarButton, TouchBarLabel, TouchBarSpacer, TouchBarGroup } = TouchBar
 
@@ -34,7 +34,7 @@ export default class TouchBarManager extends EventEmitter {
     if (!icon) {
       return
     }
-    const img = join(__static, `./icons/${icon}.png`)
+    const img = resolveStaticFile('icons', `${icon}.png`)
     return nativeImage.createFromPath(img)
   }
 

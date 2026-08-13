@@ -14,7 +14,7 @@ import { setRendererI18n } from '@/components/Locale'
 import Icon from '@/components/Icons/Icon.vue'
 import Msg from '@/components/Msg'
 import { commands } from '@/components/CommandManager/instance'
-import TrayWorker from '@/workers/tray.worker?worker'
+import TrayWorker from '@/workers/tray.worker?worker&inline'
 
 import '@/components/Theme/tailwind.css'
 import '@/components/Theme/Index.scss'
@@ -33,25 +33,38 @@ const updateTray = is.renderer()
   : () => {}
 
 function initTrayWorker () {
-  const worker = new TrayWorker()
+  try {
+    const worker = new TrayWorker()
 
-  worker.addEventListener('message', (event) => {
-    const { type, payload } = event.data
+    worker.addEventListener('message', (event) => {
+      const { type, payload } = event.data
 
-    switch (type) {
-      case 'initialized':
-      case 'log':
-        console.log('[imFile] Log from Tray Worker: ', payload)
-        break
-      case 'tray:drawed':
-        updateTray(payload)
-        break
-      default:
-        console.warn('[imFile] Tray Worker unhandled message type:', type, payload)
-    }
+      switch (type) {
+        case 'initialized':
+        case 'log':
+          console.log('[imFile] Log from Tray Worker: ', payload)
+          break
+        case 'tray:drawed':
+          updateTray(payload)
+          break
+        default:
+          console.warn('[imFile] Tray Worker unhandled message type:', type, payload)
+      }
+    })
+
+    return worker
+  } catch (err) {
+    console.warn('[imFile] tray worker init failed:', err)
+    return null
+  }
+}
+
+function withTimeout (promise, ms, label) {
+  let timer
+  const timeout = new Promise((resolve, reject) => {
+    timer = setTimeout(() => reject(new Error(label)), ms)
   })
-
-  return worker
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer))
 }
 
 function init (config) {
@@ -87,7 +100,7 @@ function init (config) {
   }, 400)
 }
 
-store.dispatch('preference/fetchPreference')
+withTimeout(store.dispatch('preference/fetchPreference'), 4000, 'fetchPreference timeout')
   .then((config) => {
     console.info('[imFile] load preference:', config)
     init(config)

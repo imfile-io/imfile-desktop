@@ -1,4 +1,6 @@
+import { existsSync } from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { app } from 'electron'
 import is from 'electron-is'
@@ -25,14 +27,26 @@ export function getRendererDevServerUrl () {
   return 'http://localhost:9080/index.html'
 }
 
+function resolveRendererIndexHtml () {
+  // 打包后 main.js 与 index.html 同目录；优先用当前模块位置，避免 asar 内层级变化。
+  try {
+    const sibling = path.join(path.dirname(fileURLToPath(import.meta.url)), 'index.html')
+    if (existsSync(sibling)) {
+      return sibling
+    }
+  } catch {
+    // import.meta.url 不可用时回退
+  }
+  // 开发态 / 单测：源码模块旁没有 index.html，回退到约定产物路径
+  return path.join(app.getAppPath(), 'dist', 'electron', 'index.html')
+}
+
 export function resolveIndexLoad () {
   if (useRendererDevServer()) {
     return { url: getRendererDevServerUrl() }
   }
-  // 打包后 app.getAppPath() 指向 app.asar 根目录；开发时指向仓库根目录。
-  // 渲染产物始终位于 dist/electron/index.html，不能依赖当前源码模块的 __dirname。
   return {
-    htmlFile: path.join(app.getAppPath(), 'dist', 'electron', 'index.html')
+    htmlFile: resolveRendererIndexHtml()
   }
 }
 

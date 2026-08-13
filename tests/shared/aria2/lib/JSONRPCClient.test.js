@@ -65,4 +65,15 @@ describe('JSONRPCClient', () => {
     client._onmessage({ method: 'onDownloadComplete', params: ['gid'] })
     expect(handler).toHaveBeenCalledWith(['gid'])
   })
+
+  it('不静态导入 ws，避免安装包 asar 中 require(ws) 失败导致骨架屏', async () => {
+    const { readFileSync } = await import('node:fs')
+    const { fileURLToPath } = await import('node:url')
+    const src = readFileSync(
+      fileURLToPath(new URL('../../../../src/shared/aria2/lib/JSONRPCClient.js', import.meta.url)),
+      'utf8'
+    )
+    expect(src).not.toMatch(/from ['"]ws['"]/)
+    expect(src).toMatch(/globalThis\.WebSocket/)
+  })
 })

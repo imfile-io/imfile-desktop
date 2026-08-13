@@ -1,3 +1,4 @@
+import path from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const mockApp = {
@@ -6,6 +7,15 @@ const mockApp = {
 }
 
 const mockIsDev = vi.fn(() => true)
+const mockExistsSync = vi.fn(() => false)
+
+vi.mock('node:fs', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    existsSync: (...args) => mockExistsSync(...args)
+  }
+})
 
 vi.mock('electron', () => ({
   app: mockApp
@@ -23,6 +33,7 @@ describe('main/configs/page', () => {
     vi.unstubAllEnvs()
     mockApp.isPackaged = false
     mockIsDev.mockReturnValue(true)
+    mockExistsSync.mockReturnValue(false)
     vi.resetModules()
   })
 
@@ -45,14 +56,27 @@ describe('main/configs/page', () => {
     expect(getRendererDevServerUrl()).toBe('http://localhost:9080/index.html')
   })
 
-  it('已打包应用走本地 index.html', async () => {
+  it('已打包且同目录无 index.html 时回退到 app 产物路径', async () => {
     mockApp.isPackaged = true
+    mockExistsSync.mockReturnValue(false)
     vi.stubEnv('NODE_ENV', 'development')
 
     const { resolveIndexLoad } = await import('../../../src/main/configs/page.js')
 
     expect(resolveIndexLoad()).toEqual({
-      htmlFile: '/mock/app/dist/electron/index.html'
+      htmlFile: path.join('/mock/app', 'dist', 'electron', 'index.html')
     })
+  })
+
+  it('同目录存在 index.html 时优先使用（打包后与 main.js 同目录）', async () => {
+    mockApp.isPackaged = true
+    mockExistsSync.mockReturnValue(true)
+    vi.stubEnv('NODE_ENV', 'production')
+
+    const { resolveIndexLoad } = await import('../../../src/main/configs/page.js')
+    const htmlFile = resolveIndexLoad().htmlFile.replace(/\\/g, '/')
+
+    expect(htmlFile).toMatch(/\/index\.html$/)
+    expect(htmlFile).not.toContain('dist/electron')
   })
 })

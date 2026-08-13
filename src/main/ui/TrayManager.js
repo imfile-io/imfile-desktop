@@ -1,5 +1,4 @@
 import { EventEmitter } from 'node:events'
-import { join } from 'node:path'
 import { Tray, Menu, nativeImage } from 'electron'
 import is from 'electron-is'
 
@@ -13,6 +12,7 @@ import {
   updateStates
 } from '../utils/menu'
 import { convertArrayBufferToBuffer } from '../utils/index'
+import { resolveStaticFile } from '../utils/staticPath'
 import trayMenu from '../menus/tray.json'
 
 let tray = null
@@ -112,7 +112,7 @@ export default class TrayManager extends EventEmitter {
       return file
     }
 
-    const filePath = join(__static, `./${key}`)
+    const filePath = resolveStaticFile(key)
     file = nativeImage.createFromPath(filePath)
     if (file.isEmpty()) {
       logger.warn('[imFile] tray image is empty:', filePath)

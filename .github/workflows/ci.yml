@@ -76,22 +76,48 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build application (webpack)
+      - name: Build application (electron-vite)
         run: pnpm run build:github
 
-      - name: 验证构建产物
+      - name: 验证 electron-vite 构建产物
         run: |
           set -e
           test -f dist/electron/main.js
           test -f dist/electron/index.html
           test -f dist/electron/package.json
-          # electron-vite：index.html 须为相对路径；webpack：bundle 须为 publicPath:auto
           if grep -qE 'src="\./assets/' dist/electron/index.html; then
             echo "OK: electron-vite 渲染产物使用相对路径 ./assets/"
-          elif grep -q 'Automatic publicPath' dist/electron/index.js; then
-            echo "OK: webpack 渲染 bundle 使用 publicPath:auto"
           else
-            echo "ERROR: 渲染产物路径异常，Electron file:// 下可能无法加载脚本或懒加载 chunk"
+            echo "ERROR: electron-vite 渲染产物路径异常，Electron file:// 下可能无法加载脚本"
             exit 1
           fi
-          echo "OK: dist/electron 关键产物已生成。"
+          if grep -qE 'src="/' dist/electron/index.html; then
+            echo "ERROR: index.html 含绝对路径 src=\"/，安装包会白屏"
+            exit 1
+          fi
+
+      - name: Build application (webpack release path)
+        run: node .electron-vue/build.mjs
+        env:
+          NODE_ENV: production
+          CI: true
+
+      - name: 验证 webpack 发布产物
+        run: |
+          set -e
+          test -f dist/electron/main.js
+          test -f dist/electron/index.html
+          test -f dist/electron/index.js
+          if grep -q 'type="module"' dist/electron/index.html; then
+            echo "ERROR: webpack 渲染入口不应使用 type=module（file:// 下 require/懒加载会失败，只剩骨架）"
+            exit 1
+          fi
+          if grep -qE 'src="/' dist/electron/index.html; then
+            echo "ERROR: index.html 含绝对路径 src=\"/，安装包会白屏"
+            exit 1
+          fi
+          if grep -qE 'from ['\''"]ws['\''"]' dist/electron/index.js; then
+            echo "ERROR: 渲染 bundle 仍静态导入 ws，asar 中 require 会失败"
+            exit 1
+          fi
+          echo "OK: webpack 发布产物为经典脚本相对路径。"

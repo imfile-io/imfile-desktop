@@ -80,7 +80,12 @@ export const moveTaskFilesToTrash = (task) => {
 }
 
 export const getSystemTheme = () => {
-  return nativeTheme.shouldUseDarkColors ? APP_THEME.DARK : APP_THEME.LIGHT
+  try {
+    return nativeTheme.shouldUseDarkColors ? APP_THEME.DARK : APP_THEME.LIGHT
+  } catch (err) {
+    console.warn('[imFile] getSystemTheme failed:', err)
+    return APP_THEME.LIGHT
+  }
 }
 
 export const delayDeleteTaskFiles = (task, delay) => {

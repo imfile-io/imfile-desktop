@@ -12,6 +12,9 @@
       }
     ],
     "asar": true,
+    "asarUnpack": [
+      "dist/electron/static/**/*"
+    ],
     "directories": {
       "output": "release"
     },
@@ -127,13 +130,19 @@
           ]
         }
       ],
-      "extraResources": {
-        "from": "./extra/win32/${arch}/",
-        "to": "./",
-        "filter": [
-          "**/*"
-        ]
-      }
+      "extraResources": [
+        {
+          "from": "./extra/win32/${arch}/",
+          "to": "./",
+          "filter": [
+            "**/*"
+          ]
+        },
+        {
+          "from": "build/icon.ico",
+          "to": "icon.ico"
+        }
+      ]
     },
     "nsis": {
       "artifactName": "${productName}-Setup-${version}-${arch}.${ext}",
@@ -141,7 +150,9 @@
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      "createStartMenuShortcut": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico"
     },
     "appx": {
       "artifactName": "${productName}-${version}-${arch}.${ext}",

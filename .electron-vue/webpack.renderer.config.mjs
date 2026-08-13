@@ -20,7 +20,6 @@ import sass from 'sass'
 
 const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const { dependencies } = require('../package.json')
 const eslintFriendlyFormatter = require('eslint-friendly-formatter/index.js')
 const devMode = process.env.NODE_ENV !== 'production'
 
@@ -34,32 +33,26 @@ try {
 
 const tailwindEntryCss = path.resolve(__dirname, '../src/renderer/components/Theme/tailwind.css')
 
-/**
- * List of node_modules to include in webpack bundle
- *
- * Required for specific packages like Vue UI libraries
- * that provide pure *.vue files that need compiling
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/webpack-configurations.html#white-listing-externals
- */
-const whiteListedModules = ['vue']
-
 const rendererConfig = {
   entry: {
     index: path.join(__dirname, '../src/renderer/pages/index/main.js')
   },
-  experiments: {
-    outputModule: !devMode
-  },
-  externals: [
-    ...Object.keys(dependencies || {}).filter(d => !whiteListedModules.includes(d))
-  ],
+  /**
+   * 安装包 asar 只含 dist/electron，不含 node_modules。
+   * 渲染进程依赖必须打进 bundle；勿把 ws 等 production 依赖标为 external。
+   */
+  externals: [],
   module: {
     rules: [
       {
-        test: /\.worker\.js$/,
+        // 勿用 /\.worker\.js$/：Vite 的 ?worker 查询会使绝对匹配失败
+        test: /\.worker\.js/,
         use: {
           loader: 'worker-loader',
-          options: { filename: '[name].js' }
+          options: {
+            filename: '[name].js',
+            inline: 'no-fallback'
+          }
         }
       },
       {
@@ -195,7 +188,12 @@ const rendererConfig = {
       template: path.resolve(__dirname, '../src/index.ejs'),
       isBrowser: false,
       isDev: process.env.NODE_ENV !== 'production',
-      scriptLoading: devMode ? 'defer' : 'module'
+      /**
+       * 生产必须用经典脚本而非 type=module：
+       * ESM 入口在 Electron file:// 下没有模块作用域 require，
+       * 且 import() 懒加载 chunk 在 Windows 上会失败，只剩骨架屏。
+       */
+      scriptLoading: 'defer'
     }),
     new Webpack.HotModuleReplacementPlugin(),
     new ESLintPlugin({
@@ -208,20 +206,13 @@ const rendererConfig = {
   output: {
     filename: '[name].js',
     path: path.join(__dirname, '../dist/electron'),
-    ...(devMode
-      ? { libraryTarget: 'commonjs2', globalObject: 'this' }
-      : {
-          module: true,
-          chunkFormat: 'module',
-          chunkLoading: 'import',
-          environment: { module: true, dynamicImport: true }
-        }),
+    libraryTarget: 'commonjs2',
+    globalObject: 'this',
     /**
-     * 生产 Electron file:// 下懒加载 chunk 须用 publicPath:'auto'（基于 import.meta.url），
-     * 勿用 './'：webpack 会拼成 file:///C:/.../102.js 等非法 URL，路由动态 import 失败，
-     * 表现为安装包启动后仅标题栏/骨架、主区域无文字（#439 仅修复了入口 index.js）。
+     * 经典脚本 + 相对路径：chunk 以 <script src="./123.js"> 加载，相对 index.html 解析。
+     * 勿用 output.module / type=module：Windows file:// 下动态 import 失败只剩骨架。
      */
-    publicPath: devMode ? '/' : 'auto'
+    publicPath: devMode ? '/' : './'
   },
   resolve: {
     alias: {
