@@ -213,10 +213,15 @@ const rendererConfig = {
       : {
           module: true,
           chunkFormat: 'module',
+          chunkLoading: 'import',
           environment: { module: true, dynamicImport: true }
         }),
-    /** 生产 file:// 用相对路径；开发保持 / 以免 dev server / HMR 异常 */
-    publicPath: devMode ? '/' : './'
+    /**
+     * 生产 Electron file:// 下懒加载 chunk 须用 publicPath:'auto'（基于 import.meta.url），
+     * 勿用 './'：webpack 会拼成 file:///C:/.../102.js 等非法 URL，路由动态 import 失败，
+     * 表现为安装包启动后仅标题栏/骨架、主区域无文字（#439 仅修复了入口 index.js）。
+     */
+    publicPath: devMode ? '/' : 'auto'
   },
   resolve: {
     alias: {
