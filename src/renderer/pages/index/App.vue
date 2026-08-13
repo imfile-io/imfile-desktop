@@ -84,8 +84,8 @@ export default {
       const { themeClass = '', i18nClass = '', directionClass = '' } = this
       const classList = [themeClass, i18nClass, directionClass]
 
-      // Element Plus dark vars uses `.dark`; keep compatibility with existing `theme-dark`.
-      if (themeClass === `theme-${APP_THEME.DARK}`) {
+      // Element Plus dark vars uses `.dark`; AUTO 跟随系统时 class 为 theme-dark，也需同步 dark。
+      if (themeClass.includes('dark')) {
         classList.push('dark')
       }
 
