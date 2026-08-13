@@ -1,3 +1,6 @@
+- 修复安装包启动后只显示骨架、无界面内容：webpack 生产入口改为经典脚本（避免 file:// 下 ESM 无 require）、渲染依赖打进 bundle、共享 RPC 不再静态导入 ws
+- 修复安装后运行时窗口/任务栏图标不是自定义图标：Windows 无法从 asar 内读取 .ico，改为解包 static 并回退 resources/icon.ico
+- CI 增加 webpack 发布产物校验，避免只验证 electron-vite 而漏掉实际上架安装包
 - 修复 Windows 安装包（含 v2.3.2）启动后主区域无文字：webpack 生产构建 publicPath './' 导致路由懒加载 chunk 在 file:// 下失败（#444）
 - 修复 Windows 下 pnpm run dev 只显示骨架无界面：主进程应使用 ELECTRON_RENDERER_URL 而非硬编码 9080（#444）
 - 修复 v2.3.0/v2.3.1 Windows 版启动白屏（仅骨架屏）：ESM import 提升使 NODE_ENV 过晚设置，生产构建误用 publicPath '/'，Electron file:// 下脚本 404（#439）
