@@ -136,7 +136,7 @@ After building, the application will be found in the project's `release` directo
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=imfile-io/imfile-desktop&type=Timeline)](https://star-history.com/#imfile-io/imfile-desktop&Timeline)
+[![Star History Chart](https://star-history.dera.page/svg?repos=imfile-io/imfile-desktop&type=Timeline)](https://star-history.dera.page/#imfile-io/imfile-desktop&Timeline)
 
 ## 📜 License
 
