@@ -14,6 +14,7 @@ export const createElectronMock = (overrides = {}) => {
       return paths[name] || `/mock/${name}`
     }),
     getAppPath: vi.fn(() => '/mock/app'),
+    getName: vi.fn(() => 'imFile'),
     getLocale: vi.fn(() => 'zh-CN'),
     getLoginItemSettings: vi.fn(() => ({ openAtLogin: false })),
     isPackaged: false,

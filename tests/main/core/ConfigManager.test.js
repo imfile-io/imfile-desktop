@@ -109,6 +109,36 @@ describe('ConfigManager', () => {
     expect(manager.getSystemConfig('dir')).toBe('/portable/Downloads')
   })
 
+  it('便携模式下将残留的 AppData DHT 路径改写到程序目录', () => {
+    process.env.PORTABLE_EXECUTABLE_DIR = '/portable'
+    manager.setSystemConfig('dht-file-path', '/mock/appData/imFile/dht.dat')
+    manager.setSystemConfig('dht-file-path6', '/mock/appData/imFile/dht6.dat')
+    manager.fixPortableDhtPaths()
+
+    expect(manager.getSystemConfig('dht-file-path')).toBe('/portable/dht.dat')
+    expect(manager.getSystemConfig('dht-file-path6')).toBe('/portable/dht6.dat')
+  })
+
+  it('便携模式下已指向程序目录的 DHT 路径保持不变', () => {
+    process.env.PORTABLE_EXECUTABLE_DIR = '/portable'
+    manager.setSystemConfig('dht-file-path', '/portable/dht.dat')
+    manager.setSystemConfig('dht-file-path6', '/portable/dht6.dat')
+    manager.fixPortableDhtPaths()
+
+    expect(manager.getSystemConfig('dht-file-path')).toBe('/portable/dht.dat')
+    expect(manager.getSystemConfig('dht-file-path6')).toBe('/portable/dht6.dat')
+  })
+
+  it('fixSystemConfig 在便携模式下同步纠正 DHT 路径', () => {
+    process.env.PORTABLE_EXECUTABLE_DIR = '/portable'
+    manager.setSystemConfig('dht-file-path', '/mock/appData/imFile/dht.dat')
+    manager.setSystemConfig('dht-file-path6', '/mock/appData/imFile/dht6.dat')
+    manager.fixSystemConfig()
+
+    expect(manager.getSystemConfig('dht-file-path')).toBe('/portable/dht.dat')
+    expect(manager.getSystemConfig('dht-file-path6')).toBe('/portable/dht6.dat')
+  })
+
   it('reset 清空用户与系统配置', () => {
     manager.setUserConfig('theme', APP_THEME.DARK)
     manager.setSystemConfig('pause', true)
