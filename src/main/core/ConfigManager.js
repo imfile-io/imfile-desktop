@@ -10,6 +10,11 @@ import {
   getUserDownloadsPath
 } from '../utils/index'
 import {
+  collectPortableDhtPathFixes,
+  isPathInsideDir
+} from '../utils/portableDhtPaths'
+import { reclaimLegacyDhtFiles } from '../utils/portableLegacyCleanup'
+import {
   APP_RUN_MODE,
   APP_THEME,
   EMPTY_STRING,
@@ -179,6 +184,7 @@ export default class ConfigManager {
 
     if (isPortableMode()) {
       this.fixPortableDownloadDir()
+      this.fixPortableDhtPaths()
     }
   }
 
@@ -215,6 +221,47 @@ export default class ConfigManager {
       }
     } catch {
       // 保留用户原设置
+    }
+  }
+
+  /**
+   * 便携模式下强制将 dht-file-path / dht-file-path6 改到程序目录。
+   * 从 AppData 迁移的 system.json 会带上旧绝对路径，electron-store 不会覆盖已有键，
+   * 引擎会持续向 %APPDATA%\\imFile 写入 dht.dat，空目录清理因此失效。
+   */
+  fixPortableDhtPaths () {
+    const portableRoot = getPortableExecutableDir()
+    if (!portableRoot) {
+      return
+    }
+
+    const fixes = collectPortableDhtPathFixes({
+      'dht-file-path': this.systemConfig.get('dht-file-path'),
+      'dht-file-path6': this.systemConfig.get('dht-file-path6')
+    }, portableRoot)
+
+    const previousPaths = []
+    for (const { key, from, to } of fixes) {
+      this.setSystemConfig(key, to)
+      if (from) {
+        previousPaths.push(from)
+      }
+    }
+
+    const legacyDir = this.getLegacyUserDataDir()
+    const overwrite = previousPaths.some((p) => isPathInsideDir(p, legacyDir))
+    reclaimLegacyDhtFiles(legacyDir, portableRoot, {
+      overwrite,
+      extraPaths: previousPaths
+    })
+  }
+
+  getLegacyUserDataDir () {
+    try {
+      const appName = typeof app.getName === 'function' ? app.getName() : 'imFile'
+      return resolve(app.getPath('appData'), appName || 'imFile')
+    } catch {
+      return ''
     }
   }
 

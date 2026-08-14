@@ -9,7 +9,8 @@
 import { cpSync, existsSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { app } from 'electron'
-import { removeEmptyLegacyUserDataDir } from './utils/portableLegacyCleanup'
+import { isPathInsideDir, rewritePortableDhtPathsInSystemJson } from './utils/portableDhtPaths'
+import { reclaimLegacyDhtFiles, removeEmptyLegacyUserDataDir } from './utils/portableLegacyCleanup'
 
 const PORTABLE_DATA_FILES = new Set([
   'user.json',
@@ -138,5 +139,17 @@ if (portableRoot) {
   app.setPath('userData', portableRoot)
   app.setPath('logs', join(portableRoot, 'logs'))
   app.setPath('cache', getPortableCacheDir(portableRoot))
+
+  // 迁移会原样复制 system.json；其中 dht-file-path / dht-file-path6
+  // 仍是 AppData 绝对路径，electron-store 不会用 defaults 覆盖已有键。
+  const { previousPaths } = rewritePortableDhtPathsInSystemJson(
+    join(portableRoot, 'system.json'),
+    portableRoot
+  )
+  const overwriteLegacyDht = previousPaths.some((p) => isPathInsideDir(p, defaultUserData))
+  reclaimLegacyDhtFiles(defaultUserData, portableRoot, {
+    overwrite: overwriteLegacyDht,
+    extraPaths: previousPaths
+  })
   removeEmptyLegacyUserDataDir(defaultUserData)
 }
