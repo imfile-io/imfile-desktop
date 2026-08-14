@@ -227,8 +227,8 @@ importers:
         specifier: ^32.1.0
         version: 32.1.0(esbuild@0.28.1)(rollup@4.62.3)(vite@7.3.6(@types/node@26.2.0)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.102.0)(terser@5.49.2)(yaml@2.9.0))(vue@3.5.41(typescript@6.0.3))(webpack@5.109.2)
       vite-plugin-electron-renderer:
-        specifier: ^0.14.7
-        version: 0.14.7
+        specifier: ^1.0.0
+        version: 1.0.0
       vite-plugin-static-copy:
         specifier: ^4.1.1
         version: 4.1.1(vite@7.3.6(@types/node@26.2.0)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.102.0)(terser@5.49.2)(yaml@2.9.0))
@@ -6089,8 +6089,8 @@ packages:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
 
-  vite-plugin-electron-renderer@0.14.7:
-    resolution: {integrity: sha512-hHBMKuZ24MB2SIxG7U7ix+DDEnvxou7Bgy/TdhYxNz3S5N3Yh7Hjvj9blfMeGEJ0oaZJn7y5z0V/RyDmJ5OuCA==}
+  vite-plugin-electron-renderer@1.0.0:
+    resolution: {integrity: sha512-/9CBdUqnCgwWXn61v5PErWnR5q3Bfne2oI52uHzgJnKnlaoNgEKvxOzS0/XssDXWMK3ElStM2+J/Ko4Q63XhMA==}
 
   vite-plugin-static-copy@4.1.1:
     resolution: {integrity: sha512-GrlA8YklrAfSyxJ4M3fdQLOo9oNkp56IM9FYgX/WtEgeIFkPwhu4wzpufBCIuNKCa6Fn77FkRdYxkHqV0FwjAw==}
@@ -12483,7 +12483,7 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vite-plugin-electron-renderer@0.14.7: {}
+  vite-plugin-electron-renderer@1.0.0: {}
 
   vite-plugin-static-copy@4.1.1(vite@7.3.6(@types/node@26.2.0)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.102.0)(terser@5.49.2)(yaml@2.9.0)):
     dependencies:
