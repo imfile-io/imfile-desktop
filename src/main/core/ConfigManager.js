@@ -11,9 +11,11 @@ import {
 } from '../utils/index'
 import {
   collectPortableDhtPathFixes,
-  isPathInsideDir
+  getRememberedLegacyUserDataDir,
+  isPathInsideDir,
+  isSameFilePath
 } from '../utils/portableDhtPaths'
-import { reclaimLegacyDhtFiles } from '../utils/portableLegacyCleanup'
+import { reclaimRewrittenLegacyDhtFiles } from '../utils/portableLegacyCleanup'
 import {
   APP_RUN_MODE,
   APP_THEME,
@@ -208,14 +210,14 @@ export default class ConfigManager {
     try {
       const normalizedDir = resolve(String(currentDir))
       const normalizedRoot = resolve(portableRoot)
-      if (normalizedDir.toLowerCase().startsWith(normalizedRoot.toLowerCase())) {
+      if (isPathInsideDir(normalizedDir, normalizedRoot)) {
         return
       }
       const systemDownloads = resolve(app.getPath('downloads'))
       const appDataDir = resolve(app.getPath('appData'))
       if (
-        normalizedDir.toLowerCase() === systemDownloads.toLowerCase() ||
-        normalizedDir.toLowerCase().startsWith(appDataDir.toLowerCase())
+        isSameFilePath(normalizedDir, systemDownloads) ||
+        isPathInsideDir(normalizedDir, appDataDir)
       ) {
         this.setSystemConfig('dir', portableDownloads)
       }
@@ -225,9 +227,10 @@ export default class ConfigManager {
   }
 
   /**
-   * 便携模式下强制将 dht-file-path / dht-file-path6 改到程序目录。
+   * 便携模式下将仍指向旧 AppData 的 dht-file-path / dht-file-path6 改到程序目录。
    * 从 AppData 迁移的 system.json 会带上旧绝对路径，electron-store 不会覆盖已有键，
    * 引擎会持续向 %APPDATA%\\imFile 写入 dht.dat，空目录清理因此失效。
+   * 用户自定义的外部路径（如共享盘）保持不变。
    */
   fixPortableDhtPaths () {
     const portableRoot = getPortableExecutableDir()
@@ -235,10 +238,11 @@ export default class ConfigManager {
       return
     }
 
+    const legacyDir = this.getLegacyUserDataDir()
     const fixes = collectPortableDhtPathFixes({
       'dht-file-path': this.systemConfig.get('dht-file-path'),
       'dht-file-path6': this.systemConfig.get('dht-file-path6')
-    }, portableRoot)
+    }, portableRoot, { legacyDir })
 
     const previousPaths = []
     for (const { key, from, to } of fixes) {
@@ -248,15 +252,14 @@ export default class ConfigManager {
       }
     }
 
-    const legacyDir = this.getLegacyUserDataDir()
-    const overwrite = previousPaths.some((p) => isPathInsideDir(p, legacyDir))
-    reclaimLegacyDhtFiles(legacyDir, portableRoot, {
-      overwrite,
-      extraPaths: previousPaths
-    })
+    reclaimRewrittenLegacyDhtFiles(legacyDir, portableRoot, previousPaths)
   }
 
   getLegacyUserDataDir () {
+    const remembered = getRememberedLegacyUserDataDir()
+    if (remembered) {
+      return resolve(remembered)
+    }
     try {
       const appName = typeof app.getName === 'function' ? app.getName() : 'imFile'
       return resolve(app.getPath('appData'), appName || 'imFile')
