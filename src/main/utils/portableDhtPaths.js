@@ -47,11 +47,27 @@ export function getPortableDhtFilePath (portableRoot, fileName) {
 }
 
 /**
+ * 是否属于应纠正的旧 DHT 位置：空值，或落在旧 AppData userData / AppData 根下。
+ * 自定义外部路径（如共享盘）不视为残留，与 fixPortableDownloadDir 策略一致。
+ */
+export function isLegacyPortableDhtLocation (filePath, options = {}) {
+  if (!filePath || !String(filePath).trim()) {
+    return true
+  }
+  const { legacyDir, appDataDir } = options
+  return Boolean(
+    (legacyDir && isPathInsideDir(filePath, legacyDir)) ||
+    (appDataDir && isPathInsideDir(filePath, appDataDir))
+  )
+}
+
+/**
  * 计算需要改写到便携根目录的 DHT 路径。
+ * 只纠正空值和旧 AppData 残留；用户自定义的外部路径保持不变。
  * electron-store 对已存在的键不会套用 defaults，迁移后的绝对路径会一直指向 AppData。
  * @returns {{ key: string, from: string, to: string }[]}
  */
-export function collectPortableDhtPathFixes (currentByKey, portableRoot) {
+export function collectPortableDhtPathFixes (currentByKey, portableRoot, options = {}) {
   if (!currentByKey || !portableRoot) {
     return []
   }
@@ -60,13 +76,18 @@ export function collectPortableDhtPathFixes (currentByKey, portableRoot) {
   for (const [key, fileName] of PORTABLE_DHT_PATH_KEYS) {
     const expected = getPortableDhtFilePath(portableRoot, fileName)
     const current = currentByKey[key]
-    if (!current || !isSameFilePath(current, expected)) {
-      fixes.push({
-        key,
-        from: current ? String(current) : '',
-        to: expected
-      })
+    const currentStr = current == null ? '' : String(current).trim()
+    if (currentStr && isSameFilePath(currentStr, expected)) {
+      continue
     }
+    if (currentStr && !isLegacyPortableDhtLocation(currentStr, options)) {
+      continue
+    }
+    fixes.push({
+      key,
+      from: currentStr,
+      to: expected
+    })
   }
   return fixes
 }
@@ -75,7 +96,7 @@ export function collectPortableDhtPathFixes (currentByKey, portableRoot) {
  * 读取便携目录 system.json，将残留的 DHT 绝对路径改写为便携根目录。
  * @returns {{ changed: boolean, previousPaths: string[] }}
  */
-export function rewritePortableDhtPathsInSystemJson (systemJsonPath, portableRoot) {
+export function rewritePortableDhtPathsInSystemJson (systemJsonPath, portableRoot, options = {}) {
   const empty = { changed: false, previousPaths: [] }
   if (!systemJsonPath || !portableRoot || !existsSync(systemJsonPath)) {
     return empty
@@ -87,7 +108,7 @@ export function rewritePortableDhtPathsInSystemJson (systemJsonPath, portableRoo
       return empty
     }
 
-    const fixes = collectPortableDhtPathFixes(data, portableRoot)
+    const fixes = collectPortableDhtPathFixes(data, portableRoot, options)
     if (fixes.length === 0) {
       return empty
     }

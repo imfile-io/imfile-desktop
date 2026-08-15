@@ -78,6 +78,30 @@ describe('reclaimLegacyDhtFiles', () => {
     rmSync(legacyDir, { recursive: true, force: true })
   })
 
+  it('不删除 legacyDir 之外的自定义 DHT 文件', () => {
+    const stamp = `${Date.now()}-${Math.random().toString(16).slice(2)}`
+    const legacyDir = join(tmpdir(), `imfile-legacy-dht-skip-${stamp}`)
+    const portableRoot = join(tmpdir(), `imfile-portable-dht-skip-${stamp}`)
+    const customDir = join(tmpdir(), `imfile-custom-dht-skip-${stamp}`)
+    mkdirSync(legacyDir, { recursive: true })
+    mkdirSync(portableRoot, { recursive: true })
+    mkdirSync(customDir, { recursive: true })
+    const customFile = join(customDir, 'dht.dat')
+    writeFileSync(customFile, 'custom-live')
+
+    reclaimLegacyDhtFiles(legacyDir, portableRoot, {
+      overwrite: true,
+      extraPaths: [customFile]
+    })
+
+    expect(existsSync(customFile)).toBe(true)
+    expect(readFileSync(customFile, 'utf8')).toBe('custom-live')
+    expect(existsSync(join(portableRoot, 'dht.dat'))).toBe(false)
+    rmSync(legacyDir, { recursive: true, force: true })
+    rmSync(portableRoot, { recursive: true, force: true })
+    rmSync(customDir, { recursive: true, force: true })
+  })
+
   it('回收后若仍有其他文件则保留 AppData 目录', () => {
     const stamp = `${Date.now()}-${Math.random().toString(16).slice(2)}`
     const legacyDir = join(tmpdir(), `imfile-legacy-dht-keepdir-${stamp}`)

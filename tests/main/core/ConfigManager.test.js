@@ -129,6 +129,16 @@ describe('ConfigManager', () => {
     expect(manager.getSystemConfig('dht-file-path6')).toBe('/portable/dht6.dat')
   })
 
+  it('便携模式下保留自定义外部 DHT 路径', () => {
+    process.env.PORTABLE_EXECUTABLE_DIR = '/portable'
+    manager.setSystemConfig('dht-file-path', '/shared/dht/dht.dat')
+    manager.setSystemConfig('dht-file-path6', '/shared/dht/dht6.dat')
+    manager.fixPortableDhtPaths()
+
+    expect(manager.getSystemConfig('dht-file-path')).toBe('/shared/dht/dht.dat')
+    expect(manager.getSystemConfig('dht-file-path6')).toBe('/shared/dht/dht6.dat')
+  })
+
   it('fixSystemConfig 在便携模式下同步纠正 DHT 路径', () => {
     process.env.PORTABLE_EXECUTABLE_DIR = '/portable'
     manager.setSystemConfig('dht-file-path', '/mock/appData/imFile/dht.dat')

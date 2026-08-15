@@ -225,9 +225,10 @@ export default class ConfigManager {
   }
 
   /**
-   * 便携模式下强制将 dht-file-path / dht-file-path6 改到程序目录。
+   * 便携模式下将仍指向旧 AppData 的 dht-file-path / dht-file-path6 改到程序目录。
    * 从 AppData 迁移的 system.json 会带上旧绝对路径，electron-store 不会覆盖已有键，
    * 引擎会持续向 %APPDATA%\\imFile 写入 dht.dat，空目录清理因此失效。
+   * 用户自定义的外部路径（如共享盘）保持不变。
    */
   fixPortableDhtPaths () {
     const portableRoot = getPortableExecutableDir()
@@ -235,10 +236,14 @@ export default class ConfigManager {
       return
     }
 
+    const legacyDir = this.getLegacyUserDataDir()
     const fixes = collectPortableDhtPathFixes({
       'dht-file-path': this.systemConfig.get('dht-file-path'),
       'dht-file-path6': this.systemConfig.get('dht-file-path6')
-    }, portableRoot)
+    }, portableRoot, {
+      legacyDir,
+      appDataDir: this.getAppDataDir()
+    })
 
     const previousPaths = []
     for (const { key, from, to } of fixes) {
@@ -248,7 +253,6 @@ export default class ConfigManager {
       }
     }
 
-    const legacyDir = this.getLegacyUserDataDir()
     const overwrite = previousPaths.some((p) => isPathInsideDir(p, legacyDir))
     reclaimLegacyDhtFiles(legacyDir, portableRoot, {
       overwrite,
@@ -260,6 +264,14 @@ export default class ConfigManager {
     try {
       const appName = typeof app.getName === 'function' ? app.getName() : 'imFile'
       return resolve(app.getPath('appData'), appName || 'imFile')
+    } catch {
+      return ''
+    }
+  }
+
+  getAppDataDir () {
+    try {
+      return resolve(app.getPath('appData'))
     } catch {
       return ''
     }

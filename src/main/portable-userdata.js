@@ -144,7 +144,11 @@ if (portableRoot) {
   // 仍是 AppData 绝对路径，electron-store 不会用 defaults 覆盖已有键。
   const { previousPaths } = rewritePortableDhtPathsInSystemJson(
     join(portableRoot, 'system.json'),
-    portableRoot
+    portableRoot,
+    {
+      legacyDir: defaultUserData,
+      appDataDir: app.getPath('appData')
+    }
   )
   const overwriteLegacyDht = previousPaths.some((p) => isPathInsideDir(p, defaultUserData))
   reclaimLegacyDhtFiles(defaultUserData, portableRoot, {

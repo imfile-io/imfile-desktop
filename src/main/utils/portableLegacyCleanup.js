@@ -31,6 +31,7 @@ export function removeEmptyLegacyUserDataDir (legacyDir) {
  * 导致目录非空、空目录清理永远不触发。
  *
  * overwrite=true 时用残留文件覆盖便携目录副本（引擎此前一直在往 AppData 写，残留文件更新）。
+ * 仅处理落在 legacyDir 内的文件，extraPaths 指向自定义外部位置时不会删除。
  */
 export function reclaimLegacyDhtFiles (legacyDir, portableRoot, options = {}) {
   const { overwrite = false, extraPaths = [] } = options
@@ -74,6 +75,10 @@ export function reclaimLegacyDhtFiles (legacyDir, portableRoot, options = {}) {
       continue
     }
     if (isPathInsideDir(normalized, portableRoot)) {
+      continue
+    }
+    // 只回收旧 AppData userData 内的残留，避免删掉自定义外部 DHT 文件
+    if (!legacyDir || !isPathInsideDir(normalized, legacyDir)) {
       continue
     }
 
