@@ -9,8 +9,8 @@
 import { cpSync, existsSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { app } from 'electron'
-import { isPathInsideDir, rewritePortableDhtPathsInSystemJson } from './utils/portableDhtPaths'
-import { reclaimLegacyDhtFiles, removeEmptyLegacyUserDataDir } from './utils/portableLegacyCleanup'
+import { isSameFilePath, rememberLegacyUserDataDir, rewritePortableDhtPathsInSystemJson } from './utils/portableDhtPaths'
+import { reclaimRewrittenLegacyDhtFiles } from './utils/portableLegacyCleanup'
 
 const PORTABLE_DATA_FILES = new Set([
   'user.json',
@@ -79,7 +79,7 @@ function shouldMigratePortableEntry (name) {
  * 仅迁移配置与引擎数据，不复制 AppData 下的 logs/Cache 等目录。
  */
 function migrateLegacyUserDataIfNeeded (legacyDir, portableRoot) {
-  if (!legacyDir || legacyDir === portableRoot) {
+  if (!legacyDir || isSameFilePath(legacyDir, portableRoot)) {
     return
   }
   if (existsSync(join(portableRoot, 'user.json')) || existsSync(join(portableRoot, 'system.json'))) {
@@ -134,6 +134,7 @@ function getPortableCacheDir (portableRoot) {
 const defaultUserData = app.getPath('userData')
 const portableRoot = resolvePortableRoot()
 if (portableRoot) {
+  rememberLegacyUserDataDir(defaultUserData)
   migrateLegacyUserDataIfNeeded(defaultUserData, portableRoot)
   process.env.PORTABLE_EXECUTABLE_DIR = portableRoot
   app.setPath('userData', portableRoot)
@@ -145,15 +146,7 @@ if (portableRoot) {
   const { previousPaths } = rewritePortableDhtPathsInSystemJson(
     join(portableRoot, 'system.json'),
     portableRoot,
-    {
-      legacyDir: defaultUserData,
-      appDataDir: app.getPath('appData')
-    }
+    { legacyDir: defaultUserData }
   )
-  const overwriteLegacyDht = previousPaths.some((p) => isPathInsideDir(p, defaultUserData))
-  reclaimLegacyDhtFiles(defaultUserData, portableRoot, {
-    overwrite: overwriteLegacyDht,
-    extraPaths: previousPaths
-  })
-  removeEmptyLegacyUserDataDir(defaultUserData)
+  reclaimRewrittenLegacyDhtFiles(defaultUserData, portableRoot, previousPaths)
 }

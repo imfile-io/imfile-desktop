@@ -25,6 +25,7 @@ vi.mock('electron-log', () => ({
 }))
 
 const { default: ConfigManager } = await import('../../../src/main/core/ConfigManager.js')
+const { rememberLegacyUserDataDir } = await import('../../../src/main/utils/portableDhtPaths.js')
 
 describe('ConfigManager', () => {
   let manager
@@ -38,6 +39,7 @@ describe('ConfigManager', () => {
   afterEach(() => {
     delete process.env.PORTABLE_EXECUTABLE_DIR
     delete process.env.SSAPI_BUILD_DEFAULT_BASE_URL
+    rememberLegacyUserDataDir('')
   })
 
   it('初始化用户与系统默认配置', () => {
@@ -109,6 +111,14 @@ describe('ConfigManager', () => {
     expect(manager.getSystemConfig('dir')).toBe('/portable/Downloads')
   })
 
+  it('便携模式下不把前缀相似的自定义下载目录当成系统下载', () => {
+    process.env.PORTABLE_EXECUTABLE_DIR = '/portable'
+    manager.setSystemConfig('dir', '/mock/downloads-extra')
+    manager.fixPortableDownloadDir()
+
+    expect(manager.getSystemConfig('dir')).toBe('/mock/downloads-extra')
+  })
+
   it('便携模式下将残留的 AppData DHT 路径改写到程序目录', () => {
     process.env.PORTABLE_EXECUTABLE_DIR = '/portable'
     manager.setSystemConfig('dht-file-path', '/mock/appData/imFile/dht.dat')
@@ -127,6 +137,16 @@ describe('ConfigManager', () => {
 
     expect(manager.getSystemConfig('dht-file-path')).toBe('/portable/dht.dat')
     expect(manager.getSystemConfig('dht-file-path6')).toBe('/portable/dht6.dat')
+  })
+
+  it('便携模式下不改写 AppData 下其他目录的 DHT 路径', () => {
+    process.env.PORTABLE_EXECUTABLE_DIR = '/portable'
+    manager.setSystemConfig('dht-file-path', '/mock/appData/other/dht.dat')
+    manager.setSystemConfig('dht-file-path6', '/mock/appData/other/dht6.dat')
+    manager.fixPortableDhtPaths()
+
+    expect(manager.getSystemConfig('dht-file-path')).toBe('/mock/appData/other/dht.dat')
+    expect(manager.getSystemConfig('dht-file-path6')).toBe('/mock/appData/other/dht6.dat')
   })
 
   it('便携模式下保留自定义外部 DHT 路径', () => {

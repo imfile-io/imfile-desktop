@@ -46,19 +46,26 @@ export function getPortableDhtFilePath (portableRoot, fileName) {
   return resolve(portableRoot, fileName)
 }
 
+let rememberedLegacyUserDataDir = ''
+
+/** 记录便携重定向前的默认 userData，供 ConfigManager 与启动清理使用同一路径。 */
+export function rememberLegacyUserDataDir (dir) {
+  rememberedLegacyUserDataDir = typeof dir === 'string' ? dir : ''
+}
+
+export function getRememberedLegacyUserDataDir () {
+  return rememberedLegacyUserDataDir
+}
+
 /**
- * 是否属于应纠正的旧 DHT 位置：空值，或落在旧 AppData userData / AppData 根下。
- * 自定义外部路径（如共享盘）不视为残留，与 fixPortableDownloadDir 策略一致。
+ * 是否属于应纠正的旧 DHT 位置：空值，或落在旧 AppData userData 内。
+ * 自定义外部路径（如共享盘、AppData 下其他目录）不视为残留。
  */
 export function isLegacyPortableDhtLocation (filePath, options = {}) {
   if (!filePath || !String(filePath).trim()) {
     return true
   }
-  const { legacyDir, appDataDir } = options
-  return Boolean(
-    (legacyDir && isPathInsideDir(filePath, legacyDir)) ||
-    (appDataDir && isPathInsideDir(filePath, appDataDir))
-  )
+  return Boolean(options.legacyDir && isPathInsideDir(filePath, options.legacyDir))
 }
 
 /**

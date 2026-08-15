@@ -4,9 +4,11 @@ import { tmpdir } from 'node:os'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   collectPortableDhtPathFixes,
+  getRememberedLegacyUserDataDir,
   isLegacyPortableDhtLocation,
   isPathInsideDir,
   isSameFilePath,
+  rememberLegacyUserDataDir,
   rewritePortableDhtPathsInSystemJson
 } from '../../../src/main/utils/portableDhtPaths'
 
@@ -20,9 +22,18 @@ function makeTempDir (prefix) {
 }
 
 afterEach(() => {
+  rememberLegacyUserDataDir('')
   for (const dir of tempDirs.splice(0)) {
     rmSync(dir, { recursive: true, force: true })
   }
+})
+
+describe('rememberLegacyUserDataDir', () => {
+  it('记录并读取便携重定向前的 userData', () => {
+    expect(getRememberedLegacyUserDataDir()).toBe('')
+    rememberLegacyUserDataDir('/mock/appData/imFile')
+    expect(getRememberedLegacyUserDataDir()).toBe('/mock/appData/imFile')
+  })
 })
 
 describe('isSameFilePath / isPathInsideDir', () => {
@@ -42,8 +53,7 @@ describe('isSameFilePath / isPathInsideDir', () => {
 
 describe('collectPortableDhtPathFixes', () => {
   const legacyOptions = {
-    legacyDir: '/mock/appData/imFile',
-    appDataDir: '/mock/appData'
+    legacyDir: '/mock/appData/imFile'
   }
 
   it('将 AppData 残留路径改写到便携根目录', () => {
@@ -88,31 +98,23 @@ describe('collectPortableDhtPathFixes', () => {
     }, '/portable', legacyOptions)).toEqual([])
   })
 
-  it('AppData 根下但不在 imFile 目录的路径仍视为残留', () => {
-    const fixes = collectPortableDhtPathFixes({
+  it('AppData 下其他目录的路径保持不变', () => {
+    expect(collectPortableDhtPathFixes({
       'dht-file-path': '/mock/appData/other/dht.dat',
       'dht-file-path6': '/portable/dht6.dat'
-    }, '/portable', legacyOptions)
-    expect(fixes).toEqual([
-      {
-        key: 'dht-file-path',
-        from: '/mock/appData/other/dht.dat',
-        to: '/portable/dht.dat'
-      }
-    ])
+    }, '/portable', legacyOptions)).toEqual([])
   })
 })
 
 describe('isLegacyPortableDhtLocation', () => {
   const options = {
-    legacyDir: '/mock/appData/imFile',
-    appDataDir: '/mock/appData'
+    legacyDir: '/mock/appData/imFile'
   }
 
-  it('空值与 AppData 残留为 true，共享盘路径为 false', () => {
+  it('空值与旧 userData 残留为 true，其他路径为 false', () => {
     expect(isLegacyPortableDhtLocation('', options)).toBe(true)
     expect(isLegacyPortableDhtLocation('/mock/appData/imFile/dht.dat', options)).toBe(true)
-    expect(isLegacyPortableDhtLocation('/mock/appData/other/dht.dat', options)).toBe(true)
+    expect(isLegacyPortableDhtLocation('/mock/appData/other/dht.dat', options)).toBe(false)
     expect(isLegacyPortableDhtLocation('/shared/dht/dht.dat', options)).toBe(false)
   })
 })
@@ -129,8 +131,7 @@ describe('rewritePortableDhtPathsInSystemJson', () => {
     }, null, 2))
 
     const result = rewritePortableDhtPathsInSystemJson(systemJsonPath, portableRoot, {
-      legacyDir: '/mock/appData/imFile',
-      appDataDir: '/mock/appData'
+      legacyDir: '/mock/appData/imFile'
     })
 
     expect(result.changed).toBe(true)
@@ -169,8 +170,7 @@ describe('rewritePortableDhtPathsInSystemJson', () => {
     writeFileSync(systemJsonPath, JSON.stringify(payload))
 
     const result = rewritePortableDhtPathsInSystemJson(systemJsonPath, portableRoot, {
-      legacyDir: '/mock/appData/imFile',
-      appDataDir: '/mock/appData'
+      legacyDir: '/mock/appData/imFile'
     })
 
     expect(result.changed).toBe(false)

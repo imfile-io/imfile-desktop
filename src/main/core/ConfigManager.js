@@ -11,9 +11,11 @@ import {
 } from '../utils/index'
 import {
   collectPortableDhtPathFixes,
-  isPathInsideDir
+  getRememberedLegacyUserDataDir,
+  isPathInsideDir,
+  isSameFilePath
 } from '../utils/portableDhtPaths'
-import { reclaimLegacyDhtFiles } from '../utils/portableLegacyCleanup'
+import { reclaimRewrittenLegacyDhtFiles } from '../utils/portableLegacyCleanup'
 import {
   APP_RUN_MODE,
   APP_THEME,
@@ -208,14 +210,14 @@ export default class ConfigManager {
     try {
       const normalizedDir = resolve(String(currentDir))
       const normalizedRoot = resolve(portableRoot)
-      if (normalizedDir.toLowerCase().startsWith(normalizedRoot.toLowerCase())) {
+      if (isPathInsideDir(normalizedDir, normalizedRoot)) {
         return
       }
       const systemDownloads = resolve(app.getPath('downloads'))
       const appDataDir = resolve(app.getPath('appData'))
       if (
-        normalizedDir.toLowerCase() === systemDownloads.toLowerCase() ||
-        normalizedDir.toLowerCase().startsWith(appDataDir.toLowerCase())
+        isSameFilePath(normalizedDir, systemDownloads) ||
+        isPathInsideDir(normalizedDir, appDataDir)
       ) {
         this.setSystemConfig('dir', portableDownloads)
       }
@@ -240,10 +242,7 @@ export default class ConfigManager {
     const fixes = collectPortableDhtPathFixes({
       'dht-file-path': this.systemConfig.get('dht-file-path'),
       'dht-file-path6': this.systemConfig.get('dht-file-path6')
-    }, portableRoot, {
-      legacyDir,
-      appDataDir: this.getAppDataDir()
-    })
+    }, portableRoot, { legacyDir })
 
     const previousPaths = []
     for (const { key, from, to } of fixes) {
@@ -253,25 +252,17 @@ export default class ConfigManager {
       }
     }
 
-    const overwrite = previousPaths.some((p) => isPathInsideDir(p, legacyDir))
-    reclaimLegacyDhtFiles(legacyDir, portableRoot, {
-      overwrite,
-      extraPaths: previousPaths
-    })
+    reclaimRewrittenLegacyDhtFiles(legacyDir, portableRoot, previousPaths)
   }
 
   getLegacyUserDataDir () {
+    const remembered = getRememberedLegacyUserDataDir()
+    if (remembered) {
+      return resolve(remembered)
+    }
     try {
       const appName = typeof app.getName === 'function' ? app.getName() : 'imFile'
       return resolve(app.getPath('appData'), appName || 'imFile')
-    } catch {
-      return ''
-    }
-  }
-
-  getAppDataDir () {
-    try {
-      return resolve(app.getPath('appData'))
     } catch {
       return ''
     }
