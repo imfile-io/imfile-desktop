@@ -14,7 +14,7 @@
     "type": "git",
     "url": "https://github.com/imfile-io/imfile-desktop.git"
   },
-  "packageManager": "pnpm@11.22.0",
+  "packageManager": "pnpm@11.24.0",
   "scripts": {
     "release": "electron-vite build && electron-builder --publish onTagOrDraft",
     "build": "electron-vite build && electron-builder",
