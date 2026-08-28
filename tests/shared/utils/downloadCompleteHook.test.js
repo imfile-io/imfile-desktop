@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 import { buildDownloadCompleteHookArgs } from '@shared/utils/downloadCompleteHook'
@@ -13,7 +14,7 @@ describe('buildDownloadCompleteHookArgs', () => {
     expect(buildDownloadCompleteHookArgs(task)).toEqual({
       gid: 'abc123',
       numFiles: '1',
-      filePath: '/downloads/file.zip'
+      filePath: resolve('/downloads/file.zip')
     })
   })
 

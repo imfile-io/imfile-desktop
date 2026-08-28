@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 import { getTaskFullPath } from '@shared/utils/taskPath'
@@ -14,7 +15,7 @@ describe('getTaskFullPath', () => {
       bittorrent: { info: { name: 'My Torrent' } },
       files: []
     }
-    expect(getTaskFullPath(task)).toBe('/downloads/My Torrent')
+    expect(getTaskFullPath(task)).toBe(resolve('/downloads', 'My Torrent'))
   })
 
   it('磁力任务仅返回目录', () => {
@@ -23,7 +24,7 @@ describe('getTaskFullPath', () => {
       bittorrent: {},
       files: [{ path: '/downloads/file.bin' }]
     }
-    expect(getTaskFullPath(task)).toBe('/downloads')
+    expect(getTaskFullPath(task)).toBe(resolve('/downloads'))
   })
 
   it('单文件 HTTP 任务解析完整路径', () => {
@@ -31,7 +32,7 @@ describe('getTaskFullPath', () => {
       dir: '/downloads',
       files: [{ path: '/downloads/single.zip' }]
     }
-    expect(getTaskFullPath(task)).toBe('/downloads/single.zip')
+    expect(getTaskFullPath(task)).toBe(resolve('/downloads/single.zip'))
   })
 
   it('通过 URI 推导单文件路径', () => {
@@ -39,6 +40,6 @@ describe('getTaskFullPath', () => {
       dir: '/downloads',
       files: [{ uris: [{ uri: 'https://example.com/hello%20world.zip' }] }]
     }
-    expect(getTaskFullPath(task)).toBe('/downloads/hello world.zip')
+    expect(getTaskFullPath(task)).toBe(resolve('/downloads', 'hello world.zip'))
   })
 })

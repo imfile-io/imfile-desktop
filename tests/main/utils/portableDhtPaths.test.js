@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
@@ -66,12 +66,12 @@ describe('collectPortableDhtPathFixes', () => {
       {
         key: 'dht-file-path',
         from: '/mock/appData/imFile/dht.dat',
-        to: '/portable/dht.dat'
+        to: resolve('/portable', 'dht.dat')
       },
       {
         key: 'dht-file-path6',
         from: '/mock/appData/imFile/dht6.dat',
-        to: '/portable/dht6.dat'
+        to: resolve('/portable', 'dht6.dat')
       }
     ])
   })
@@ -86,8 +86,8 @@ describe('collectPortableDhtPathFixes', () => {
   it('空值或缺省键也会补到便携目录', () => {
     const fixes = collectPortableDhtPathFixes({}, '/portable', legacyOptions)
     expect(fixes.map((item) => item.to)).toEqual([
-      '/portable/dht.dat',
-      '/portable/dht6.dat'
+      resolve('/portable', 'dht.dat'),
+      resolve('/portable', 'dht6.dat')
     ])
   })
 

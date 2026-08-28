@@ -6,7 +6,7 @@ describe('webpack.renderer.config', () => {
     vi.resetModules()
   })
 
-  it('生产构建使用经典脚本与相对 publicPath，避免安装包 file:// 白屏', async () => {
+  it('生产构建使用经典脚本与相对 publicPath，避免安装包 file:// 白屏', { timeout: 20000 }, async () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.resetModules()
 

@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { MemoryStore } from '../../helpers/electron-store-mock.js'
@@ -108,7 +109,7 @@ describe('ConfigManager', () => {
     manager.setSystemConfig('dir', '/mock/downloads')
     manager.fixPortableDownloadDir()
 
-    expect(manager.getSystemConfig('dir')).toBe('/portable/Downloads')
+    expect(manager.getSystemConfig('dir')).toBe(resolve('/portable', 'Downloads'))
   })
 
   it('便携模式下不把前缀相似的自定义下载目录当成系统下载', () => {
@@ -125,8 +126,8 @@ describe('ConfigManager', () => {
     manager.setSystemConfig('dht-file-path6', '/mock/appData/imFile/dht6.dat')
     manager.fixPortableDhtPaths()
 
-    expect(manager.getSystemConfig('dht-file-path')).toBe('/portable/dht.dat')
-    expect(manager.getSystemConfig('dht-file-path6')).toBe('/portable/dht6.dat')
+    expect(manager.getSystemConfig('dht-file-path')).toBe(resolve('/portable', 'dht.dat'))
+    expect(manager.getSystemConfig('dht-file-path6')).toBe(resolve('/portable', 'dht6.dat'))
   })
 
   it('便携模式下已指向程序目录的 DHT 路径保持不变', () => {
@@ -165,8 +166,8 @@ describe('ConfigManager', () => {
     manager.setSystemConfig('dht-file-path6', '/mock/appData/imFile/dht6.dat')
     manager.fixSystemConfig()
 
-    expect(manager.getSystemConfig('dht-file-path')).toBe('/portable/dht.dat')
-    expect(manager.getSystemConfig('dht-file-path6')).toBe('/portable/dht6.dat')
+    expect(manager.getSystemConfig('dht-file-path')).toBe(resolve('/portable', 'dht.dat'))
+    expect(manager.getSystemConfig('dht-file-path6')).toBe(resolve('/portable', 'dht6.dat'))
   })
 
   it('reset 清空用户与系统配置', () => {
