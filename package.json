@@ -118,7 +118,7 @@
     "terser-webpack-plugin": "^5.6.1",
     "unplugin-auto-import": "^21.1.0",
     "unplugin-vue-components": "^32.1.0",
-    "vite-plugin-electron-renderer": "^0.14.7",
+    "vite-plugin-electron-renderer": "^1.0.0",
     "vite-plugin-static-copy": "^4.1.1",
     "vitest": "^4.1.11",
     "vue": "^3.5.42",
