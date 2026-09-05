@@ -34,4 +34,4 @@ overrides:
   # CVE GHSA-r292-9mhp-454m: tar 递归 DoS
   tar: '>=7.5.21'
   # CVE-2026-15157 / GHSA-m8rv-5g2x-5cg5: blob-like body.type CRLF 注入
-  undici@6.27.0: 6.28.0
+  undici@6.27.0: 6.28.1
