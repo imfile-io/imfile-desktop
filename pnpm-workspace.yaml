@@ -26,12 +26,13 @@ overrides:
   # CVE: removeScripts 未完全清除可执行脚本 (fixed in 4.0.2)
   svgo: ^4.0.2
   # CVE GHSA-mh99-v99m-4gvg: brace-expansion DoS
-  # 1.x 只能升到 maintenance-v1（1.1.18）；不可跨主版本到 5.x，
+  # 1.x 只能留在 1.x（当前 maintenance 1.1.21）；不可跨主版本到 5.x，
   # 否则 minimatch@3（@electron/asar → glob@7）会报 expand is not a function
-  brace-expansion@1.1.16: 1.1.18
-  brace-expansion@2.1.2: 2.1.4
-  brace-expansion@4.0.1: 5.0.9
+  brace-expansion@1.1.16: 1.1.21
+  brace-expansion@2.1.2: 2.1.7
+  brace-expansion@4.0.1: 5.0.12
+  brace-expansion@5.0.9: 5.0.12
   # CVE GHSA-r292-9mhp-454m: tar 递归 DoS
-  tar: '>=7.5.21'
+  tar: '>=7.5.22'
   # CVE-2026-15157 / GHSA-m8rv-5g2x-5cg5: blob-like body.type CRLF 注入
   undici@6.27.0: 6.28.1
