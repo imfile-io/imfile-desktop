@@ -30,7 +30,7 @@ overrides:
   # 否则 minimatch@3（@electron/asar → glob@7）会报 expand is not a function
   brace-expansion@1.1.16: 1.1.18
   brace-expansion@2.1.2: 2.1.4
-  brace-expansion@4.0.1: 5.0.9
+  brace-expansion@4.0.1: 5.0.12
   # CVE GHSA-r292-9mhp-454m: tar 递归 DoS
   tar: '>=7.5.21'
   # CVE-2026-15157 / GHSA-m8rv-5g2x-5cg5: blob-like body.type CRLF 注入
