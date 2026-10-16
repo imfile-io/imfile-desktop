@@ -1,3 +1,5 @@
+- 修复便携模式迁移后 DHT 路径仍指向 AppData 的问题，并收紧路径改写与文件回收范围（#446、#447）
+- 升级 pnpm 至 12.14.0、Electron 至 43.7.11、Vue 至 3.5.44、vitest 至 5，并更新 undici 覆盖以继续规避 CVE-2026-15157
 - 修复安装包启动后只显示骨架、无界面内容：webpack 生产入口改为经典脚本（避免 file:// 下 ESM 无 require）、渲染依赖打进 bundle、共享 RPC 不再静态导入 ws
 - 修复安装后运行时窗口/任务栏图标不是自定义图标：Windows 无法从 asar 内读取 .ico，改为解包 static 并回退 resources/icon.ico
 - CI 增加 webpack 发布产物校验，避免只验证 electron-vite 而漏掉实际上架安装包
