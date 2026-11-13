@@ -167,7 +167,7 @@ overrides:
   fast-uri: ^4.0.0
   svgo: ^4.0.2
   brace-expansion@1.1.16: 1.1.22
-  brace-expansion@2.1.2: 2.1.8
+  brace-expansion@2.1.2: 5.0.13
   brace-expansion@4.0.1: 5.0.13
   brace-expansion@5.0.9: 5.0.13
   tar: '>=7.5.23'
@@ -2909,9 +2909,6 @@ packages:
 
   brace-expansion@1.1.22:
     resolution: {integrity: sha512-CKLDTuSsN0+r1ThM0WkzzBI7dnPI6xEGfa/JnVYIK9JNBA1N1NyPwXVHor//NKD/y3sDxp764sZdLhFK7pH8XQ==}
-
-  brace-expansion@2.1.8:
-    resolution: {integrity: sha512-BnlDzDYQoplTsZSvPi86CNzmbcb07X8ufR8fk1zivaiEJlXJkiq1MQyDCVmlWcsWbj6aWXqHnrwwevbrm/Saig==}
 
   brace-expansion@5.0.13:
     resolution: {integrity: sha512-Vh3dmFbc4wZeox7M9I/0L9GfFd83Su4+yCck/OF9Gi/P/dAHn0RT7X4K9R7gMNMhDck3DvhR6QXsnQdjjgwNvQ==}
@@ -9057,10 +9054,6 @@ snapshots:
       balanced-match: 1.0.2
       concat-map: 0.0.1
 
-  brace-expansion@2.1.8:
-    dependencies:
-      balanced-match: 1.0.2
-
   brace-expansion@5.0.13:
     dependencies:
       balanced-match: 4.0.4
@@ -11061,11 +11054,11 @@ snapshots:
 
   minimatch@5.1.9:
     dependencies:
-      brace-expansion: 2.1.8
+      brace-expansion: 5.0.13
 
   minimatch@9.0.9:
     dependencies:
-      brace-expansion: 2.1.8
+      brace-expansion: 5.0.13
 
   minimist@1.2.8: {}
 
