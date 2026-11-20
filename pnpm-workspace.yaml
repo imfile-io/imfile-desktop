@@ -13,6 +13,8 @@ minimumReleaseAgeExclude:
   - axios@1.19.0
   - globals@17.9.0
   - unplugin-auto-import@21.1.0
+  # Renovate security update: happy-dom@21.0.4
+  - happy-dom@21.0.4
 
 peerDependencyRules:
   allowedVersions:
