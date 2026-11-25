@@ -5,5 +5,38 @@
   ],
   "forkProcessing": "enabled",
   "minimumReleaseAge": "1 day",
-  "internalChecksFilter": "strict"
+  "internalChecksFilter": "strict",
+  "packageRules": [
+    {
+      "description": "brace-expansion 1.x/2.x 不可跨主版本到 5.x（minimatch@3 默认导出为函数；5.x 为命名导出对象）",
+      "matchPackageNames": [
+        "brace-expansion"
+      ],
+      "matchCurrentVersion": "/^[12]\\./",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "undici 仅做同主版本 CVE 覆盖，禁止 6.x/7.x 跨到 8.x",
+      "matchPackageNames": [
+        "undici"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "CI/文档基线仍为 Node 24，暂不自动升级到 Node 26",
+      "matchPackageNames": [
+        "node"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    }
+  ]
 }
