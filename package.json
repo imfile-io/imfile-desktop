@@ -84,7 +84,7 @@
     "css-loader": "^7.1.5",
     "css-minimizer-webpack-plugin": "^8.0.0",
     "del": "^9.0.0",
-    "electron": "43.8.12",
+    "electron": "45.4.1",
     "electron-builder": "^26.18.0",
     "electron-devtools-installer": "^4.0.0",
     "electron-is": "^3.0.0",
