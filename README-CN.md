@@ -28,6 +28,23 @@ imFile 是一款全能的下载工具，支持下载 HTTP、FTP、BT、磁力链
 
 注意win7操作系统需要下载文件名带win7的版本。
 
+### macOS
+
+请按芯片架构选择安装包：Apple Silicon（M 系列）下载 `imFile-*-arm64.dmg`，Intel 下载 `imFile-*.dmg`（x64）。
+
+若打开时提示「已损坏，无法打开」，一般是 Gatekeeper 拦截了尚未完成 Apple 公证的应用，**不是**安装包损坏。可按下列步骤处理：
+
+1. 将 `imFile.app` 拖到「应用程序」
+2. 打开「终端」执行：
+
+```bash
+sudo xattr -r -d com.apple.quarantine /Applications/imFile.app
+```
+
+3. 再从「应用程序」启动；若仍被拦截，到「系统设置 → 隐私与安全性」点击「仍要打开」
+
+DMG 内也附带了 `macOS安装说明.txt`。完成 Developer ID 签名与公证后的正式发布包可直接打开，无需上述步骤。
+
 ## ✨ 特性
 
 - 🕹 简洁明了的图形操作界面

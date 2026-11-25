@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>com.apple.security.automation.apple-events</key>
+    <true/>
+    <!-- Electron / Chromium V8 JIT：hardened runtime 下渲染进程启动所必需 -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+    <!-- 允许加载 asar.unpacked 中的原生模块，以及 extraResources 里的 go-aria2 / goed2kd -->
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+    <!-- 子进程（下载引擎）可能依赖自定义 DYLD_* 环境变量 -->
+    <key>com.apple.security.cs.allow-dyld-environment-variables</key>
+    <true/>
+    <!-- HTTP/FTP/BT/ED2K 出站与本地 RPC / BT 入站监听 -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    <key>com.apple.security.network.server</key>
+    <true/>
+    <!-- 用户通过系统对话框选择自定义下载目录 -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+    <!-- 默认下载目录 ~/Downloads -->
+    <key>com.apple.security.files.downloads.read-write</key>
+    <true/>
+</dict>
+</plist>

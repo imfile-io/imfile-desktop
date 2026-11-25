@@ -1,0 +1,29 @@
+imFile macOS 安装说明
+====================
+
+若打开 imFile 时提示「已损坏，无法打开」，通常不是安装包真的损坏，
+而是 macOS Gatekeeper 拦截了尚未完成 Apple 公证（Notarization）的应用。
+
+请按下列步骤处理后即可正常使用：
+
+1. 将 imFile.app 拖到「应用程序」文件夹
+2. 打开「终端」，执行：
+
+   sudo xattr -r -d com.apple.quarantine /Applications/imFile.app
+
+3. 再从「应用程序」启动 imFile
+4. 若仍被拦截：打开「系统设置 → 隐私与安全性」，在底部点击「仍要打开」
+
+也可尝试：在 Finder 中对 imFile.app 按住 Control 点击（或右键）→「打开」。
+
+---
+
+If macOS says imFile is "damaged" and cannot be opened, the download is usually
+fine — Gatekeeper is blocking an app that is not yet Apple-notarized.
+
+Workaround:
+
+  sudo xattr -r -d com.apple.quarantine /Applications/imFile.app
+
+Then open imFile from Applications. See also:
+https://github.com/imfile-io/imfile-desktop/issues/508

@@ -22,6 +22,7 @@
     "build:win10": "electron-vite build && electron-builder --win --config.directories.output=release/win32/10",
     "build:win:arm64": "electron-vite build && electron-builder --win --arm64 --config.directories.output=release/win32/arm64",
     "build:applesilicon": "electron-vite build && electron-builder --arm64 --mac",
+    "build:macos:release": "electron-vite build && node scripts/build-macos-release.mjs",
     "build:github": "electron-vite build",
     "build:dir": "electron-vite build && electron-builder --dir",
     "build:clean": "cross-env NODE_ENV=production BUILD_TARGET=clean node .electron-vue/build.mjs",

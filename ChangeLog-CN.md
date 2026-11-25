@@ -1,3 +1,4 @@
+- 修复 macOS 安装包被 Gatekeeper 提示「已损坏」：启用 hardened runtime / entitlements、补齐公证钩子与 CI 签名密钥接入；未签名包在 DMG 与 README 中提供 `xattr` 绕过说明（#508）
 - 修复便携模式迁移后 DHT 路径仍指向 AppData 的问题，并收紧路径改写与文件回收范围（#446、#447）
 - 升级 pnpm 至 12.14.0、Electron 至 43.7.11、Vue 至 3.5.44、vitest 至 5，并更新 undici 覆盖以继续规避 CVE-2026-15157
 - 修复安装包启动后只显示骨架、无界面内容：webpack 生产入口改为经典脚本（避免 file:// 下 ESM 无 require）、渲染依赖打进 bundle、共享 RPC 不再静态导入 ws

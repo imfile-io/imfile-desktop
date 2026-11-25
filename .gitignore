@@ -25,6 +25,7 @@ coverage/
 # electron builder
 *.provisionprofile
 build/*.plist
+!build/entitlements.mac.plist
 dist/electron/*
 dist/web/*
 

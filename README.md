@@ -28,6 +28,23 @@ Download from [GitHub Releases](https://github.com/imfile-io/imfile-desktop/rele
 
 It is recommended to install imFile using the installation package (imFile-Setup-x.y.z.exe) to ensure a complete experience, such as associating torrent files, capturing magnet links, etc.
 
+### macOS
+
+Use `imFile-*-arm64.dmg` on Apple Silicon (M-series) and `imFile-*.dmg` (x64) on Intel Macs.
+
+If macOS says the app is “damaged” and cannot be opened, Gatekeeper is usually blocking an app that is not yet Apple-notarized — the download itself is typically fine. Workaround:
+
+1. Drag `imFile.app` to Applications
+2. Run in Terminal:
+
+```bash
+sudo xattr -r -d com.apple.quarantine /Applications/imFile.app
+```
+
+3. Open imFile from Applications; if still blocked, use System Settings → Privacy & Security → Open Anyway
+
+The DMG also includes `macOS安装说明.txt`. Notarized Developer ID builds open normally without this step.
+
 ## ✨ Features
 
 - 🕹 Simple and clear user interface

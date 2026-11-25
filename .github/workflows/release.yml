@@ -80,11 +80,20 @@ jobs:
           npm version "$VERSION" --no-git-tag-version --allow-same-version
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run sync-go-aria2 && node .electron-vue/build.mjs && npx electron-builder --publish=never
+      # 配置了 CSC_LINK 时签名并公证；否则打未签名包（DMG 内附带「macOS安装说明」）
+      - run: pnpm run sync-go-aria2 && node .electron-vue/build.mjs && node scripts/build-macos-release.mjs
         env:
           NODE_ENV: production
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SSAPI_BUILD_DEFAULT_BASE_URL: ${{ secrets.SSAPI_BUILD_DEFAULT_BASE_URL }}
+          CSC_LINK: ${{ secrets.MACOS_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MACOS_CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
 
       - name: Upload macOS build artifacts
         uses: actions/upload-artifact@v7

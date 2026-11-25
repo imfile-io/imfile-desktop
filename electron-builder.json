@@ -64,6 +64,12 @@
           "x": 130,
           "y": 230,
           "type": "file"
+        },
+        {
+          "x": 270,
+          "y": 100,
+          "type": "file",
+          "path": "build/macOS安装说明.txt"
         }
       ]
     },
@@ -84,10 +90,17 @@
           ]
         }
       ],
-      "type": "development",
+      "type": "distribution",
       "darkModeSupport": true,
-      "hardenedRuntime": false,
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
       "notarize": false,
+      "extendInfo": {
+        "NSAppleEventsUsageDescription": "imFile 在你启用「下载完成后关机」等操作时需要发送系统事件。",
+        "NSLocalNetworkUsageDescription": "imFile 使用本地网络进行 UPnP 端口映射并发现下载节点。"
+      },
       "extraResources": {
         "from": "./extra/darwin/${arch}/",
         "to": "./",
