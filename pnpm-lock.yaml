@@ -329,7 +329,7 @@ importers:
         version: 6.0.0(supports-color@10.2.2)(vite@7.3.8(@types/node@26.6.11)(jiti@2.7.0)(lightningcss@1.33.0)(sass@1.108.2)(terser@5.51.4))
       element-plus:
         specifier: ^2.14.8
-        version: 2.14.8(vue@3.5.46(typescript@6.0.3))
+        version: 2.14.9(vue@3.5.46(typescript@6.0.3))
       eslint:
         specifier: ^10.15.0
         version: 10.15.0(jiti@2.7.0)(supports-color@10.2.2)
@@ -3514,8 +3514,8 @@ packages:
     engines: {node: '>= 22.12.0'}
     hasBin: true
 
-  element-plus@2.14.8:
-    resolution: {integrity: sha512-Z4Br45W9b8vWKvVHSTvbS6rRKmsLjmHCPXICJR6osl35+i+S2LCBs4NN8apLBkQiUh0pzS9labK5eCS7yzDhWw==}
+  element-plus@2.14.9:
+    resolution: {integrity: sha512-ugBD9sxCQNLNhqzQLB2xdtkqGAE395pJ/p8ck8wzKS490lAf6OfANOuZN3+n97fFA7DfTgn/8W+p74e9IIMUYQ==}
     peerDependencies:
       vue: ^3.3.7
 
@@ -9818,7 +9818,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  element-plus@2.14.8(vue@3.5.46(typescript@6.0.3)):
+  element-plus@2.14.9(vue@3.5.46(typescript@6.0.3)):
     dependencies:
       '@ctrl/tinycolor': 4.3.1
       '@element-plus/icons-vue': 2.3.2(vue@3.5.46(typescript@6.0.3))
